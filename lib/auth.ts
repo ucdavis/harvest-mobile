@@ -12,7 +12,14 @@ const ACCESS_EXPIRATION_KEY = "access_expiration";
 
 const refreshThresholdMs = 60_000; // refresh access token 1 min before expiry
 
-// TODO: move to config
+const tenant = process.env.EXPO_PUBLIC_AZURE_TENANT_ID;
+const clientId = process.env.EXPO_PUBLIC_AZURE_CLIENT_ID;
+
+if (!tenant || !clientId) {
+  throw new Error(
+    "Azure AD configuration is missing. Please check your environment variables."
+  );
+}
 
 const discovery = {
   authorizationEndpoint: `https://login.microsoftonline.com/${tenant}/oauth2/v2.0/authorize`,
