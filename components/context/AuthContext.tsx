@@ -1,9 +1,9 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
-import { isAuthenticated } from "@/lib/auth";
+import { isAuthenticated, setAuthTokenAsync } from "@/lib/auth";
+import React, { createContext, useContext, useState } from "react";
 
 interface AuthContextType {
   isLoggedIn: boolean;
-  login: () => void;
+  login: (token: string) => void;
   logout: () => void;
   isLoading: boolean;
 }
@@ -11,31 +11,24 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(isAuthenticated());
+  const [isLoading, setIsLoading] = useState(true); // TODO: if we need it while loading auth state
 
-  useEffect(() => {
-    checkAuthStatus();
-  }, []);
-
-  const checkAuthStatus = async () => {
-    try {
-      const authenticated = await isAuthenticated();
-      setIsLoggedIn(authenticated);
-    } catch (error) {
-      console.error("Error checking auth status:", error);
-    } finally {
+  const login = (token: string) => {
+    setAuthTokenAsync(token).then(() => {
+      setIsLoggedIn(true);
       setIsLoading(false);
-    }
-  };
-
-  const login = () => {
-    setIsLoggedIn(true);
+    });
   };
 
   const logout = () => {
-    setIsLoggedIn(false);
+    setAuthTokenAsync(null).then(() => {
+      setIsLoading(false);
+      setIsLoggedIn(false);
+    });
   };
+
+  console.log("AuthProvider rendered, isLoggedIn:", isLoggedIn);
 
   return (
     <AuthContext.Provider value={{ isLoggedIn, login, logout, isLoading }}>

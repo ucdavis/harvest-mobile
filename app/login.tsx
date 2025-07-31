@@ -1,41 +1,26 @@
 import { useAuth } from "@/components/context/AuthContext";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
-import { setAuthToken } from "@/lib/auth";
+import { Redirect, router } from "expo-router";
 import { useState } from "react";
-import { Alert, StyleSheet, TextInput, TouchableOpacity } from "react-native";
+import { Alert, StyleSheet, TouchableOpacity } from "react-native";
 
 export default function LoginScreen() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const { login } = useAuth();
+  const { isLoggedIn, login } = useAuth();
 
   console.log("LoginScreen rendered");
 
-  const handleLogin = async () => {
-    if (!email || !password) {
-      Alert.alert("Error", "Please fill in all fields");
-      return;
-    }
+  if (isLoggedIn) {
+    return <Redirect href="/" />;
+  }
 
+  const handleLogin = async () => {
     setIsLoading(true);
     try {
-      // Replace with your actual authentication logic
-      const response = await fetch("your-api-endpoint/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        await setAuthToken(data.token);
-        login();
-      } else {
-        Alert.alert("Error", "Invalid credentials");
-      }
-    } catch (error) {
+      login("dummy_token");
+      router.replace("/");
+    } catch {
       Alert.alert("Error", "Login failed");
     } finally {
       setIsLoading(false);
@@ -48,30 +33,13 @@ export default function LoginScreen() {
         Welcome to Harvest
       </ThemedText>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
-        autoCapitalize="none"
-      />
-
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-      />
-
       <TouchableOpacity
         style={[styles.button, isLoading && styles.buttonDisabled]}
         onPress={handleLogin}
         disabled={isLoading}
       >
         <ThemedText style={styles.buttonText}>
-          {isLoading ? "Signing In..." : "Sign In"}
+          {isLoading ? "Signing In..." : "Login with UC Davis"}
         </ThemedText>
       </TouchableOpacity>
     </ThemedView>
@@ -88,27 +56,19 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: 40,
   },
-  input: {
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 8,
-    padding: 15,
-    marginBottom: 15,
-    fontSize: 16,
-  },
   button: {
     backgroundColor: "#0a7ea4",
-    padding: 15,
-    borderRadius: 8,
+    padding: 20,
+    borderRadius: 12,
     alignItems: "center",
-    marginTop: 10,
+    marginTop: 20,
   },
   buttonDisabled: {
     opacity: 0.6,
   },
   buttonText: {
     color: "white",
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: "bold",
   },
 });

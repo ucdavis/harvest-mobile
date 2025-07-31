@@ -13,6 +13,7 @@ export default function TabLayout() {
   const colorScheme = useColorScheme();
   const { isLoggedIn } = useAuth();
 
+  console.log("TabLayout rendered, isLoggedIn:", isLoggedIn);
   if (!isLoggedIn) {
     return <Redirect href="/login" />; // Redirect to login if not logged in
   }
