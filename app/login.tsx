@@ -4,6 +4,7 @@ import { ThemedView } from "@/components/ThemedView";
 import { authConfig } from "@/lib/auth";
 import {
   ResponseType,
+  TokenResponse,
   exchangeCodeAsync,
   useAuthRequest,
 } from "expo-auth-session";
@@ -30,6 +31,16 @@ export default function LoginScreen() {
     },
     authConfig.discovery
   );
+
+  const fakeLogin = () => {
+    setIsLoading(true);
+    login({
+      accessToken: "fake-access-token",
+      idToken: "fake-id-token",
+      refreshToken: "fake-refresh-token",
+      expiresIn: 3600, // 1 hour in seconds
+    } as TokenResponse);
+  };
 
   useEffect(() => {
     console.log("Auth response:", response);
@@ -70,7 +81,8 @@ export default function LoginScreen() {
       <TouchableOpacity
         style={[styles.button, isLoading && styles.buttonDisabled]}
         onPress={() => {
-          promptAsync();
+          fakeLogin();
+          // promptAsync();
         }}
         disabled={isLoading}
       >
