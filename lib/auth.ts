@@ -38,6 +38,13 @@ const authConfig = {
   redirectUri,
 };
 
+type UserInfo = {
+  email: string;
+  name: string;
+  sid: string;
+  // TODO: add in IAMID pulled from azure graph api
+};
+
 // TODO: maybe we don't need this sync helpers
 const isAuthenticatedAsync = async () => {
   const token = await getAuthTokenAsync();
@@ -119,13 +126,33 @@ const getValidAccessTokenAsync = async () => {
   return refreshed.accessToken;
 };
 
+const getUserInfoFromIdToken = (idToken?: string) => {
+  if (!idToken) throw new Error("ID token is required");
+
+  const payload = idToken.split(".")[1];
+
+  const userInfo: UserInfo = JSON.parse(atob(payload));
+  return userInfo;
+};
+
+const getUserInfo = () => {
+  const idToken = SecureStore.getItem(ID_TOKEN_KEY);
+
+  if (!idToken) return undefined;
+
+  return getUserInfoFromIdToken(idToken);
+};
+
 export {
   authConfig,
   deleteAuthTokensAsync,
   getAuthToken,
   getAuthTokenAsync,
+  getUserInfo,
+  getUserInfoFromIdToken,
   getValidAccessTokenAsync,
   isAuthenticated,
   isAuthenticatedAsync,
   setAuthTokenAsync,
+  UserInfo,
 };

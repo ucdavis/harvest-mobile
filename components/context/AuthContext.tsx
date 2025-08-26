@@ -1,7 +1,10 @@
 import {
   deleteAuthTokensAsync,
+  getUserInfo,
+  getUserInfoFromIdToken,
   isAuthenticated,
   setAuthTokenAsync,
+  UserInfo,
 } from "@/lib/auth";
 import { TokenResponse } from "expo-auth-session";
 import React, { createContext, useContext, useState } from "react";
@@ -11,6 +14,7 @@ interface AuthContextType {
   login: (tokenResponse: TokenResponse) => void;
   logout: () => void;
   isLoading: boolean;
+  userInfo?: UserInfo;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -18,9 +22,11 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoggedIn, setIsLoggedIn] = useState(isAuthenticated());
   const [isLoading, setIsLoading] = useState(true); // TODO: if we need it while loading auth state
+  const [userInfo, setUserInfo] = useState<UserInfo | undefined>(getUserInfo());
 
   const login = (tokenResponse: TokenResponse) => {
     setAuthTokenAsync(tokenResponse).then(() => {
+      setUserInfo(getUserInfoFromIdToken(tokenResponse.idToken));
       setIsLoggedIn(true);
       setIsLoading(false);
     });
@@ -36,7 +42,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   console.log("AuthProvider rendered, isLoggedIn:", isLoggedIn);
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, login, logout, isLoading }}>
+    <AuthContext.Provider
+      value={{ isLoggedIn, login, logout, isLoading, userInfo }}
+    >
       {children}
     </AuthContext.Provider>
   );

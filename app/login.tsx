@@ -81,8 +81,8 @@ export default function LoginScreen() {
       <TouchableOpacity
         style={[styles.button, isLoading && styles.buttonDisabled]}
         onPress={() => {
-          fakeLogin();
-          // promptAsync();
+          // fakeLogin();
+          promptAsync();
         }}
         disabled={isLoading}
       >
