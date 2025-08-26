@@ -1,92 +1,68 @@
-import { Image } from "expo-image";
-import { Button, Platform, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
 
-import { useAuth } from "@/components/context/AuthContext";
-import { HelloWave } from "@/components/HelloWave";
 import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
+import { IconSymbol } from "@/components/ui/IconSymbol";
 
-export default function HomeScreen() {
-  const { logout, userInfo } = useAuth();
-
+export default function RecentProjectsScreen() {
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: "#A1CEDC", dark: "#1D3D47" }}
       headerImage={
-        <Image
-          source={require("@/assets/images/partial-react-logo.png")}
-          style={styles.reactLogo}
+        <IconSymbol
+          size={310}
+          color="#808080"
+          name="clock.fill"
+          style={styles.headerImage}
         />
       }
     >
       <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Hello {userInfo?.name}!!</ThemedText>
-        <HelloWave />
+        <ThemedText type="title">Recent Projects</ThemedText>
       </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit{" "}
-          <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText>{" "}
-          to see changes. Press{" "}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: "cmd + d",
-              android: "cmd + m",
-              web: "F12",
-            })}
-          </ThemedText>{" "}
-          to open developer tools.
+      <ThemedText>Your recently accessed projects will appear here</ThemedText>
+
+      <ThemedView style={styles.placeholderContainer}>
+        <IconSymbol size={80} color="#808080" name="clock.badge.checkmark" />
+        <ThemedText style={styles.placeholderText}>
+          No recent activity
         </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
+        <ThemedText style={styles.placeholderSubtext}>
+          Start working on projects to see them here!
         </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">
-            npm run reset-project
-          </ThemedText>{" "}
-          to get a fresh <ThemedText type="defaultSemiBold">app</ThemedText>{" "}
-          directory. This will move the current{" "}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{" "}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 4: Logout</ThemedText>
-        <Button
-          title="Logout"
-          onPress={() => {
-            logout();
-          }}
-        />
       </ThemedView>
     </ParallaxScrollView>
   );
 }
 
 const styles = StyleSheet.create({
+  headerImage: {
+    color: "#808080",
+    bottom: -90,
+    left: -35,
+    position: "absolute",
+  },
   titleContainer: {
     flexDirection: "row",
+    gap: 8,
+  },
+  placeholderContainer: {
     alignItems: "center",
-    gap: 8,
+    justifyContent: "center",
+    paddingVertical: 60,
+    paddingHorizontal: 20,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  placeholderText: {
+    fontSize: 18,
+    fontWeight: "600",
+    marginTop: 16,
+    textAlign: "center",
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: "absolute",
+  placeholderSubtext: {
+    fontSize: 14,
+    marginTop: 8,
+    textAlign: "center",
+    opacity: 0.7,
   },
 });
