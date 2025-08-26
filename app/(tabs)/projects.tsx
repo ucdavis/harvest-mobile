@@ -5,7 +5,7 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { IconSymbol } from "@/components/ui/IconSymbol";
 
-export default function RecentProjectsScreen() {
+export default function AllProjectsScreen() {
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: "#A1CEDC", dark: "#1D3D47" }}
@@ -13,23 +13,21 @@ export default function RecentProjectsScreen() {
         <IconSymbol
           size={310}
           color="#808080"
-          name="clock.fill"
+          name="folder.fill"
           style={styles.headerImage}
         />
       }
     >
       <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Recent Projects</ThemedText>
+        <ThemedText type="title">All Projects</ThemedText>
       </ThemedView>
-      <ThemedText>Your recently accessed projects will appear here</ThemedText>
+      <ThemedText>Your projects will appear here once we load them</ThemedText>
 
       <ThemedView style={styles.placeholderContainer}>
-        <IconSymbol size={80} color="#808080" name="clock.badge.checkmark" />
-        <ThemedText style={styles.placeholderText}>
-          No recent activity
-        </ThemedText>
+        <IconSymbol size={80} color="#808080" name="folder.badge.plus" />
+        <ThemedText style={styles.placeholderText}>No projects yet</ThemedText>
         <ThemedText style={styles.placeholderSubtext}>
-          Start working on projects to see them here!
+          Working on it!
         </ThemedText>
       </ThemedView>
     </ParallaxScrollView>

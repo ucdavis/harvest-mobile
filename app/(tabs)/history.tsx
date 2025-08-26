@@ -5,31 +5,31 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { IconSymbol } from "@/components/ui/IconSymbol";
 
-export default function RecentProjectsScreen() {
+export default function HistoryScreen() {
   return (
     <ParallaxScrollView
-      headerBackgroundColor={{ light: "#A1CEDC", dark: "#1D3D47" }}
+      headerBackgroundColor={{ light: "#D0D0D0", dark: "#353636" }}
       headerImage={
         <IconSymbol
           size={310}
           color="#808080"
-          name="clock.fill"
+          name="clock.arrow.circlepath"
           style={styles.headerImage}
         />
       }
     >
       <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Recent Projects</ThemedText>
+        <ThemedText type="title">History</ThemedText>
       </ThemedView>
-      <ThemedText>Your recently accessed projects will appear here</ThemedText>
+      <ThemedText>
+        Your project history and time tracking logs will appear here
+      </ThemedText>
 
       <ThemedView style={styles.placeholderContainer}>
-        <IconSymbol size={80} color="#808080" name="clock.badge.checkmark" />
-        <ThemedText style={styles.placeholderText}>
-          No recent activity
-        </ThemedText>
+        <IconSymbol size={80} color="#808080" name="clock.arrow.2.circlepath" />
+        <ThemedText style={styles.placeholderText}>No history yet</ThemedText>
         <ThemedText style={styles.placeholderSubtext}>
-          Start working on projects to see them here!
+          Start tracking time on projects to see your activity history here.
         </ThemedText>
       </ThemedView>
     </ParallaxScrollView>
