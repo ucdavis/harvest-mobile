@@ -1,11 +1,14 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, TouchableOpacity } from "react-native";
 
+import { useAuth } from "@/components/context/AuthContext";
 import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { IconSymbol } from "@/components/ui/IconSymbol";
 
 export default function HistoryScreen() {
+  const { logout } = useAuth();
+
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: "#D0D0D0", dark: "#353636" }}
@@ -20,6 +23,14 @@ export default function HistoryScreen() {
     >
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="title">History</ThemedText>
+        <TouchableOpacity style={styles.logoutButton} onPress={logout}>
+          <IconSymbol
+            size={24}
+            color="#FF4444"
+            name="rectangle.portrait.and.arrow.right"
+          />
+          <ThemedText style={styles.logoutText}>Logout</ThemedText>
+        </TouchableOpacity>
       </ThemedView>
       <ThemedText>
         Your project history and time tracking logs will appear here
@@ -46,6 +57,22 @@ const styles = StyleSheet.create({
   titleContainer: {
     flexDirection: "row",
     gap: 8,
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  logoutButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 6,
+    backgroundColor: "rgba(255, 68, 68, 0.1)",
+  },
+  logoutText: {
+    fontSize: 14,
+    color: "#FF4444",
+    fontWeight: "600",
   },
   placeholderContainer: {
     alignItems: "center",
