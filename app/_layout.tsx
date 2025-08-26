@@ -10,6 +10,7 @@ import "react-native-reanimated";
 
 import { AuthProvider } from "@/components/context/AuthContext";
 import { useColorScheme } from "@/hooks/useColorScheme";
+import { useInitDb } from "@/hooks/useInitDb";
 
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
@@ -27,11 +28,12 @@ function RootLayoutNav() {
 }
 
 export default function RootLayout() {
+  const { status } = useInitDb();
   const [loaded] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
 
-  if (!loaded) {
+  if (!loaded || status !== "ready") {
     return null;
   }
 
