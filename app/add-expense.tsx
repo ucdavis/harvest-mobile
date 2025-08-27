@@ -1,4 +1,4 @@
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 import {
   ScrollView,
@@ -40,8 +40,11 @@ export default function AddExpenseScreen() {
   ]);
 
   const handleAddExpenses = () => {
-    // Navigate to expenses selection screen
-    console.log("Navigate to expenses selection");
+    // Navigate to rate selection modal
+    router.push({
+      pathname: "/rate-select",
+      params: { projectId },
+    });
   };
 
   const handleSubmit = () => {

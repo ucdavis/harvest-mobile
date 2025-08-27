@@ -29,6 +29,13 @@ function RootLayoutNav() {
             presentation: "card",
           }}
         />
+        <Stack.Screen
+          name="rate-select"
+          options={{
+            headerShown: false,
+            presentation: "modal",
+          }}
+        />
         <Stack.Screen name="+not-found" />
       </Stack>
       <StatusBar style="auto" />
