@@ -1,7 +1,7 @@
 import { useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
-  Alert,
   FlatList,
   RefreshControl,
   StyleSheet,
@@ -17,6 +17,7 @@ import { useProjects } from "@/services/queries/projects";
 export default function AllProjectsScreen() {
   const projectQuery = useProjects();
   const queryClient = useQueryClient();
+  const router = useRouter();
   const [refreshing, setRefreshing] = useState(false);
 
   const onRefresh = async () => {
@@ -28,7 +29,14 @@ export default function AllProjectsScreen() {
   console.log(projectQuery.data, projectQuery.fetchStatus);
 
   const handleProjectPress = (project: Project) => {
-    Alert.alert("Project Selected", `You tapped on ${project.name}`);
+    router.push({
+      pathname: "/add-expense",
+      params: {
+        projectId: project.id,
+        projectName: project.name,
+        piName: project.piName,
+      },
+    });
   };
 
   const renderProjectCard = ({ item }: { item: Project }) => (
