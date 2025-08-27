@@ -32,3 +32,42 @@ export function createExpenseWithUniqueId(
     uniqueId: getExpenseUniqueId(),
   };
 }
+
+// Fake rates for testing/demonstration
+export const fakeRates: Rate[] = [
+  {
+    id: "rate-001",
+    type: "labor",
+    description: "Senior Laborer",
+    unit: "hours",
+    price: 125.0,
+  },
+  {
+    id: "rate-002",
+    type: "equipment",
+    description: "John Deere 6120M Tractor",
+    unit: "hours",
+    price: 85.5,
+  },
+  {
+    id: "rate-003",
+    type: "labor",
+    description: "Field Technician",
+    unit: "hours",
+    price: 45.0,
+  },
+  {
+    id: "rate-004",
+    type: "equipment",
+    description: "Kubota Excavator U35-4",
+    unit: "days",
+    price: 350.0,
+  },
+  {
+    id: "rate-005",
+    type: "other",
+    description: "Materials and Supplies",
+    unit: "per item",
+    price: 25.75,
+  },
+];

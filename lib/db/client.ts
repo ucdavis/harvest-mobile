@@ -30,6 +30,22 @@ export async function getDb(): Promise<SQLite.SQLiteDatabase> {
       await tx.execAsync(
         `CREATE INDEX IF NOT EXISTS idx_projects_piName ON projects(piName);`
       );
+
+      await tx.execAsync(`
+        CREATE TABLE IF NOT EXISTS rates (
+          id          TEXT PRIMARY KEY,
+          type        TEXT NOT NULL,
+          description TEXT NOT NULL,
+          unit        TEXT NOT NULL,
+          price       REAL NOT NULL
+        );
+      `);
+      await tx.execAsync(
+        `CREATE INDEX IF NOT EXISTS idx_rates_type ON rates(type);`
+      );
+      await tx.execAsync(
+        `CREATE INDEX IF NOT EXISTS idx_rates_description ON rates(description);`
+      );
     });
 
     dbInstance = db;
