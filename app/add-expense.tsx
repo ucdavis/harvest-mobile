@@ -10,13 +10,7 @@ import {
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { IconSymbol } from "@/components/ui/IconSymbol";
-
-interface WorkItem {
-  id: string;
-  name: string;
-  category: string;
-  hours: number;
-}
+import { Expense, createExpenseWithUniqueId } from "@/lib/expense";
 
 export default function AddExpenseScreen() {
   const { projectId, projectName } = useLocalSearchParams<{
@@ -26,23 +20,32 @@ export default function AddExpenseScreen() {
   }>();
 
   const [description, setDescription] = useState("");
-  const [workItems] = useState<WorkItem[]>([
-    {
+  const [expenses] = useState<Expense[]>([
+    createExpenseWithUniqueId({
       // TODO: testing
-      id: "1",
-      name: "RR Farm Labor",
-      category: "LABOR",
-      hours: 32,
-    },
+      type: "labor",
+      description: "RR Farm Labor",
+      price: 100,
+      quantity: 1,
+      projectId: projectId,
+      rateId: "rate_1",
+      rate: {
+        unit: "hours",
+        description: "Tractor X",
+        price: 100,
+        type: "equipment",
+        id: "rate_1",
+      },
+    }),
   ]);
 
-  const handleAddWorkItems = () => {
-    // Navigate to work items selection screen
-    console.log("Navigate to work items selection");
+  const handleAddExpenses = () => {
+    // Navigate to expenses selection screen
+    console.log("Navigate to expenses selection");
   };
 
   const handleSubmit = () => {
-    console.log("Submit expense", { description, workItems });
+    console.log("Submit expense", { description, expenses });
   };
 
   return (
@@ -75,21 +78,25 @@ export default function AddExpenseScreen() {
           />
         </ThemedView>
 
-        {/* Work Items Section */}
+        {/* Expenses Section */}
         <ThemedView style={styles.sectionContainer}>
-          <ThemedText style={styles.sectionLabel}>WORK ITEMS</ThemedText>
+          <ThemedText style={styles.sectionLabel}>EXPENSES</ThemedText>
 
-          {/* Existing Work Items */}
-          {workItems.map((item) => (
-            <ThemedView key={item.id} style={styles.workItemRow}>
-              <ThemedView style={styles.workItemInfo}>
-                <ThemedText style={styles.workItemCategory}>
-                  {item.category}
+          {/* Existing expenses */}
+          {expenses.map((item) => (
+            <ThemedView key={item.uniqueId} style={styles.expenseRow}>
+              <ThemedView style={styles.expenseInfo}>
+                <ThemedText style={styles.expenseCategory}>
+                  {item.type}
                 </ThemedText>
-                <ThemedText style={styles.workItemName}>{item.name}</ThemedText>
+                <ThemedText style={styles.expenseName}>
+                  {item.description}
+                </ThemedText>
               </ThemedView>
-              <ThemedView style={styles.workItemHours}>
-                <ThemedText style={styles.hoursText}>{item.hours}hr</ThemedText>
+              <ThemedView style={styles.expenseHours}>
+                <ThemedText style={styles.hoursText}>
+                  {item.quantity} {item.rate?.unit} @ ${item.price}
+                </ThemedText>
                 <TouchableOpacity>
                   <ThemedText style={styles.editText}>edit</ThemedText>
                 </TouchableOpacity>
@@ -97,14 +104,12 @@ export default function AddExpenseScreen() {
             </ThemedView>
           ))}
 
-          {/* Add Work Items Button */}
+          {/* Add Expenses Button */}
           <TouchableOpacity
-            style={styles.addWorkItemsButton}
-            onPress={handleAddWorkItems}
+            style={styles.addExpensesButton}
+            onPress={handleAddExpenses}
           >
-            <ThemedText style={styles.addWorkItemsText}>
-              Add work items
-            </ThemedText>
+            <ThemedText style={styles.addExpensesText}>Add expense</ThemedText>
             <IconSymbol size={16} color="#666" name="chevron.right" />
           </TouchableOpacity>
         </ThemedView>
@@ -185,7 +190,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#f9f9f9",
     textAlignVertical: "top",
   },
-  workItemRow: {
+  expenseRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
@@ -193,21 +198,21 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "#f0f0f0",
   },
-  workItemInfo: {
+  expenseInfo: {
     flex: 1,
   },
-  workItemCategory: {
+  expenseCategory: {
     fontSize: 12,
     color: "#666",
     fontWeight: "500",
     marginBottom: 4,
   },
-  workItemName: {
+  expenseName: {
     fontSize: 16,
     color: "#333",
     fontWeight: "500",
   },
-  workItemHours: {
+  expenseHours: {
     flexDirection: "row",
     alignItems: "center",
     gap: 12,
@@ -222,14 +227,14 @@ const styles = StyleSheet.create({
     color: "#007AFF",
     fontWeight: "500",
   },
-  addWorkItemsButton: {
+  addExpensesButton: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     paddingVertical: 16,
     paddingHorizontal: 4,
   },
-  addWorkItemsText: {
+  addExpensesText: {
     fontSize: 16,
     color: "#333",
     fontWeight: "500",
