@@ -1,4 +1,12 @@
-import { Alert, FlatList, StyleSheet, TouchableOpacity } from "react-native";
+import { useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
+import {
+  Alert,
+  FlatList,
+  RefreshControl,
+  StyleSheet,
+  TouchableOpacity,
+} from "react-native";
 
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
@@ -8,6 +16,14 @@ import { useProjects } from "@/services/queries/projects";
 
 export default function AllProjectsScreen() {
   const projectQuery = useProjects();
+  const queryClient = useQueryClient();
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await queryClient.invalidateQueries({ queryKey: ["projects"] });
+    setRefreshing(false);
+  };
 
   console.log(projectQuery.data, projectQuery.fetchStatus);
 
@@ -45,6 +61,9 @@ export default function AllProjectsScreen() {
           keyExtractor={(item) => item.id}
           style={styles.projectList}
           showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
         />
       ) : (
         <ThemedView style={styles.placeholderContainer}>
