@@ -9,6 +9,7 @@ import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
 
 import { AuthProvider } from "@/components/context/AuthContext";
+import { QueryContext } from "@/components/context/QueryContext";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { useInitDb } from "@/hooks/useInitDb";
 
@@ -38,8 +39,10 @@ export default function RootLayout() {
   }
 
   return (
-    <AuthProvider>
-      <RootLayoutNav />
-    </AuthProvider>
+    <QueryContext>
+      <AuthProvider>
+        <RootLayoutNav />
+      </AuthProvider>
+    </QueryContext>
   );
 }
