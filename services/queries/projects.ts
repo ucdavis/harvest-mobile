@@ -1,6 +1,6 @@
 import { queryClient } from "@/components/context/queryClient";
 import { getDbOrThrow } from "@/lib/db/client";
-import { Project } from "@/lib/project";
+import { fakeProjects, Project } from "@/lib/project";
 import { onlineManager, useQuery } from "@tanstack/react-query";
 
 // we either get projects from the db (cache) or query from the API (and overwrite cache)
@@ -9,6 +9,26 @@ async function fetchProjectsFromDb() {
     "SELECT * FROM projects ORDER BY name ASC"
   );
   return result;
+}
+
+async function fetchFakeProjectsFromApi() {
+  // we'll just fake a few for now
+  // TODO: remove this!
+  const projects = [...fakeProjects];
+  await getDbOrThrow().withExclusiveTransactionAsync(async (tx) => {
+    await tx.execAsync("DELETE FROM projects");
+
+    for (const p of projects) {
+      await tx.runAsync(
+        "INSERT INTO projects (id, name, piName) VALUES (?,?,?)",
+        p.id,
+        p.name,
+        p.piName
+      );
+    }
+  });
+
+  return projects;
 }
 
 async function fetchProjectsFromApi() {
@@ -41,7 +61,8 @@ export function useProjects() {
       if (!onlineManager.isOnline()) {
         return cached;
       }
-      const fresh = await fetchProjectsFromApi();
+
+      const fresh = await fetchFakeProjectsFromApi();
       return fresh;
     },
     initialData: () => queryClient.getQueryData(["projects"]) as Project[] | [],
