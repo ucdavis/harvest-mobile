@@ -1,24 +1,33 @@
-import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
-import { QueryClient } from "@tanstack/react-query";
-import AsyncStorage from "expo-sqlite/kv-store";
+import { focusManager, onlineManager } from "@tanstack/react-query";
 
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
-
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 12 * 60 * 60 * 1000, // get new data after 12 hours
-      gcTime: 24 * 60 * 60 * 1000, // garbage cleanup after a day
-    },
-  },
-});
-
-const reactQueryPersister = createAsyncStoragePersister({
-  storage: AsyncStorage,
-  throttleTime: 3000,
-});
+import * as Network from "expo-network";
+import { useEffect } from "react";
+import { AppState } from "react-native";
+import { queryClient, reactQueryPersister } from "./queryClient";
 
 export function QueryContext({ children }: { children: React.ReactNode }) {
+  // Let query know about app focus (since it can't use window)
+  useEffect(() => {
+    const sub = AppState.addEventListener("change", (state) => {
+      focusManager.setFocused(state === "active");
+    });
+    return () => sub.remove();
+  }, []);
+
+  // Online/Offline wiring
+  useEffect(() => {
+    Network.getNetworkStateAsync().then((s) => {
+      onlineManager.setOnline(!!(s.isConnected && s.isInternetReachable));
+    });
+    const sub = Network.addNetworkStateListener(
+      ({ isConnected, isInternetReachable }) => {
+        onlineManager.setOnline(!!(isConnected && isInternetReachable));
+      }
+    );
+    return () => sub.remove();
+  }, []);
+
   return (
     <PersistQueryClientProvider
       client={queryClient}
