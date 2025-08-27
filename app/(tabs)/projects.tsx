@@ -21,7 +21,7 @@ export default function AllProjectsScreen() {
 
   const onRefresh = async () => {
     setRefreshing(true);
-    await queryClient.invalidateQueries({ queryKey: ["projects"] });
+    await queryClient.refetchQueries({ queryKey: ["projects"] });
     setRefreshing(false);
   };
 
