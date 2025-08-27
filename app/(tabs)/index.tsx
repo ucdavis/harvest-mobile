@@ -1,23 +1,12 @@
 import { StyleSheet } from "react-native";
 
-import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { IconSymbol } from "@/components/ui/IconSymbol";
 
 export default function RecentProjectsScreen() {
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: "#A1CEDC", dark: "#1D3D47" }}
-      headerImage={
-        <IconSymbol
-          size={310}
-          color="#808080"
-          name="clock.fill"
-          style={styles.headerImage}
-        />
-      }
-    >
+    <>
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="title">Recent Projects</ThemedText>
       </ThemedView>
@@ -32,7 +21,7 @@ export default function RecentProjectsScreen() {
           Start working on projects to see them here!
         </ThemedText>
       </ThemedView>
-    </ParallaxScrollView>
+    </>
   );
 }
 

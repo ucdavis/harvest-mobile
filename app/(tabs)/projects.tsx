@@ -1,6 +1,5 @@
 import { Alert, FlatList, StyleSheet, TouchableOpacity } from "react-native";
 
-import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { IconSymbol } from "@/components/ui/IconSymbol";
@@ -32,17 +31,7 @@ export default function AllProjectsScreen() {
   );
 
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: "#A1CEDC", dark: "#1D3D47" }}
-      headerImage={
-        <IconSymbol
-          size={310}
-          color="#808080"
-          name="folder.fill"
-          style={styles.headerImage}
-        />
-      }
-    >
+    <>
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="title">All Projects</ThemedText>
       </ThemedView>
@@ -68,7 +57,7 @@ export default function AllProjectsScreen() {
           </ThemedText>
         </ThemedView>
       )}
-    </ParallaxScrollView>
+    </>
   );
 }
 
