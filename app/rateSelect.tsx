@@ -23,7 +23,7 @@ export default function RateSelectScreen() {
   const handleRateSelect = (rate: Rate) => {
     // Navigate directly to expense details with the selected rate
     router.push({
-      pathname: "/expense-details",
+      pathname: "/expenseDetails",
       params: {
         rate: JSON.stringify(rate),
         projectId: projectId || "",

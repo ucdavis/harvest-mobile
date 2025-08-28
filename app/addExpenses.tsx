@@ -58,7 +58,7 @@ export default function AddExpenseScreen() {
   const handleAddExpenses = () => {
     // Navigate to rate selection modal
     router.push({
-      pathname: "/rate-select",
+      pathname: "/rateSelect",
       params: { projectId },
     });
   };

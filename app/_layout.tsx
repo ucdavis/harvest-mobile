@@ -30,14 +30,14 @@ function RootLayoutNav() {
           }}
         />
         <Stack.Screen
-          name="rate-select"
+          name="rateSelect"
           options={{
             headerShown: false,
             presentation: "modal",
           }}
         />
         <Stack.Screen
-          name="expense-details"
+          name="expenseDetails"
           options={{
             headerShown: false,
             presentation: "modal",
