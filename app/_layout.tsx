@@ -9,7 +9,9 @@ import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
 
 import { AuthProvider } from "@/components/context/AuthContext";
+import { QueryContext } from "@/components/context/QueryContext";
 import { useColorScheme } from "@/hooks/useColorScheme";
+import { useInitDb } from "@/hooks/useInitDb";
 
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
@@ -18,7 +20,29 @@ function RootLayoutNav() {
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="login" />
-        <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="(tabs)" options={{ title: "Harvest" }} />
+        <Stack.Screen
+          name="addExpenses"
+          options={{
+            headerShown: true,
+            title: "Add Expense",
+            presentation: "card",
+          }}
+        />
+        <Stack.Screen
+          name="rateSelect"
+          options={{
+            headerShown: false,
+            presentation: "modal",
+          }}
+        />
+        <Stack.Screen
+          name="expenseDetails"
+          options={{
+            headerShown: false,
+            presentation: "modal",
+          }}
+        />
         <Stack.Screen name="+not-found" />
       </Stack>
       <StatusBar style="auto" />
@@ -27,17 +51,20 @@ function RootLayoutNav() {
 }
 
 export default function RootLayout() {
+  const { status } = useInitDb();
   const [loaded] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
 
-  if (!loaded) {
+  if (!loaded || status !== "ready") {
     return null;
   }
 
   return (
-    <AuthProvider>
-      <RootLayoutNav />
-    </AuthProvider>
+    <QueryContext>
+      <AuthProvider>
+        <RootLayoutNav />
+      </AuthProvider>
+    </QueryContext>
   );
 }
