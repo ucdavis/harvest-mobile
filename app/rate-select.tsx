@@ -1,5 +1,4 @@
-import { router } from "expo-router";
-import { useState } from "react";
+import { router, useLocalSearchParams } from "expo-router";
 import {
   ActivityIndicator,
   FlatList,
@@ -15,21 +14,21 @@ import { Rate } from "@/lib/expense";
 import { useRates } from "@/services/queries/rates";
 
 export default function RateSelectScreen() {
+  const { projectId } = useLocalSearchParams<{
+    projectId: string;
+  }>();
+
   const { data: rates, isLoading, error } = useRates();
-  const [selectedRate, setSelectedRate] = useState<Rate | null>(null);
 
   const handleRateSelect = (rate: Rate) => {
-    setSelectedRate(rate);
-  };
-
-  const handleConfirm = () => {
-    if (selectedRate) {
-      // Navigate back to add-expense with the selected rate
-      router.back();
-      // TODO: Pass selected rate data back to add-expense screen
-      // This would typically be done through navigation params or state management
-      console.log("Selected rate:", selectedRate);
-    }
+    // Navigate directly to expense details with the selected rate
+    router.push({
+      pathname: "/expense-details",
+      params: {
+        rate: JSON.stringify(rate),
+        projectId: projectId || "",
+      },
+    });
   };
 
   const handleCancel = () => {
@@ -64,10 +63,7 @@ export default function RateSelectScreen() {
 
   const renderRateItem = ({ item }: { item: Rate }) => (
     <TouchableOpacity
-      style={[
-        styles.rateItem,
-        selectedRate?.id === item.id && styles.selectedRateItem,
-      ]}
+      style={styles.rateItem}
       onPress={() => handleRateSelect(item)}
     >
       <View style={styles.rateContent}>
@@ -95,15 +91,6 @@ export default function RateSelectScreen() {
             <ThemedText style={styles.rateUnit}>per {item.unit}</ThemedText>
           </View>
         </View>
-        {selectedRate?.id === item.id && (
-          <View style={styles.checkmark}>
-            <IconSymbol
-              size={20}
-              color="#5e8a5e"
-              name="checkmark.circle.fill"
-            />
-          </View>
-        )}
       </View>
     </TouchableOpacity>
   );
@@ -137,23 +124,7 @@ export default function RateSelectScreen() {
           <ThemedText style={styles.cancelButtonText}>Cancel</ThemedText>
         </TouchableOpacity>
         <ThemedText style={styles.headerTitle}>Select Rate</ThemedText>
-        <TouchableOpacity
-          style={[
-            styles.confirmButton,
-            !selectedRate && styles.confirmButtonDisabled,
-          ]}
-          onPress={handleConfirm}
-          disabled={!selectedRate}
-        >
-          <ThemedText
-            style={[
-              styles.confirmButtonText,
-              !selectedRate && styles.confirmButtonTextDisabled,
-            ]}
-          >
-            Confirm
-          </ThemedText>
-        </TouchableOpacity>
+        <View style={{ width: 60 }} />
       </ThemedView>
 
       {/* Rates List */}

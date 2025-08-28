@@ -1,5 +1,5 @@
 import { router, useLocalSearchParams } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ScrollView,
   StyleSheet,
@@ -13,25 +13,26 @@ import { IconSymbol } from "@/components/ui/IconSymbol";
 import { Expense, createExpenseWithUniqueId } from "@/lib/expense";
 
 export default function AddExpenseScreen() {
-  const { projectId, projectName } = useLocalSearchParams<{
+  const { projectId, projectName, newExpense } = useLocalSearchParams<{
     projectId: string;
     projectName: string;
     piName: string;
+    newExpense?: string;
   }>();
 
   const [description, setDescription] = useState("");
-  const [expenses] = useState<Expense[]>([
+  const [expenses, setExpenses] = useState<Expense[]>([
     createExpenseWithUniqueId({
       // TODO: testing
       type: "labor",
-      description: "RR Farm Labor",
+      description: "",
       price: 100,
       quantity: 1,
       projectId: projectId,
       rateId: "rate_1",
       rate: {
         unit: "hours",
-        description: "Tractor X",
+        description: "RR Farm Labor",
         price: 100,
         type: "equipment",
         id: "rate_1",
@@ -39,12 +40,33 @@ export default function AddExpenseScreen() {
     }),
   ]);
 
+  // Handle new expense being added
+  useEffect(() => {
+    if (newExpense) {
+      try {
+        const parsedExpense: Expense = JSON.parse(newExpense);
+        setExpenses((prevExpenses) => [...prevExpenses, parsedExpense]);
+
+        // Clear the parameter to prevent re-adding on re-renders
+        router.setParams({ newExpense: undefined });
+      } catch (error) {
+        console.error("Failed to parse new expense:", error);
+      }
+    }
+  }, [newExpense]);
+
   const handleAddExpenses = () => {
     // Navigate to rate selection modal
     router.push({
       pathname: "/rate-select",
       params: { projectId },
     });
+  };
+
+  const handleDeleteExpense = (uniqueId: string) => {
+    setExpenses((prevExpenses) =>
+      prevExpenses.filter((expense) => expense.uniqueId !== uniqueId)
+    );
   };
 
   const handleSubmit = () => {
@@ -93,15 +115,17 @@ export default function AddExpenseScreen() {
                   {item.type}
                 </ThemedText>
                 <ThemedText style={styles.expenseName}>
-                  {item.description}
+                  {item.rate?.description}
                 </ThemedText>
               </ThemedView>
               <ThemedView style={styles.expenseHours}>
                 <ThemedText style={styles.hoursText}>
                   {item.quantity} {item.rate?.unit} @ ${item.price}
                 </ThemedText>
-                <TouchableOpacity>
-                  <ThemedText style={styles.editText}>edit</ThemedText>
+                <TouchableOpacity
+                  onPress={() => handleDeleteExpense(item.uniqueId)}
+                >
+                  <IconSymbol size={16} color="#EF4444" name="trash" />
                 </TouchableOpacity>
               </ThemedView>
             </ThemedView>
