@@ -57,10 +57,10 @@ export default function ExpenseDetailsScreen() {
       rate: rate,
     });
 
-    // Navigate back to add-expense with the new expense data
+    // Navigate back to addExpenses with the new expense data
     router.dismissAll();
     router.push({
-      pathname: "/add-expense",
+      pathname: "/addExpenses",
       params: {
         projectId,
         newExpense: JSON.stringify(newExpense),

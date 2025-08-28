@@ -48,7 +48,7 @@ export default function AllProjectsScreen() {
 
   const handleProjectPress = (project: Project) => {
     router.push({
-      pathname: "/add-expense",
+      pathname: "/addExpenses",
       params: {
         projectId: project.id,
         projectName: project.name,

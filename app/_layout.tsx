@@ -22,7 +22,7 @@ function RootLayoutNav() {
         <Stack.Screen name="login" />
         <Stack.Screen name="(tabs)" options={{ title: "Harvest" }} />
         <Stack.Screen
-          name="add-expense"
+          name="addExpenses"
           options={{
             headerShown: true,
             title: "Add Expense",
