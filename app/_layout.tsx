@@ -13,6 +13,8 @@ import { QueryContext } from "@/components/context/QueryContext";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { useInitDb } from "@/hooks/useInitDb";
 
+import "../global.css";
+
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
 
