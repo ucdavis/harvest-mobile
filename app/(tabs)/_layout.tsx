@@ -23,6 +23,8 @@ export default function TabLayout() {
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
         headerShown: true,
+        headerStyle: { backgroundColor: "#266041" }, // brand header background
+        headerTintColor: "#fff",                     // header text & icons
         tabBarButton: HapticTab,
         tabBarBackground: TabBarBackground,
         tabBarStyle: Platform.select({

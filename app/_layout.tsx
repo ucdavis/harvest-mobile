@@ -18,7 +18,10 @@ function RootLayoutNav() {
 
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      <Stack screenOptions={{ headerShown: false }}>
+      <Stack screenOptions={{ headerShown: false,
+        headerStyle: { backgroundColor: "#266041" },
+        headerTintColor: "#fff",
+       }}>
         <Stack.Screen name="login" />
         <Stack.Screen name="(tabs)" options={{ title: "Harvest" }} />
         <Stack.Screen
@@ -53,7 +56,7 @@ function RootLayoutNav() {
 export default function RootLayout() {
   const { status } = useInitDb();
   const [loaded] = useFonts({
-    SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
+    SpaceMono: require("../assets/fonts/proximanova-regular.ttf"),
   });
 
   if (!loaded || status !== "ready") {
