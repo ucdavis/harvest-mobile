@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
@@ -7,6 +7,11 @@ import { IconSymbol } from "@/components/ui/IconSymbol";
 export default function RecentProjectsScreen() {
   return (
     <>
+      <View className="flex-1 items-center justify-center bg-white">
+        <Text className="text-xl font-bold text-blue-500">
+          Welcome to Nativewind!
+        </Text>
+      </View>
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="title">Recent Projects</ThemedText>
       </ThemedView>
