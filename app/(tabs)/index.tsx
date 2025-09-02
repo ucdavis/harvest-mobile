@@ -3,17 +3,18 @@ import { StyleSheet } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { IconSymbol } from "@/components/ui/IconSymbol";
+import { Colors } from "@/constants/Colors";
 
 export default function RecentProjectsScreen() {
   return (
     <>
       <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Recent Projects</ThemedText>
+        <ThemedText style={{ color: Colors.light.primary }} type="title">Recent Projects</ThemedText>
       </ThemedView>
       <ThemedText>Your recently accessed projects will appear here</ThemedText>
 
       <ThemedView style={styles.placeholderContainer}>
-        <IconSymbol size={80} color="#808080" name="clock.badge.checkmark" />
+        <IconSymbol size={80} color="#a0a0a0" name="clock.badge.checkmark" />
         <ThemedText style={styles.placeholderText}>
           No recent activity
         </ThemedText>
