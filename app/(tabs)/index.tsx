@@ -1,63 +1,40 @@
-import { StyleSheet, Text, View } from "react-native";
+import { ProjectCard } from "@/components/ui/ProjectCard";
+import { Image, View } from "react-native";
 
-import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
-import { IconSymbol } from "@/components/ui/IconSymbol";
-import { Colors } from "@/constants/Colors";
+
+
 
 export default function RecentProjectsScreen() {
   return (
     <>
-      <View className="flex-1 items-center justify-center bg-white">
-        <Text className="text-xl font-bold text-blue-500">
-          Welcome to Nativewind!
-        </Text>
-      </View>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText style={{ color: Colors.light.primary }} type="title">Recent Projects</ThemedText>
-      </ThemedView>
-      <ThemedText>Your recently accessed projects will appear here</ThemedText>
+      <View className="main">
 
-      <ThemedView style={styles.placeholderContainer}>
-        <IconSymbol size={80} color="#a0a0a0" name="clock.badge.checkmark" />
-        <ThemedText style={styles.placeholderText}>
-          No recent activity
-        </ThemedText>
-        <ThemedText style={styles.placeholderSubtext}>
-          Start working on projects to see them here!
-        </ThemedText>
-      </ThemedView>
+        <ProjectCard
+          projectId="AE-12234"
+          piName="Brian McEligot"
+          years="2026–2029"
+          onEdit={() => console.log("edit pressed")}
+        />
+        <ProjectCard
+          projectId="AE-27366 Corn Trials 2025"
+          piName="Brian McEligot"
+          years="2025"
+          onEdit={() => console.log("edit pressed")}
+        />
+
+        <Image
+          className="w-[175px] self-center mt-auto mb-16 opacity-50"
+          resizeMode="contain"
+          source={require("../../assets/images/caes-logo.png")}
+        />
+
+
+      </View>
+
+
+
+
     </>
   );
 }
 
-const styles = StyleSheet.create({
-  headerImage: {
-    color: "#808080",
-    bottom: -90,
-    left: -35,
-    position: "absolute",
-  },
-  titleContainer: {
-    flexDirection: "row",
-    gap: 8,
-  },
-  placeholderContainer: {
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 60,
-    paddingHorizontal: 20,
-  },
-  placeholderText: {
-    fontSize: 18,
-    fontWeight: "600",
-    marginTop: 16,
-    textAlign: "center",
-  },
-  placeholderSubtext: {
-    fontSize: 14,
-    marginTop: 8,
-    textAlign: "center",
-    opacity: 0.7,
-  },
-});

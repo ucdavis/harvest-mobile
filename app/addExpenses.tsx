@@ -2,14 +2,19 @@ import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import {
   ScrollView,
-  StyleSheet,
+  Text,
   TextInput,
   TouchableOpacity,
+  View,
 } from "react-native";
 
-import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
-import { IconSymbol } from "@/components/ui/IconSymbol";
+import {
+  ChevronRightIcon,
+  InformationCircleIcon,
+  TrashIcon,
+} from "react-native-heroicons/solid";
+
+
 import { Expense, createExpenseWithUniqueId } from "@/lib/expense";
 
 export default function AddExpenseScreen() {
@@ -40,14 +45,11 @@ export default function AddExpenseScreen() {
     }),
   ]);
 
-  // Handle new expense being added
   useEffect(() => {
     if (newExpense) {
       try {
         const parsedExpense: Expense = JSON.parse(newExpense);
-        setExpenses((prevExpenses) => [...prevExpenses, parsedExpense]);
-
-        // Clear the parameter to prevent re-adding on re-renders
+        setExpenses((prev) => [...prev, parsedExpense]);
         router.setParams({ newExpense: undefined });
       } catch (error) {
         console.error("Failed to parse new expense:", error);
@@ -56,17 +58,11 @@ export default function AddExpenseScreen() {
   }, [newExpense]);
 
   const handleAddExpenses = () => {
-    // Navigate to rate selection modal
-    router.push({
-      pathname: "/rateSelect",
-      params: { projectId },
-    });
+    router.push({ pathname: "/rateSelect", params: { projectId } });
   };
 
   const handleDeleteExpense = (uniqueId: string) => {
-    setExpenses((prevExpenses) =>
-      prevExpenses.filter((expense) => expense.uniqueId !== uniqueId)
-    );
+    setExpenses((prev) => prev.filter((e) => e.uniqueId !== uniqueId));
   };
 
   const handleSubmit = () => {
@@ -74,213 +70,93 @@ export default function AddExpenseScreen() {
   };
 
   return (
-    <ThemedView style={styles.container}>
+    <View className="flex-1">
       <ScrollView
-        style={styles.scrollView}
+        className="flex-1 px-4 py-4"
         showsVerticalScrollIndicator={false}
       >
-        {/* Project Info Header */}
-        <ThemedView style={styles.projectInfoContainer}>
-          <ThemedView style={styles.projectRow}>
-            <ThemedText style={styles.projectLabel}>PROJECT</ThemedText>
-            <IconSymbol size={16} color="#666" name="info.circle" />
-          </ThemedView>
-          <ThemedText style={styles.projectId}>
-            {projectId}: {projectName}
-          </ThemedText>
-        </ThemedView>
 
-        {/* Description Section */}
-        <ThemedView style={styles.sectionContainer}>
-          <ThemedText style={styles.sectionLabel}>DESCRIPTION</ThemedText>
+        <View className="card">
+          <View className="flex-row items-center justify-between mb-2">
+            <Text className="text-md uppercase font-bold text-harvest tracking-tight">
+              Project
+            </Text>
+            <InformationCircleIcon size={16} color="#666666" />
+          </View>
+          <Text className="text-base font-semibold text-gray-800">
+            {projectId}: {projectName}
+          </Text>
+        </View>
+
+
+        <View className="card">
+          <Text className="text-md uppercase font-bold text-harvest tracking-tight">
+            Description
+          </Text>
           <TextInput
-            style={styles.descriptionInput}
-            placeholder="Add activity description..."
+            className="border mt-5 border-primary-border rounded-md p-3 text-base min-h-[60px] bg-gray-50"
+            placeholder="Add expense description..."
             placeholderTextColor="#999"
             value={description}
             onChangeText={setDescription}
             multiline
+            textAlignVertical="top"
           />
-        </ThemedView>
+        </View>
 
-        {/* Expenses Section */}
-        <ThemedView style={styles.sectionContainer}>
-          <ThemedText style={styles.sectionLabel}>EXPENSES</ThemedText>
 
-          {/* Existing expenses */}
+        <View className="card">
+          <Text className="text-md uppercase font-bold text-harvest tracking-tight">
+            Expenses
+          </Text>
+
           {expenses.map((item) => (
-            <ThemedView key={item.uniqueId} style={styles.expenseRow}>
-              <ThemedView style={styles.expenseInfo}>
-                <ThemedText style={styles.expenseCategory}>
+            <View
+              key={item.uniqueId}
+              className="flex-row items-end justify-between py-3 border-b border-primary-border"
+            >
+              <View className="flex-1">
+                <Text className="text-xs text-primary-font/40 uppercase font-medium">
                   {item.type}
-                </ThemedText>
-                <ThemedText style={styles.expenseName}>
+                </Text>
+                <Text className="text-base text-primary-font font-medium">
                   {item.rate?.description}
-                </ThemedText>
-              </ThemedView>
-              <ThemedView style={styles.expenseHours}>
-                <ThemedText style={styles.hoursText}>
+                </Text>
+              </View>
+
+              <View className="flex-row items-center space-x-3">
+                <Text className="text-base text-primary-font/80 font-semibold">
                   {item.quantity} {item.rate?.unit} @ ${item.price}
-                </ThemedText>
-                <TouchableOpacity
-                  onPress={() => handleDeleteExpense(item.uniqueId)}
-                >
-                  <IconSymbol size={16} color="#EF4444" name="trash" />
+                </Text>
+                <TouchableOpacity className="ms-3" onPress={() => handleDeleteExpense(item.uniqueId)}>
+                  <TrashIcon size={16} color="#79242F" />
                 </TouchableOpacity>
-              </ThemedView>
-            </ThemedView>
+              </View>
+            </View>
           ))}
 
           {/* Add Expenses Button */}
           <TouchableOpacity
-            style={styles.addExpensesButton}
+            className="flex-row justify-between py-4 px-1"
             onPress={handleAddExpenses}
           >
-            <ThemedText style={styles.addExpensesText}>Add expense</ThemedText>
-            <IconSymbol size={16} color="#666" name="chevron.right" />
+            <Text className="text-base text-gray-800 font-medium">
+              Add expense
+            </Text>
+            <ChevronRightIcon size={16} color="#666666" />
           </TouchableOpacity>
-        </ThemedView>
+        </View>
       </ScrollView>
 
       {/* Submit Button */}
-      <ThemedView style={styles.submitContainer}>
-        <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-          <ThemedText style={styles.submitButtonText}>Submit</ThemedText>
+      <View className="p-4 mb-4 bg-white border-t border-primary-border">
+        <TouchableOpacity
+          className="bg-harvest py-4 rounded-xl items-center"
+          onPress={handleSubmit}
+        >
+          <Text className="text-white text-lg font-semibold">Submit</Text>
         </TouchableOpacity>
-      </ThemedView>
-    </ThemedView>
+      </View>
+    </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#f8f9fa",
-  },
-  scrollView: {
-    flex: 1,
-    padding: 16,
-  },
-  projectInfoContainer: {
-    backgroundColor: "white",
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 24,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  projectRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: 8,
-  },
-  projectLabel: {
-    fontSize: 12,
-    fontWeight: "600",
-    color: "#666",
-    letterSpacing: 0.5,
-  },
-  projectId: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#333",
-  },
-  sectionContainer: {
-    backgroundColor: "white",
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  sectionLabel: {
-    fontSize: 12,
-    fontWeight: "600",
-    color: "#666",
-    letterSpacing: 0.5,
-    marginBottom: 12,
-  },
-  descriptionInput: {
-    borderWidth: 1,
-    borderColor: "#e0e0e0",
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
-    minHeight: 60,
-    backgroundColor: "#f9f9f9",
-    textAlignVertical: "top",
-  },
-  expenseRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: "#f0f0f0",
-  },
-  expenseInfo: {
-    flex: 1,
-  },
-  expenseCategory: {
-    fontSize: 12,
-    color: "#666",
-    fontWeight: "500",
-    marginBottom: 4,
-  },
-  expenseName: {
-    fontSize: 16,
-    color: "#333",
-    fontWeight: "500",
-  },
-  expenseHours: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-  },
-  hoursText: {
-    fontSize: 16,
-    color: "#333",
-    fontWeight: "600",
-  },
-  editText: {
-    fontSize: 14,
-    color: "#007AFF",
-    fontWeight: "500",
-  },
-  addExpensesButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingVertical: 16,
-    paddingHorizontal: 4,
-  },
-  addExpensesText: {
-    fontSize: 16,
-    color: "#333",
-    fontWeight: "500",
-  },
-  submitContainer: {
-    padding: 16,
-    backgroundColor: "white",
-    borderTopWidth: 1,
-    borderTopColor: "#e0e0e0",
-  },
-  submitButton: {
-    backgroundColor: "#5e8a5e",
-    paddingVertical: 16,
-    borderRadius: 12,
-    alignItems: "center",
-  },
-  submitButtonText: {
-    color: "white",
-    fontSize: 18,
-    fontWeight: "600",
-  },
-});

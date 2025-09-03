@@ -4,18 +4,23 @@ import { Platform } from "react-native";
 
 import { useAuth } from "@/components/context/AuthContext";
 import { HapticTab } from "@/components/HapticTab";
-import { IconSymbol } from "@/components/ui/IconSymbol";
 import TabBarBackground from "@/components/ui/TabBarBackground";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
+
+// ✅ Heroicons (solid set)
+import {
+  ClipboardDocumentListIcon,
+  ClockIcon,
+  ListBulletIcon,
+} from "react-native-heroicons/solid";
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
   const { isLoggedIn } = useAuth();
 
-  console.log("TabLayout rendered, isLoggedIn:", isLoggedIn);
   if (!isLoggedIn) {
-    return <Redirect href="/login" />; // Redirect to login if not logged in
+    return <Redirect href="/login" />;
   }
 
   return (
@@ -23,15 +28,12 @@ export default function TabLayout() {
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
         headerShown: true,
-        headerStyle: { backgroundColor: "#266041" }, // brand header background
-        headerTintColor: "#fff",                     // header text & icons
+        headerStyle: { backgroundColor: "#266041" },
+        headerTintColor: "#fff",
         tabBarButton: HapticTab,
         tabBarBackground: TabBarBackground,
         tabBarStyle: Platform.select({
-          ios: {
-            // Use a transparent background on iOS to show the blur effect
-            position: "absolute",
-          },
+          ios: { position: "absolute" },
           default: {},
         }),
       }}
@@ -39,19 +41,15 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "Recent",
-          tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="clock.fill" color={color} />
-          ),
+          title: "Recent Projects",
+          tabBarIcon: ({ color }) => <ClockIcon size={28} color={color} />,
         }}
       />
       <Tabs.Screen
         name="projects"
         options={{
-          title: "Projects",
-          tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="folder.fill" color={color} />
-          ),
+          title: "All Projects",
+          tabBarIcon: ({ color }) => <ListBulletIcon size={28} color={color} />,
         }}
       />
       <Tabs.Screen
@@ -59,7 +57,7 @@ export default function TabLayout() {
         options={{
           title: "History",
           tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="clock.arrow.circlepath" color={color} />
+            <ClipboardDocumentListIcon size={28} color={color} />
           ),
         }}
       />
