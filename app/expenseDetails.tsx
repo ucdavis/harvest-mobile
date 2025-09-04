@@ -76,13 +76,13 @@ export default function ExpenseDetailsScreen() {
   const getRateTypeColor = (type: string) => {
     switch (type.toLowerCase()) {
       case "labor":
-        return "#3B82F6"; // Blue
+        return "#00524C";
       case "equipment":
-        return "#F59E0B"; // Amber
+        return "#8A532F";
       case "other":
-        return "#10B981"; // Emerald
+        return "#003A5D";
       default:
-        return "#6B7280"; // Gray
+        return "#d7d7d7";
     }
   };
 

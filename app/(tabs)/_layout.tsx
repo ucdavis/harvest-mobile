@@ -5,12 +5,11 @@ import { Platform } from "react-native";
 import { useAuth } from "@/components/context/AuthContext";
 import { HapticTab } from "@/components/HapticTab";
 import TabBarBackground from "@/components/ui/TabBarBackground";
-import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
 
 // ✅ Heroicons (solid set)
 import {
-  ClipboardDocumentListIcon,
+  ArrowRightOnRectangleIcon,
   ClockIcon,
   ListBulletIcon,
 } from "react-native-heroicons/solid";
@@ -26,7 +25,8 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
+        tabBarActiveTintColor: "#266041",
+        tabBarInactiveTintColor: "#b7b7b7",
         headerShown: true,
         headerStyle: { backgroundColor: "#266041" },
         headerTintColor: "#fff",
@@ -53,11 +53,11 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="history"
+        name="logout"
         options={{
-          title: "History",
+          title: "Log out",
           tabBarIcon: ({ color }) => (
-            <ClipboardDocumentListIcon size={28} color={color} />
+            <ArrowRightOnRectangleIcon size={28} color={color} />
           ),
         }}
       />

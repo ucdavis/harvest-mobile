@@ -84,7 +84,7 @@ export default function AddExpenseScreen() {
             <InformationCircleIcon size={16} color="#666666" />
           </View>
           <Text className="text-base font-semibold text-gray-800">
-            {projectId}: {projectName}
+            {projectId} {projectName}
           </Text>
         </View>
 

@@ -1,40 +1,28 @@
 import { ProjectCard } from "@/components/ui/ProjectCard";
-import { Image, View } from "react-native";
-
-
-
+import { TeamChooser } from "@/components/ui/TeamChooser";
+import { ScrollView, View } from "react-native";
 
 export default function RecentProjectsScreen() {
   return (
-    <>
-      <View className="main">
+    <ScrollView stickyHeaderIndices={[0]} className="flex-1 flex-col">
+      {/* Sticky header */}
+      <TeamChooser onClose={() => console.log("Team chooser closed")} />
 
+      {/* Scrollable content */}
+      <View className="p-4">
         <ProjectCard
+          id="proj-001"
           projectId="AE-12234"
           piName="Brian McEligot"
-          years="2026–2029"
           onEdit={() => console.log("edit pressed")}
         />
         <ProjectCard
+          id="proj-002"
           projectId="AE-27366 Corn Trials 2025"
           piName="Brian McEligot"
-          years="2025"
           onEdit={() => console.log("edit pressed")}
         />
-
-        <Image
-          className="w-[175px] self-center mt-auto mb-16 opacity-50"
-          resizeMode="contain"
-          source={require("../../assets/images/caes-logo.png")}
-        />
-
-
       </View>
-
-
-
-
-    </>
+    </ScrollView>
   );
 }
-
