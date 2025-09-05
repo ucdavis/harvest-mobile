@@ -2,7 +2,13 @@
 import { setOrUpdateUserAuthInfo } from "@/lib/auth";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useRef, useState } from "react";
-import { ActivityIndicator, Alert, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  Alert,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 type LinkSuccess = {
   token: string;
@@ -34,6 +40,7 @@ export default function AppLinkScreen() {
     baseUrl?: string;
   }>();
   const [status, setStatus] = useState("Authenticating…");
+  const [hasFailed, setHasFailed] = useState(false);
   const didRun = useRef(false); // avoid double-run in StrictMode
 
   useEffect(() => {
@@ -49,6 +56,8 @@ export default function AppLinkScreen() {
       try {
         if (!code || !baseUrl) {
           setStatus("Missing code or baseUrl.");
+          setHasFailed(true);
+          didRun.current = false; // Reset on failure to allow retry
           return;
         }
 
@@ -89,11 +98,11 @@ export default function AppLinkScreen() {
 
         setStatus("Linked successfully. Redirecting…");
 
-        // Navigate wherever makes sense in your app:
-        // e.g., tabs home, dashboard, etc.
-        router.replace("/"); // change to "/(tabs)/home" or similar
+        router.replace("/"); // nav to home, which is the index tab
       } catch (err: any) {
         setStatus("Authentication failed.");
+        setHasFailed(true);
+        didRun.current = false; // Reset on failure to allow retry
         Alert.alert("Authentication failed", err?.message ?? "Unknown error");
       }
     })();
@@ -110,6 +119,20 @@ export default function AppLinkScreen() {
     >
       <ActivityIndicator />
       <Text style={{ marginTop: 16 }}>{status}</Text>
+      {hasFailed && (
+        <TouchableOpacity
+          style={{
+            marginTop: 24,
+            paddingVertical: 12,
+            paddingHorizontal: 24,
+            backgroundColor: "#007AFF",
+            borderRadius: 8,
+          }}
+          onPress={() => router.replace("/")}
+        >
+          <Text style={{ color: "white", fontWeight: "600" }}>Go Back</Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 }
