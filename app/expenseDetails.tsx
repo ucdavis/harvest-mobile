@@ -200,22 +200,23 @@ export default function ExpenseDetailsScreen() {
 
 
           </View>
-          <View className="bg-white p-4 -mb-2 mt-auto shadow-sm border-t border-primary-border">
+          <View className="p-4 mb-4 bg-white border-t mt-auto border-primary-border">
             <View className="flex-row items-center justify-between mb-1">
               <Text className="text-xl font-semibold text-primary-font">Total Cost</Text>
               <Text className="text-xl font-extrabold" style={{ color: "#5e8a5e" }}>
                 ${getTotalCost()}
               </Text>
             </View>
-            <Text className="text-lg font-semibold text-primary-font/40 text-start">
+            <Text className="text-lg font-semibold text-primary-font/40 text-start mb-2">
               {quantity || "0"} {rate.unit} × ${rate.price} = ${getTotalCost()}
             </Text>
+            <TouchableOpacity className="harvest-button" onPress={handleConfirm}>
+              <Text className="harvest-button-text" >
+                Add Expense
+              </Text>
+            </TouchableOpacity>
           </View>
-          <TouchableOpacity className="py-6 z-10 rounded-lg text-center bg-harvest" onPress={handleConfirm}>
-            <Text className="text-xl mx-auto font-semibold text-white" >
-              Add
-            </Text>
-          </TouchableOpacity>
+
         </View>
       </View>
     </KeyboardAvoidingView>

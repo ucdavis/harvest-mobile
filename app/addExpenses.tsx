@@ -77,15 +77,18 @@ export default function AddExpenseScreen() {
       >
 
         <View className="card">
-          <View className="flex-row items-center justify-between mb-2">
-            <Text className="text-md uppercase font-bold text-harvest tracking-tight">
-              Project
-            </Text>
-            <InformationCircleIcon size={24} className="text-harvest" />
+          <View className="flex-row items-start justify-between">
+            <View>
+              <Text className="text-md uppercase font-bold text-harvest tracking-tight mb-1">
+                Project
+              </Text>
+              <Text className="text-lg font-semibold text-primary-font">
+                {projectId}{projectName}
+              </Text>
+            </View>
+            <InformationCircleIcon size={24} color="#a0a0a0" />
           </View>
-          <Text className="text-lg font-semibold text-primary-font">
-            {projectId}{projectName}
-          </Text>
+
         </View>
 
 
@@ -152,10 +155,10 @@ export default function AddExpenseScreen() {
       {/* Submit Button */}
       <View className="p-4 mb-4 bg-white border-t border-primary-border">
         <TouchableOpacity
-          className="bg-harvest py-4 rounded-xl items-center"
+          className="harvest-button"
           onPress={handleSubmit}
         >
-          <Text className="text-white text-lg font-semibold">Submit</Text>
+          <Text className="harvest-button-text">Submit</Text>
         </TouchableOpacity>
       </View>
     </View>

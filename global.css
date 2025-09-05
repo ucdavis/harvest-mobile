@@ -13,3 +13,11 @@
 .modal-header {
     @apply flex-row items-center justify-between border-b border-primary-border bg-harvest px-4 py-3;
 }
+
+.harvest-button-text {
+    @apply text-white text-lg font-semibold;
+}
+
+.harvest-button {
+    @apply bg-harvest py-4 rounded-xl items-center;
+}
