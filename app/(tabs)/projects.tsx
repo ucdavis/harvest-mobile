@@ -104,12 +104,12 @@ export default function AllProjectsScreen() {
           Loading projects...
         </Text>
       ) : filteredProjects.length > 0 ? (
-        <View className="pb-4 px-4">
+        <View className="px-4 flex-1">
           <FlatList
             data={filteredProjects}
             renderItem={renderProjectCard}
             keyExtractor={(item) => item.id} // keep internal key stable
-            contentContainerStyle={{ paddingTop: 8, paddingBottom: 24 }}
+            contentContainerStyle={{ paddingTop: 8, paddingBottom: 88 }}
             showsVerticalScrollIndicator={false}
             refreshControl={
               <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />

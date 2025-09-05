@@ -9,3 +9,7 @@
 .card {
     @apply bg-white rounded-md p-4 mb-4 border border-primary-border;
 }
+
+.modal-header {
+    @apply flex-row items-center justify-between border-b border-primary-border bg-harvest px-4 py-3;
+}
