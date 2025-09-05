@@ -4,7 +4,7 @@ import * as SecureStore from "expo-secure-store";
 const USER_AUTH_INFO_KEY = "userAuthInfo";
 const CURRENT_TEAM_KEY = "currentTeam";
 
-type TeamAuthInfo = {
+export type TeamAuthInfo = {
   token: string;
   team: string;
   apiBaseUrl: string;
@@ -24,7 +24,7 @@ type UserAuthInfo = {
  * @param authInfo - The authentication information for the team to set or update.
  * @returns A promise that resolves when the operation is complete.
  */
-const setOrUpdateUserAuthInfo = async (
+export const setOrUpdateUserAuthInfo = async (
   authInfo: TeamAuthInfo
 ): Promise<void> => {
   const userAuthInfo = (await getUserAuthInfo()) ?? {};
@@ -47,7 +47,7 @@ const setOrUpdateUserAuthInfo = async (
  * @param team - The identifier of the team whose authentication info should be removed.
  * @returns A promise that resolves when the team auth info has been removed and the updated info has been saved.
  */
-const removeTeamAuthInfo = async (team: string): Promise<void> => {
+export const removeTeamAuthInfo = async (team: string): Promise<void> => {
   const userAuthInfo = (await getUserAuthInfo()) ?? {};
   delete userAuthInfo[team];
   await SecureStore.setItemAsync(
@@ -61,7 +61,7 @@ const removeTeamAuthInfo = async (team: string): Promise<void> => {
  *
  * @returns A promise that resolves to a `UserAuthInfo` object if found, or `null` if not present.
  */
-const getUserAuthInfo = async (): Promise<UserAuthInfo | null> => {
+export const getUserAuthInfo = async (): Promise<UserAuthInfo | null> => {
   const userAuthInfoString = await SecureStore.getItemAsync(USER_AUTH_INFO_KEY);
   if (userAuthInfoString) {
     return JSON.parse(userAuthInfoString);
@@ -77,7 +77,7 @@ const getUserAuthInfo = async (): Promise<UserAuthInfo | null> => {
  * @param team - The team identifier to set as current.
  * @returns A promise that resolves when the current team has been saved.
  */
-const setCurrentTeam = async (team: string): Promise<void> => {
+export const setCurrentTeam = async (team: string): Promise<void> => {
   await AsyncStorage.setItem(CURRENT_TEAM_KEY, team);
 };
 
@@ -86,7 +86,7 @@ const setCurrentTeam = async (team: string): Promise<void> => {
  *
  * @returns A promise that resolves to the current team identifier, or null if none is set.
  */
-const getCurrentTeam = async (): Promise<string | null> => {
+export const getCurrentTeam = async (): Promise<string | null> => {
   return await AsyncStorage.getItem(CURRENT_TEAM_KEY);
 };
 
@@ -95,15 +95,23 @@ const getCurrentTeam = async (): Promise<string | null> => {
  *
  * @returns A promise that resolves to the current team's auth info, or null if no team is selected or no auth info exists.
  */
-const getCurrentTeamAuthInfo = async (): Promise<TeamAuthInfo | null> => {
-  const currentTeam = await getCurrentTeam();
-  if (!currentTeam) return null;
+export const getCurrentTeamAuthInfo =
+  async (): Promise<TeamAuthInfo | null> => {
+    const currentTeam = await getCurrentTeam();
+    if (!currentTeam) return null;
 
-  const userAuthInfo = await getUserAuthInfo();
-  return userAuthInfo?.[currentTeam] ?? null;
+    const userAuthInfo = await getUserAuthInfo();
+    return userAuthInfo?.[currentTeam] ?? null;
+  };
+
+export const removeCurrentTeamAuthInfo = async (): Promise<void> => {
+  const currentTeam = await getCurrentTeam();
+  if (!currentTeam) return;
+
+  await removeTeamAuthInfo(currentTeam);
 };
 
-const isCurrentTeamAuthenticated = async (): Promise<boolean> => {
+export const isCurrentTeamAuthenticated = async (): Promise<boolean> => {
   const currentTeamAuthInfo = await getCurrentTeamAuthInfo();
   return currentTeamAuthInfo !== null;
 };

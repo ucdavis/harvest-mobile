@@ -1,4 +1,5 @@
 // note, lowercase to match route, must be exactly `harvestmobile://applink`
+import { setOrUpdateUserAuthInfo } from "@/lib/auth";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import { ActivityIndicator, Alert, Text, View } from "react-native";
@@ -19,11 +20,12 @@ function normalizeBaseUrl(input: string) {
   return noTrailing;
 }
 
-async function saveAuth(
-  team: string,
-  payload: { token: string; team: string; baseUrl: string }
-) {
-  // TODO
+async function saveAuth(token: string, team: string, baseUrl: string) {
+  await setOrUpdateUserAuthInfo({
+    token,
+    team,
+    apiBaseUrl: baseUrl,
+  });
 }
 
 export default function AppLinkScreen() {
@@ -35,8 +37,13 @@ export default function AppLinkScreen() {
   const didRun = useRef(false); // avoid double-run in StrictMode
 
   useEffect(() => {
+    console.log("local params:", { code, baseUrl });
+    console.log("didRun:", didRun.current);
+
     if (didRun.current) return;
     didRun.current = true;
+
+    console.log("local params:", { code, baseUrl });
 
     (async () => {
       try {
@@ -78,11 +85,7 @@ export default function AppLinkScreen() {
         }
 
         // Persist securely under auth-{team}
-        await saveAuth(String(team), {
-          token: String(token),
-          team: String(team),
-          baseUrl: normalizedBase,
-        });
+        await saveAuth(String(token), String(team), normalizedBase);
 
         setStatus("Linked successfully. Redirecting…");
 

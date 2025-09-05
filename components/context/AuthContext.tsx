@@ -1,39 +1,24 @@
-import {
-  deleteAuthTokensAsync,
-  getUserInfo,
-  getUserInfoFromIdToken,
-  isAuthenticated,
-  setAuthTokenAsync,
-  UserInfo,
-} from "@/lib/auth";
-import { TokenResponse } from "expo-auth-session";
+import { removeCurrentTeamAuthInfo, TeamAuthInfo } from "@/lib/auth";
 import React, { createContext, useContext, useState } from "react";
 
 interface AuthContextType {
   isLoggedIn: boolean;
-  login: (tokenResponse: TokenResponse) => void;
+  // only logout, login is handled via applink.tsx
   logout: () => void;
   isLoading: boolean;
-  userInfo?: UserInfo;
+  authInfo?: TeamAuthInfo;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [isLoggedIn, setIsLoggedIn] = useState(isAuthenticated());
-  const [isLoading, setIsLoading] = useState(true); // TODO: if we need it while loading auth state
-  const [userInfo, setUserInfo] = useState<UserInfo | undefined>(getUserInfo());
-
-  const login = (tokenResponse: TokenResponse) => {
-    setAuthTokenAsync(tokenResponse).then(() => {
-      setUserInfo(getUserInfoFromIdToken(tokenResponse.idToken));
-      setIsLoggedIn(true);
-      setIsLoading(false);
-    });
-  };
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // TODO: should we do this synchronously?
+  const [isLoading, setIsLoading] = useState(true);
+  const [authInfo, setAuthInfo] = useState<TeamAuthInfo | undefined>();
 
   const logout = () => {
-    deleteAuthTokensAsync().then(() => {
+    removeCurrentTeamAuthInfo().then(() => {
+      setAuthInfo(undefined);
       setIsLoading(false);
       setIsLoggedIn(false);
     });
@@ -42,9 +27,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   console.log("AuthProvider rendered, isLoggedIn:", isLoggedIn);
 
   return (
-    <AuthContext.Provider
-      value={{ isLoggedIn, login, logout, isLoading, userInfo }}
-    >
+    <AuthContext.Provider value={{ isLoggedIn, logout, isLoading, authInfo }}>
       {children}
     </AuthContext.Provider>
   );
