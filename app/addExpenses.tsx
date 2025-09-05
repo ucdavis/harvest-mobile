@@ -81,10 +81,10 @@ export default function AddExpenseScreen() {
             <Text className="text-md uppercase font-bold text-harvest tracking-tight">
               Project
             </Text>
-            <InformationCircleIcon size={16} color="#666666" />
+            <InformationCircleIcon size={24} className="text-harvest" />
           </View>
-          <Text className="text-base font-semibold text-gray-800">
-            {projectId} {projectName}
+          <Text className="text-lg font-semibold text-primary-font">
+            {projectId}{projectName}
           </Text>
         </View>
 
@@ -116,10 +116,10 @@ export default function AddExpenseScreen() {
               className="flex-row items-end justify-between py-3 border-b border-primary-border"
             >
               <View className="flex-1">
-                <Text className="text-xs text-primary-font/40 uppercase font-medium">
+                <Text className="text-sm text-primary-font/40 uppercase font-bold">
                   {item.type}
                 </Text>
-                <Text className="text-base text-primary-font font-medium">
+                <Text className="text-lg text-primary-font font-medium">
                   {item.rate?.description}
                 </Text>
               </View>
@@ -136,16 +136,17 @@ export default function AddExpenseScreen() {
           ))}
 
           {/* Add Expenses Button */}
-          <TouchableOpacity
-            className="flex-row justify-between py-4 px-1"
-            onPress={handleAddExpenses}
-          >
-            <Text className="text-base text-gray-800 font-medium">
-              Add expense
-            </Text>
-            <ChevronRightIcon size={16} color="#666666" />
-          </TouchableOpacity>
+
         </View>
+        <TouchableOpacity
+          className="flex-row bg-harvest rounded-md justify-between py-4 px-4"
+          onPress={handleAddExpenses}
+        >
+          <Text className="text-base text-white font-bold">
+            Add expense
+          </Text>
+          <ChevronRightIcon size={24} color="white" />
+        </TouchableOpacity>
       </ScrollView>
 
       {/* Submit Button */}

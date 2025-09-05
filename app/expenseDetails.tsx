@@ -16,7 +16,7 @@ import {
   QuestionMarkCircleIcon,
   UserIcon,
   WrenchScrewdriverIcon,
-} from "react-native-heroicons/outline";
+} from "react-native-heroicons/solid";
 
 import { Rate, createExpenseWithUniqueId } from "@/lib/expense";
 
@@ -136,7 +136,7 @@ export default function ExpenseDetailsScreen() {
         {/* Content */}
         <View className="flex-1">
           {/* Selected Rate Info */}
-          <View className="bg-white p-4 mb-2 border-b border-primary-border">
+          <View className="bg-white p-4 mb-2 border-b-2" style={{ borderColor: getRateTypeColor(rate.type) }}>
             <View className="flex-row items-center">
               <View
                 className="mr-3 h-8 w-8 items-center justify-center rounded-full"
@@ -183,11 +183,11 @@ export default function ExpenseDetailsScreen() {
 
             {/* Description Input */}
             <View className="mb-6">
-              <Text className="text-[12px] font-semibold text-neutral-500 tracking-tight mb-2">
+              <Text className="text-sm font-semibold text-neutral-500 tracking-tight mb-2">
                 Description (optional)
               </Text>
               <TextInput
-                className="bg-white rounded-lg p-4 text-[16px] border border-neutral-200 min-h-[80px]"
+                className="bg-white rounded-lg p-4 text-base border border-neutral-200 min-h-[80px]"
                 value={description}
                 onChangeText={setDescription}
                 placeholder={`Enter custom description or leave blank to use "${rate.description}"`}
@@ -200,19 +200,19 @@ export default function ExpenseDetailsScreen() {
 
 
           </View>
-          <View className="bg-white rounded-xl p-4 mt-auto shadow-sm border border-black/5">
-            <View className="flex-row items-center justify-between mb-2">
-              <Text className="text-[18px] font-semibold text-neutral-800">Total Cost</Text>
-              <Text className="text-[24px] font-extrabold" style={{ color: "#5e8a5e" }}>
+          <View className="bg-white p-4 -mb-2 mt-auto shadow-sm border-t border-primary-border">
+            <View className="flex-row items-center justify-between mb-1">
+              <Text className="text-xl font-semibold text-primary-font">Total Cost</Text>
+              <Text className="text-xl font-extrabold" style={{ color: "#5e8a5e" }}>
                 ${getTotalCost()}
               </Text>
             </View>
-            <Text className="text-[14px] text-neutral-600 text-center">
+            <Text className="text-lg font-semibold text-primary-font/40 text-start">
               {quantity || "0"} {rate.unit} × ${rate.price} = ${getTotalCost()}
             </Text>
           </View>
-          <TouchableOpacity className="py-2" onPress={handleConfirm}>
-            <Text className="text-[16px] font-semibold" style={{ color: "#5e8a5e" }}>
+          <TouchableOpacity className="py-6 z-10 rounded-lg text-center bg-harvest" onPress={handleConfirm}>
+            <Text className="text-xl mx-auto font-semibold text-white" >
               Add
             </Text>
           </TouchableOpacity>
