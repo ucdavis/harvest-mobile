@@ -1,158 +1,109 @@
-import {
-  makeRedirectUri,
-  refreshAsync,
-  TokenResponse,
-} from "expo-auth-session";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as SecureStore from "expo-secure-store";
 
-const ACCESS_TOKEN_KEY = "auth_token";
-const ID_TOKEN_KEY = "id_token";
-const REFRESH_TOKEN_KEY = "refresh_token";
-const ACCESS_EXPIRATION_KEY = "access_expiration";
+const USER_AUTH_INFO_KEY = "userAuthInfo";
+const CURRENT_TEAM_KEY = "currentTeam";
 
-const refreshThresholdMs = 60_000; // refresh access token 1 min before expiry
-
-const tenant = process.env.EXPO_PUBLIC_AZURE_TENANT_ID;
-const clientId = process.env.EXPO_PUBLIC_AZURE_CLIENT_ID;
-
-if (!tenant || !clientId) {
-  throw new Error(
-    "Azure AD configuration is missing. Please check your environment variables."
-  );
-}
-
-const discovery = {
-  authorizationEndpoint: `https://login.microsoftonline.com/${tenant}/oauth2/v2.0/authorize`,
-  tokenEndpoint: `https://login.microsoftonline.com/${tenant}/oauth2/v2.0/token`,
+type TeamAuthInfo = {
+  token: string;
+  team: string;
+  apiBaseUrl: string;
 };
 
-const redirectUri = makeRedirectUri({
-  scheme: "harvest-mobile",
-  path: "auth-callback",
-});
-
-const authConfig = {
-  clientId,
-  tenant,
-  discovery,
-  redirectUri,
+// user auth info is dictionary keyed by team, we'll store it all in one key
+type UserAuthInfo = {
+  [team: string]: TeamAuthInfo;
 };
 
-type UserInfo = {
-  email: string;
-  name: string;
-  sid: string;
-  // TODO: add in IAMID pulled from azure graph api
-};
+/**
+ * Sets or updates the authentication information for a specific team in secure storage.
+ *
+ * Retrieves the current user authentication info, updates or adds the entry for the given team,
+ * and persists the updated info securely.
+ *
+ * @param authInfo - The authentication information for the team to set or update.
+ * @returns A promise that resolves when the operation is complete.
+ */
+const setOrUpdateUserAuthInfo = async (
+  authInfo: TeamAuthInfo
+): Promise<void> => {
+  const userAuthInfo = (await getUserAuthInfo()) ?? {};
 
-// TODO: maybe we don't need this sync helpers
-const isAuthenticatedAsync = async () => {
-  const token = await getAuthTokenAsync();
-  return token !== null;
-};
-
-const isAuthenticated = () => {
-  const token = getAuthToken();
-  return token !== null;
-};
-
-const getAuthTokenAsync = async () => {
-  return await SecureStore.getItemAsync(ACCESS_TOKEN_KEY);
-};
-
-const getAuthToken = (): string | null => {
-  return SecureStore.getItem(ACCESS_TOKEN_KEY);
-};
-
-const deleteAuthTokensAsync = async () => {
-  await SecureStore.deleteItemAsync(ACCESS_TOKEN_KEY);
-  await SecureStore.deleteItemAsync(ID_TOKEN_KEY);
-  await SecureStore.deleteItemAsync(REFRESH_TOKEN_KEY);
-  await SecureStore.deleteItemAsync(ACCESS_EXPIRATION_KEY);
-};
-
-const setAuthTokenAsync = async (response: TokenResponse) => {
-  await SecureStore.setItemAsync(ACCESS_TOKEN_KEY, response.accessToken);
-  if (!response.idToken || !response.refreshToken || !response.expiresIn) {
-    throw new Error(
-      "ID token and refresh token are required for authentication."
-    );
+  // if this is first auth info, set current team
+  if (Object.keys(userAuthInfo).length === 0) {
+    await setCurrentTeam(authInfo.team);
   }
-  await SecureStore.setItemAsync(ID_TOKEN_KEY, response.idToken);
-  await SecureStore.setItemAsync(REFRESH_TOKEN_KEY, response.refreshToken);
+
+  userAuthInfo[authInfo.team] = authInfo;
   await SecureStore.setItemAsync(
-    ACCESS_EXPIRATION_KEY,
-    String(Date.now() + response.expiresIn * 1000)
+    USER_AUTH_INFO_KEY,
+    JSON.stringify(userAuthInfo)
   );
 };
 
 /**
- * Retrieves a valid access token, refreshing it if necessary.
+ * Removes the authentication information for a specific team from the user's stored auth info.
  *
- * This function checks the expiration time of the current access token stored in `SecureStore`.
- * If the token is still valid (i.e., its expiration time minus the current time is greater than the refresh threshold),
- * it returns the existing access token. Otherwise, it attempts to refresh the token using the stored refresh token.
- * If the refresh is successful, it updates the stored access token, expiration time, and (optionally) refresh token.
- *
- * @returns {Promise<string>} The valid access token.
- * @throws {Error} If no refresh token is available (i.e., the user is not logged in).
+ * @param team - The identifier of the team whose authentication info should be removed.
+ * @returns A promise that resolves when the team auth info has been removed and the updated info has been saved.
  */
-const getValidAccessTokenAsync = async () => {
-  const accessExp = Number((await SecureStore.getItemAsync("accessExp")) ?? 0);
-  const now = Date.now();
-
-  if (accessExp - now > refreshThresholdMs) {
-    // still good
-    return await SecureStore.getItemAsync("accessToken");
-  }
-
-  // use the refresh token
-  const refreshToken = await SecureStore.getItemAsync("refreshToken");
-  if (!refreshToken) throw new Error("Not logged in");
-
-  const refreshed = await refreshAsync({ clientId, refreshToken }, discovery);
-
-  // persist new values
-  await SecureStore.setItemAsync("accessToken", refreshed.accessToken);
+const removeTeamAuthInfo = async (team: string): Promise<void> => {
+  const userAuthInfo = (await getUserAuthInfo()) ?? {};
+  delete userAuthInfo[team];
   await SecureStore.setItemAsync(
-    "accessExp",
-    String(now + (refreshed.expiresIn || 0) * 1000)
+    USER_AUTH_INFO_KEY,
+    JSON.stringify(userAuthInfo)
   );
-  if (refreshed.refreshToken) {
-    // Azure may issue a new one
-    await SecureStore.setItemAsync("refreshToken", refreshed.refreshToken);
+};
+
+/**
+ * Retrieves the user's authentication information from secure storage.
+ *
+ * @returns A promise that resolves to a `UserAuthInfo` object if found, or `null` if not present.
+ */
+const getUserAuthInfo = async (): Promise<UserAuthInfo | null> => {
+  const userAuthInfoString = await SecureStore.getItemAsync(USER_AUTH_INFO_KEY);
+  if (userAuthInfoString) {
+    return JSON.parse(userAuthInfoString);
   }
-
-  return refreshed.accessToken;
+  return null;
 };
 
-const getUserInfoFromIdToken = (idToken?: string) => {
-  if (!idToken) throw new Error("ID token is required");
+// TEAM specific actions
 
-  const payload = idToken.split(".")[1];
-
-  const userInfo: UserInfo = JSON.parse(atob(payload));
-  return userInfo;
+/**
+ * Sets the current active team and persists it across app sessions.
+ *
+ * @param team - The team identifier to set as current.
+ * @returns A promise that resolves when the current team has been saved.
+ */
+const setCurrentTeam = async (team: string): Promise<void> => {
+  await AsyncStorage.setItem(CURRENT_TEAM_KEY, team);
 };
 
-const getUserInfo = () => {
-  const idToken = SecureStore.getItem(ID_TOKEN_KEY);
-
-  if (!idToken) return undefined;
-
-  return getUserInfoFromIdToken(idToken);
+/**
+ * Retrieves the current active team from persistent storage.
+ *
+ * @returns A promise that resolves to the current team identifier, or null if none is set.
+ */
+const getCurrentTeam = async (): Promise<string | null> => {
+  return await AsyncStorage.getItem(CURRENT_TEAM_KEY);
 };
 
-export {
-  authConfig,
-  deleteAuthTokensAsync,
-  getAuthToken,
-  getAuthTokenAsync,
-  getUserInfo,
-  getUserInfoFromIdToken,
-  getValidAccessTokenAsync,
-  isAuthenticated,
-  isAuthenticatedAsync,
-  setAuthTokenAsync,
-  UserInfo,
+/**
+ * Gets the authentication info for the currently selected team.
+ *
+ * @returns A promise that resolves to the current team's auth info, or null if no team is selected or no auth info exists.
+ */
+const getCurrentTeamAuthInfo = async (): Promise<TeamAuthInfo | null> => {
+  const currentTeam = await getCurrentTeam();
+  if (!currentTeam) return null;
+
+  const userAuthInfo = await getUserAuthInfo();
+  return userAuthInfo?.[currentTeam] ?? null;
+};
+
+const isCurrentTeamAuthenticated = async (): Promise<boolean> => {
+  const currentTeamAuthInfo = await getCurrentTeamAuthInfo();
+  return currentTeamAuthInfo !== null;
 };
