@@ -131,7 +131,7 @@ export default function AddExpenseScreen() {
                 <Text className="text-base text-primary-font/80 font-semibold">
                   {item.quantity} {item.rate?.unit} @ ${item.price}
                 </Text>
-                <TouchableOpacity className="ms-3" onPress={() => handleDeleteExpense(item.uniqueId)}>
+                <TouchableOpacity className="ml-3" onPress={() => handleDeleteExpense(item.uniqueId)}>
                   <TrashIcon size={16} color="#79242F" />
                 </TouchableOpacity>
               </View>
