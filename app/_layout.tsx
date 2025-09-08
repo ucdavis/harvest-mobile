@@ -58,7 +58,7 @@ function RootLayoutNav() {
 export default function RootLayout() {
   const { status } = useInitDb();
   const [loaded] = useFonts({
-    SpaceMono: require("../assets/fonts/proximanova-regular.ttf"),
+    ProximaNova: require("../assets/fonts/proximanova-regular.ttf"),
   });
 
   if (!loaded || status !== "ready") {
