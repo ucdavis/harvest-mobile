@@ -14,7 +14,7 @@ import React, {
 
 interface AuthContextType {
   isLoggedIn: boolean;
-  login: (authInfo: TeamAuthInfo) => void;
+  login: (authInfo: TeamAuthInfo) => Promise<void>;
   logout: () => void;
   isLoading: boolean;
   authInfo?: TeamAuthInfo;
@@ -35,10 +35,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
-  const login = useCallback((authInfo: TeamAuthInfo) => {
-    setOrUpdateUserAuthInfo(authInfo).then(() => {
-      setIsLoggedIn(true);
-    });
+  const login = useCallback(async (authInfo: TeamAuthInfo) => {
+    setIsLoading(true);
+    await setOrUpdateUserAuthInfo(authInfo);
+    setAuthInfo(authInfo);
+    setIsLoggedIn(true);
+    setIsLoading(false);
   }, []);
 
   // load current auth info on launch

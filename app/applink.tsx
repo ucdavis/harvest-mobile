@@ -42,6 +42,10 @@ export default function AppLinkScreen() {
     // Close the browser that was opened for authentication
     WebBrowser.dismissBrowser();
 
+    const controller = new AbortController();
+    let timeoutId: ReturnType<typeof setTimeout> | undefined;
+    let unmounted = false;
+
     if (didRun.current) return;
     didRun.current = true;
 
@@ -70,8 +74,7 @@ export default function AppLinkScreen() {
         // Hit POST {baseUrl}/api/getapi/{code}
         setStatus("Linking your device…");
 
-        const controller = new AbortController();
-        const t = setTimeout(() => controller.abort(), 12000); // 12s timeout
+        timeoutId = setTimeout(() => controller.abort(), 12000); // 12s timeout
 
         const res = await fetch(
           `${normalizedBase}/api/getapi/${encodeURIComponent(codeStr)}`,
@@ -80,7 +83,9 @@ export default function AppLinkScreen() {
             headers: { "Content-Type": "application/json" },
             signal: controller.signal,
           }
-        ).finally(() => clearTimeout(t));
+        ).finally(() => {
+          if (timeoutId) clearTimeout(timeoutId);
+        });
 
         if (!res.ok) {
           const text = await res.text().catch(() => "");
@@ -110,12 +115,19 @@ export default function AppLinkScreen() {
 
         router.replace("/"); // nav to home, which is the index tab
       } catch (err: any) {
+        if (unmounted) return;
         setStatus("Authentication failed.");
         setHasFailed(true);
         didRun.current = false; // Reset on failure to allow retry
         Alert.alert("Authentication failed", err?.message ?? "Unknown error");
       }
     })();
+
+    return () => {
+      unmounted = true;
+      controller.abort(); // abort if unmounted
+      if (timeoutId) clearTimeout(timeoutId);
+    };
   }, [code, baseUrl, login]);
 
   return (
