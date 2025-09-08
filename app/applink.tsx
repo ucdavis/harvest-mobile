@@ -79,7 +79,7 @@ export default function AppLinkScreen() {
         const res = await fetch(
           `${normalizedBase}/api/getapi/${encodeURIComponent(codeStr)}`,
           {
-            method: "GET", // TODO: should be POST soon
+            method: "POST",
             headers: { "Content-Type": "application/json" },
             signal: controller.signal,
           }
