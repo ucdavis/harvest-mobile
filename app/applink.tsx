@@ -1,5 +1,6 @@
 // note, lowercase to match route, must be exactly `harvestmobile://applink`
 import { useAuth } from "@/components/context/AuthContext";
+import { isLinkCodeCompleted, markLinkCodeCompleted } from "@/lib/auth";
 import { router, useLocalSearchParams } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
 import { useEffect, useRef, useState } from "react";
@@ -41,13 +42,8 @@ export default function AppLinkScreen() {
     // Close the browser that was opened for authentication
     WebBrowser.dismissBrowser();
 
-    console.log("local params:", { code, baseUrl });
-    console.log("didRun:", didRun.current);
-
     if (didRun.current) return;
     didRun.current = true;
-
-    console.log("local params:", { code, baseUrl });
 
     (async () => {
       try {
@@ -58,14 +54,22 @@ export default function AppLinkScreen() {
           return;
         }
 
+        // Check if this specific code has already been processed
+        const codeStr = String(code);
+        const alreadyCompleted = await isLinkCodeCompleted(codeStr);
+
+        if (alreadyCompleted) {
+          setStatus("Already authenticated. Redirecting…");
+          router.replace("/");
+          return;
+        }
+
         // Normalize/sanitize
         const normalizedBase = normalizeBaseUrl(String(baseUrl));
-        const codeStr = String(code);
 
         // Hit POST {baseUrl}/api/getapi/{code}
         setStatus("Linking your device…");
 
-        console.log(codeStr, normalizedBase);
         const controller = new AbortController();
         const t = setTimeout(() => controller.abort(), 12000); // 12s timeout
 
@@ -98,6 +102,9 @@ export default function AppLinkScreen() {
           team: String(team),
           apiBaseUrl: normalizedBase,
         });
+
+        // Mark this code as completed to prevent re-processing
+        await markLinkCodeCompleted(codeStr);
 
         setStatus("Linked successfully. Redirecting…");
 

@@ -115,3 +115,26 @@ export const isCurrentTeamAuthenticated = async (): Promise<boolean> => {
   const currentTeamAuthInfo = await getCurrentTeamAuthInfo();
   return currentTeamAuthInfo !== null;
 };
+
+// LINK CODE completion tracking, so we don't try to reprocess
+
+/**
+ * Checks if a specific authentication code has already been processed.
+ *
+ * @param code - The authentication code to check.
+ * @returns A promise that resolves to true if the code was already processed, false otherwise.
+ */
+export const isLinkCodeCompleted = async (code: string): Promise<boolean> => {
+  const completedCode = await AsyncStorage.getItem(`link_completed_${code}`);
+  return completedCode === "true";
+};
+
+/**
+ * Marks a specific authentication code as completed to prevent re-processing.
+ *
+ * @param code - The authentication code to mark as completed.
+ * @returns A promise that resolves when the code has been marked as completed.
+ */
+export const markLinkCodeCompleted = async (code: string): Promise<void> => {
+  await AsyncStorage.setItem(`link_completed_${code}`, "true");
+};
