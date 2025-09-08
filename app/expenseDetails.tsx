@@ -130,7 +130,6 @@ export default function ExpenseDetailsScreen() {
           </TouchableOpacity>
           <Text className="text-lg font-semibold text-white">Expense Details</Text>
           <View className="w-[60px]" />
-
         </View>
 
         {/* Content */}
