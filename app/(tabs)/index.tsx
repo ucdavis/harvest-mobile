@@ -1,62 +1,28 @@
-import { StyleSheet, Text, View } from "react-native";
-
-import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
-import { IconSymbol } from "@/components/ui/IconSymbol";
+import { ProjectCard } from "@/components/ui/ProjectCard";
+import { TeamChooser } from "@/components/ui/TeamChooser";
+import { ScrollView, View } from "react-native";
 
 export default function RecentProjectsScreen() {
   return (
-    <>
-      <View className="flex-1 items-center justify-center bg-white">
-        <Text className="text-xl font-bold text-blue-500">
-          Welcome to Nativewind!
-        </Text>
-      </View>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Recent Projects</ThemedText>
-      </ThemedView>
-      <ThemedText>Your recently accessed projects will appear here</ThemedText>
+    <ScrollView stickyHeaderIndices={[0]} className="flex-1 flex-col">
+      {/* Sticky header */}
+      <TeamChooser onClose={() => console.log("Team chooser closed")} />
 
-      <ThemedView style={styles.placeholderContainer}>
-        <IconSymbol size={80} color="#808080" name="clock.badge.checkmark" />
-        <ThemedText style={styles.placeholderText}>
-          No recent activity
-        </ThemedText>
-        <ThemedText style={styles.placeholderSubtext}>
-          Start working on projects to see them here!
-        </ThemedText>
-      </ThemedView>
-    </>
+      {/* Scrollable content */}
+      <View className="p-4">
+        <ProjectCard
+          id="proj-001"
+          projectId="AE-12234"
+          piName="Brian McEligot"
+          onEdit={() => console.log("edit pressed")}
+        />
+        <ProjectCard
+          id="proj-002"
+          projectId="AE-27366 Corn Trials 2025"
+          piName="Brian McEligot"
+          onEdit={() => console.log("edit pressed")}
+        />
+      </View>
+    </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  headerImage: {
-    color: "#808080",
-    bottom: -90,
-    left: -35,
-    position: "absolute",
-  },
-  titleContainer: {
-    flexDirection: "row",
-    gap: 8,
-  },
-  placeholderContainer: {
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 60,
-    paddingHorizontal: 20,
-  },
-  placeholderText: {
-    fontSize: 18,
-    fontWeight: "600",
-    marginTop: 16,
-    textAlign: "center",
-  },
-  placeholderSubtext: {
-    fontSize: 14,
-    marginTop: 8,
-    textAlign: "center",
-    opacity: 0.7,
-  },
-});
