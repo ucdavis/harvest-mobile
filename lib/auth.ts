@@ -63,10 +63,14 @@ export const removeTeamAuthInfo = async (team: string): Promise<void> => {
  */
 export const getUserAuthInfo = async (): Promise<UserAuthInfo | null> => {
   const userAuthInfoString = await SecureStore.getItemAsync(USER_AUTH_INFO_KEY);
-  if (userAuthInfoString) {
+  if (!userAuthInfoString) return null;
+
+  try {
     return JSON.parse(userAuthInfoString);
+  } catch {
+    await SecureStore.deleteItemAsync(USER_AUTH_INFO_KEY);
+    return null;
   }
-  return null;
 };
 
 // TEAM specific actions
