@@ -17,9 +17,7 @@ export default function LoginScreen() {
   const onLoginPress = async () => {
     console.log("Login button pressed");
     // initiate the login process
-    await WebBrowser.openBrowserAsync(
-      "https://harvest.caes.ucdavis.edu/applink"
-    );
+    await WebBrowser.openBrowserAsync(process.env.EXPO_PUBLIC_LOGIN_URL || "");
   };
 
   const onFakeLoginPress = async () => {

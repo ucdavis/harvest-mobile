@@ -11,7 +11,7 @@ import {
 } from "react-native";
 
 type LinkSuccess = {
-  token: string;
+  apiKey: string;
   team: string;
 };
 
@@ -58,15 +58,17 @@ export default function AppLinkScreen() {
         const normalizedBase = normalizeBaseUrl(String(baseUrl));
         const codeStr = String(code);
 
-        // Hit POST {baseUrl}/link/{code}
+        // Hit POST {baseUrl}/api/getapi/{code}
         setStatus("Linking your device…");
+
+        console.log(codeStr, normalizedBase);
         const controller = new AbortController();
         const t = setTimeout(() => controller.abort(), 12000); // 12s timeout
 
         const res = await fetch(
-          `${normalizedBase}/link/${encodeURIComponent(codeStr)}`,
+          `${normalizedBase}/api/getapi/${encodeURIComponent(codeStr)}`,
           {
-            method: "POST",
+            method: "GET", // TODO: should be POST soon
             headers: { "Content-Type": "application/json" },
             signal: controller.signal,
           }
@@ -80,15 +82,15 @@ export default function AppLinkScreen() {
         }
 
         const data = (await res.json()) as LinkSuccess;
-        const { token, team } = data;
+        const { apiKey, team } = data;
 
-        if (!token || !team) {
-          throw new Error("Response missing token or team.");
+        if (!apiKey || !team) {
+          throw new Error("Response missing apiKey or team.");
         }
 
         // Persist securely under auth-{team}
         await login({
-          token: String(token),
+          token: String(apiKey),
           team: String(team),
           apiBaseUrl: normalizedBase,
         });
