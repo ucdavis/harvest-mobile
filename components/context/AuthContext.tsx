@@ -1,49 +1,64 @@
 import {
-  deleteAuthTokensAsync,
-  getUserInfo,
-  getUserInfoFromIdToken,
-  isAuthenticated,
-  setAuthTokenAsync,
-  UserInfo,
+  getCurrentTeamAuthInfo,
+  removeCurrentTeamAuthInfo,
+  setOrUpdateUserAuthInfo,
+  TeamAuthInfo,
 } from "@/lib/auth";
-import { TokenResponse } from "expo-auth-session";
-import React, { createContext, useContext, useState } from "react";
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 
 interface AuthContextType {
   isLoggedIn: boolean;
-  login: (tokenResponse: TokenResponse) => void;
+  login: (authInfo: TeamAuthInfo) => Promise<void>;
   logout: () => void;
   isLoading: boolean;
-  userInfo?: UserInfo;
+  authInfo?: TeamAuthInfo;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [isLoggedIn, setIsLoggedIn] = useState(isAuthenticated());
-  const [isLoading, setIsLoading] = useState(true); // TODO: if we need it while loading auth state
-  const [userInfo, setUserInfo] = useState<UserInfo | undefined>(getUserInfo());
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // TODO: should we do this synchronously?
+  const [isLoading, setIsLoading] = useState(true);
+  const [authInfo, setAuthInfo] = useState<TeamAuthInfo | undefined>();
 
-  const login = (tokenResponse: TokenResponse) => {
-    setAuthTokenAsync(tokenResponse).then(() => {
-      setUserInfo(getUserInfoFromIdToken(tokenResponse.idToken));
-      setIsLoggedIn(true);
-      setIsLoading(false);
-    });
-  };
-
-  const logout = () => {
-    deleteAuthTokensAsync().then(() => {
+  const logout = useCallback(() => {
+    removeCurrentTeamAuthInfo().then(() => {
+      setAuthInfo(undefined);
       setIsLoading(false);
       setIsLoggedIn(false);
     });
-  };
+  }, []);
+
+  const login = useCallback(async (authInfo: TeamAuthInfo) => {
+    setIsLoading(true);
+    await setOrUpdateUserAuthInfo(authInfo);
+    setAuthInfo(authInfo);
+    setIsLoggedIn(true);
+    setIsLoading(false);
+  }, []);
+
+  // load current auth info on launch
+  useEffect(() => {
+    getCurrentTeamAuthInfo().then((info) => {
+      if (info) {
+        setAuthInfo(info);
+        setIsLoggedIn(true);
+      }
+      setIsLoading(false);
+    });
+  }, []);
 
   console.log("AuthProvider rendered, isLoggedIn:", isLoggedIn);
 
   return (
     <AuthContext.Provider
-      value={{ isLoggedIn, login, logout, isLoading, userInfo }}
+      value={{ isLoggedIn, login, logout, isLoading, authInfo }}
     >
       {children}
     </AuthContext.Provider>
