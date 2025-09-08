@@ -1,5 +1,5 @@
 // note, lowercase to match route, must be exactly `harvestmobile://applink`
-import { setOrUpdateUserAuthInfo } from "@/lib/auth";
+import { useAuth } from "@/components/context/AuthContext";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import {
@@ -26,19 +26,12 @@ function normalizeBaseUrl(input: string) {
   return noTrailing;
 }
 
-async function saveAuth(token: string, team: string, baseUrl: string) {
-  await setOrUpdateUserAuthInfo({
-    token,
-    team,
-    apiBaseUrl: baseUrl,
-  });
-}
-
 export default function AppLinkScreen() {
   const { code, baseUrl } = useLocalSearchParams<{
     code?: string;
     baseUrl?: string;
   }>();
+  const { login } = useAuth(); // use auth context so we can notify it of login
   const [status, setStatus] = useState("Authenticating…");
   const [hasFailed, setHasFailed] = useState(false);
   const didRun = useRef(false); // avoid double-run in StrictMode
@@ -94,7 +87,11 @@ export default function AppLinkScreen() {
         }
 
         // Persist securely under auth-{team}
-        await saveAuth(String(token), String(team), normalizedBase);
+        await login({
+          token: String(token),
+          team: String(team),
+          apiBaseUrl: normalizedBase,
+        });
 
         setStatus("Linked successfully. Redirecting…");
 
@@ -106,7 +103,7 @@ export default function AppLinkScreen() {
         Alert.alert("Authentication failed", err?.message ?? "Unknown error");
       }
     })();
-  }, [code, baseUrl]);
+  }, [code, baseUrl, login]);
 
   return (
     <View

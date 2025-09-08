@@ -1,9 +1,20 @@
-import { removeCurrentTeamAuthInfo, TeamAuthInfo } from "@/lib/auth";
-import React, { createContext, useContext, useState } from "react";
+import {
+  getCurrentTeamAuthInfo,
+  removeCurrentTeamAuthInfo,
+  setOrUpdateUserAuthInfo,
+  TeamAuthInfo,
+} from "@/lib/auth";
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 
 interface AuthContextType {
   isLoggedIn: boolean;
-  // only logout, login is handled via applink.tsx
+  login: (authInfo: TeamAuthInfo) => void;
   logout: () => void;
   isLoading: boolean;
   authInfo?: TeamAuthInfo;
@@ -16,18 +27,37 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const [authInfo, setAuthInfo] = useState<TeamAuthInfo | undefined>();
 
-  const logout = () => {
+  const logout = useCallback(() => {
     removeCurrentTeamAuthInfo().then(() => {
       setAuthInfo(undefined);
       setIsLoading(false);
       setIsLoggedIn(false);
     });
-  };
+  }, []);
+
+  const login = useCallback((authInfo: TeamAuthInfo) => {
+    setOrUpdateUserAuthInfo(authInfo).then(() => {
+      setIsLoggedIn(true);
+    });
+  }, []);
+
+  // load current auth info on launch
+  useEffect(() => {
+    getCurrentTeamAuthInfo().then((info) => {
+      if (info) {
+        setAuthInfo(info);
+        setIsLoggedIn(true);
+      }
+      setIsLoading(false);
+    });
+  }, []);
 
   console.log("AuthProvider rendered, isLoggedIn:", isLoggedIn);
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, logout, isLoading, authInfo }}>
+    <AuthContext.Provider
+      value={{ isLoggedIn, login, logout, isLoading, authInfo }}
+    >
       {children}
     </AuthContext.Provider>
   );

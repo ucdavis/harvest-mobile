@@ -8,7 +8,7 @@ import { StyleSheet, TouchableOpacity } from "react-native";
 WebBrowser.maybeCompleteAuthSession(); // needed to close the auth popup
 
 export default function LoginScreen() {
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, login } = useAuth();
 
   if (isLoggedIn) {
     return <Redirect href="/" />;
@@ -22,6 +22,15 @@ export default function LoginScreen() {
     );
   };
 
+  const onFakeLoginPress = async () => {
+    console.log("Fake Login button pressed");
+    login({
+      token: "fake-token",
+      team: "fake-team",
+      apiBaseUrl: "https://harvest-test.caes.ucdavis.edu/mobile",
+    });
+  };
+
   return (
     <ThemedView style={styles.container}>
       <ThemedText type="title" style={styles.title}>
@@ -31,6 +40,11 @@ export default function LoginScreen() {
       <TouchableOpacity style={[styles.button]} onPress={onLoginPress}>
         <ThemedText style={styles.buttonText}>
           {"Login with UC Davis"}
+        </ThemedText>
+      </TouchableOpacity>
+      <TouchableOpacity style={[styles.button]} onPress={onFakeLoginPress}>
+        <ThemedText style={styles.buttonText}>
+          {"Fake Login with UC Decoy"}
         </ThemedText>
       </TouchableOpacity>
     </ThemedView>
