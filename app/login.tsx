@@ -17,7 +17,10 @@ export default function LoginScreen() {
   const onLoginPress = async () => {
     console.log("Login button pressed");
     // initiate the login process
-    await WebBrowser.openBrowserAsync(process.env.EXPO_PUBLIC_LOGIN_URL || "");
+    await WebBrowser.openBrowserAsync(
+      process.env.EXPO_PUBLIC_LOGIN_URL ||
+        "https://harvest-test.azurewebsites.net/caes/mobile/token"
+    );
   };
 
   return (
