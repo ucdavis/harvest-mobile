@@ -1,6 +1,7 @@
 // note, lowercase to match route, must be exactly `harvestmobile://applink`
 import { useAuth } from "@/components/context/AuthContext";
 import { router, useLocalSearchParams } from "expo-router";
+import * as WebBrowser from "expo-web-browser";
 import { useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
@@ -37,6 +38,9 @@ export default function AppLinkScreen() {
   const didRun = useRef(false); // avoid double-run in StrictMode
 
   useEffect(() => {
+    // Close the browser that was opened for authentication
+    WebBrowser.dismissBrowser();
+
     console.log("local params:", { code, baseUrl });
     console.log("didRun:", didRun.current);
 
