@@ -4,14 +4,20 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
-  StyleSheet,
+  Text,
   TextInput,
   TouchableOpacity,
+  View,
 } from "react-native";
 
-import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
-import { IconSymbol } from "@/components/ui/IconSymbol";
+import {
+  CubeIcon,
+  ExclamationTriangleIcon,
+  QuestionMarkCircleIcon,
+  UserIcon,
+  WrenchScrewdriverIcon,
+} from "react-native-heroicons/solid";
+
 import { Rate, createExpenseWithUniqueId } from "@/lib/expense";
 
 export default function ExpenseDetailsScreen() {
@@ -21,7 +27,7 @@ export default function ExpenseDetailsScreen() {
   }>();
 
   // Parse the rate from URL params
-  const rate: Rate = rateParam ? JSON.parse(rateParam) : null;
+  const rate: Rate | null = rateParam ? JSON.parse(rateParam) : null;
 
   const [quantity, setQuantity] = useState("1");
   const [description, setDescription] = useState("");
@@ -34,10 +40,7 @@ export default function ExpenseDetailsScreen() {
     const numericQuantity = parseFloat(quantity);
 
     if (!numericQuantity || numericQuantity <= 0) {
-      Alert.alert(
-        "Invalid Quantity",
-        "Please enter a valid quantity greater than 0."
-      );
+      Alert.alert("Invalid Quantity", "Please enter a valid quantity greater than 0.");
       return;
     }
 
@@ -54,17 +57,14 @@ export default function ExpenseDetailsScreen() {
       quantity: numericQuantity,
       projectId: projectId || "",
       rateId: rate.id,
-      rate: rate,
+      rate,
     });
 
     // Navigate back to addExpenses with the new expense data
     router.dismissAll();
     router.push({
       pathname: "/addExpenses",
-      params: {
-        projectId,
-        newExpense: JSON.stringify(newExpense),
-      },
+      params: { projectId, newExpense: JSON.stringify(newExpense) },
     });
   };
 
@@ -73,312 +73,151 @@ export default function ExpenseDetailsScreen() {
     return (numericQuantity * (rate?.price || 0)).toFixed(2);
   };
 
+  // keep your existing color scheme
   const getRateTypeColor = (type: string) => {
     switch (type.toLowerCase()) {
       case "labor":
-        return "#3B82F6"; // Blue
+        return "#00524C";
       case "equipment":
-        return "#F59E0B"; // Amber
+        return "#8A532F";
       case "other":
-        return "#10B981"; // Emerald
+        return "#003A5D";
       default:
-        return "#6B7280"; // Gray
+        return "#d7d7d7";
     }
   };
 
-  const getRateTypeIcon = (type: string) => {
-    switch (type.toLowerCase()) {
+  const RateIcon = ({ type, color = "white", size = 20 }: { type: string; color?: string; size?: number }) => {
+    switch ((type || "").toLowerCase()) {
       case "labor":
-        return "person.fill";
+        return <UserIcon size={size} color={color} />;
       case "equipment":
-        return "wrench.and.screwdriver.fill";
+        return <WrenchScrewdriverIcon size={size} color={color} />;
       case "other":
-        return "cube.box.fill";
+        return <CubeIcon size={size} color={color} />;
       default:
-        return "questionmark.circle.fill";
+        return <QuestionMarkCircleIcon size={size} color={color} />;
     }
   };
 
   if (!rate) {
     return (
-      <ThemedView style={styles.errorContainer}>
-        <IconSymbol size={48} color="#EF4444" name="exclamationmark.triangle" />
-        <ThemedText style={styles.errorText}>
+      <View className="flex-1 items-center justify-center bg-[#f8f9fa] p-8">
+        <ExclamationTriangleIcon size={48} color="#EF4444" />
+        <Text className="mt-4 text-base text-neutral-600 text-center">
           Rate information is missing
-        </ThemedText>
-        <TouchableOpacity style={styles.backButton} onPress={handleCancel}>
-          <ThemedText style={styles.backButtonText}>Go Back</ThemedText>
+        </Text>
+        <TouchableOpacity
+          className="mt-4 bg-[#5e8a5e] px-6 py-3 rounded-lg"
+          onPress={handleCancel}
+        >
+          <Text className="text-white text-base font-semibold">Go Back</Text>
         </TouchableOpacity>
-      </ThemedView>
+      </View>
     );
   }
 
   return (
     <KeyboardAvoidingView
-      style={styles.container}
+      className="flex-1 bg-secondary-bg"
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
-      <ThemedView style={styles.container}>
+      <View className="flex-1 bg-secondary-bg">
         {/* Header */}
-        <ThemedView style={styles.header}>
-          <TouchableOpacity style={styles.cancelButton} onPress={handleCancel}>
-            <ThemedText style={styles.cancelButtonText}>Cancel</ThemedText>
+        <View className="modal-header">
+          <TouchableOpacity className="py-2" onPress={handleCancel}>
+            <Text className="text-base text-white">Cancel</Text>
           </TouchableOpacity>
-          <ThemedText style={styles.headerTitle}>Expense Details</ThemedText>
-          <TouchableOpacity
-            style={styles.confirmButton}
-            onPress={handleConfirm}
-          >
-            <ThemedText style={styles.confirmButtonText}>Add</ThemedText>
-          </TouchableOpacity>
-        </ThemedView>
+          <Text className="text-lg font-semibold text-white">Expense Details</Text>
+          <View className="w-[60px]" />
+        </View>
 
         {/* Content */}
-        <ThemedView style={styles.content}>
+        <View className="flex-1">
           {/* Selected Rate Info */}
-          <ThemedView style={styles.rateInfoCard}>
-            <ThemedView style={styles.rateHeader}>
-              <ThemedView
-                style={[
-                  styles.typeIcon,
-                  { backgroundColor: getRateTypeColor(rate.type) },
-                ]}
+          <View className="bg-white p-4 mb-2 border-b-2" style={{ borderColor: getRateTypeColor(rate.type) }}>
+            <View className="flex-row items-center">
+              <View
+                className="mr-3 h-8 w-8 items-center justify-center rounded-full"
+                style={{ backgroundColor: getRateTypeColor(rate.type) }}
               >
-                <IconSymbol
-                  size={20}
-                  color="white"
-                  name={getRateTypeIcon(rate.type)}
-                />
-              </ThemedView>
-              <ThemedView style={styles.rateInfo}>
-                <ThemedText style={styles.rateType}>{rate.type}</ThemedText>
-                <ThemedText style={styles.rateDescription}>
+                <RateIcon type={rate.type} color="white" size={16} />
+              </View>
+              <View className="flex-1">
+                <Text className="text-base font-medium uppercase tracking-tight text-primary-font/40">
+                  {rate.type}
+                </Text>
+                <Text className="text-xl font-semibold text-primary-font">
                   {rate.description}
-                </ThemedText>
-                <ThemedText style={styles.ratePrice}>
-                  ${rate.price} per {rate.unit}
-                </ThemedText>
-              </ThemedView>
-            </ThemedView>
-          </ThemedView>
+                </Text>
 
-          {/* Quantity Input */}
-          <ThemedView style={styles.inputSection}>
-            <ThemedText style={styles.inputLabel}>
-              QUANTITY ({rate.unit})
-            </ThemedText>
-            <TextInput
-              style={styles.quantityInput}
-              value={quantity}
-              onChangeText={setQuantity}
-              placeholder="Enter quantity"
-              placeholderTextColor="#999"
-              keyboardType="numeric"
-              selectTextOnFocus
-            />
-          </ThemedView>
+              </View>
+              <View className="items-end">
+                <Text className="text-lg font-bold text-primary-font">
+                  ${rate.price}
+                </Text>
+                <Text className="text-sm text-primary-font/40">
+                  per {rate.unit}
+                </Text>
+              </View>
+            </View>
+          </View>
+          <View className="p-4">
 
-          {/* Description Input */}
-          <ThemedView style={styles.inputSection}>
-            <ThemedText style={styles.inputLabel}>
-              DESCRIPTION (OPTIONAL)
-            </ThemedText>
-            <TextInput
-              style={styles.descriptionInput}
-              value={description}
-              onChangeText={setDescription}
-              placeholder={`Enter custom description or leave blank to use "${rate.description}"`}
-              placeholderTextColor="#999"
-              multiline
-            />
-          </ThemedView>
+            {/* Quantity Input */}
+            <View className="mb-6">
+              <Text className="text-[12px] font-semibold text-neutral-500 tracking-tight mb-2">
+                Quantity ({rate.unit})
+              </Text>
+              <TextInput
+                className="bg-white rounded-lg p-4 text-[18px] font-semibold border border-neutral-200 text-center"
+                value={quantity}
+                onChangeText={setQuantity}
+                placeholder="Enter quantity"
+                placeholderTextColor="#999"
+                keyboardType="numeric"
+                selectTextOnFocus
+              />
+            </View>
 
-          {/* Total Cost */}
-          <ThemedView style={styles.totalSection}>
-            <ThemedView style={styles.totalRow}>
-              <ThemedText style={styles.totalLabel}>Total Cost</ThemedText>
-              <ThemedText style={styles.totalAmount}>
+            {/* Description Input */}
+            <View className="mb-6">
+              <Text className="text-sm font-semibold text-neutral-500 tracking-tight mb-2">
+                Description (optional)
+              </Text>
+              <TextInput
+                className="bg-white rounded-lg p-4 text-base border border-neutral-200 min-h-[80px]"
+                value={description}
+                onChangeText={setDescription}
+                placeholder={`Enter custom description or leave blank to use "${rate.description}"`}
+                placeholderTextColor="#999"
+                multiline
+                textAlignVertical="top"
+              />
+            </View>
+
+
+
+          </View>
+          <View className="p-4 mb-4 bg-white border-t mt-auto border-primary-border">
+            <View className="flex-row items-center justify-between mb-1">
+              <Text className="text-xl font-semibold text-primary-font">Total Cost</Text>
+              <Text className="text-xl font-extrabold" style={{ color: "#5e8a5e" }}>
                 ${getTotalCost()}
-              </ThemedText>
-            </ThemedView>
-            <ThemedText style={styles.totalBreakdown}>
+              </Text>
+            </View>
+            <Text className="text-lg font-semibold text-primary-font/40 text-start mb-2">
               {quantity || "0"} {rate.unit} × ${rate.price} = ${getTotalCost()}
-            </ThemedText>
-          </ThemedView>
-        </ThemedView>
-      </ThemedView>
+            </Text>
+            <TouchableOpacity className="harvest-button" onPress={handleConfirm}>
+              <Text className="harvest-button-text" >
+                Add Expense
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+        </View>
+      </View>
     </KeyboardAvoidingView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#f8f9fa",
-  },
-  errorContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#f8f9fa",
-    padding: 32,
-  },
-  errorText: {
-    marginTop: 16,
-    fontSize: 16,
-    color: "#666",
-    textAlign: "center",
-  },
-  backButton: {
-    marginTop: 16,
-    backgroundColor: "#5e8a5e",
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 8,
-  },
-  backButtonText: {
-    color: "white",
-    fontSize: 16,
-    fontWeight: "600",
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    backgroundColor: "white",
-    borderBottomWidth: 1,
-    borderBottomColor: "#e0e0e0",
-  },
-  cancelButton: {
-    paddingVertical: 8,
-  },
-  cancelButtonText: {
-    fontSize: 16,
-    color: "#007AFF",
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: "600",
-    color: "#333",
-  },
-  confirmButton: {
-    paddingVertical: 8,
-  },
-  confirmButtonText: {
-    fontSize: 16,
-    color: "#5e8a5e",
-    fontWeight: "600",
-  },
-  content: {
-    flex: 1,
-    padding: 16,
-  },
-  rateInfoCard: {
-    backgroundColor: "white",
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 24,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  rateHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  typeIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: 16,
-  },
-  rateInfo: {
-    flex: 1,
-  },
-  rateType: {
-    fontSize: 12,
-    fontWeight: "600",
-    color: "#666",
-    textTransform: "uppercase",
-    letterSpacing: 0.5,
-    marginBottom: 4,
-  },
-  rateDescription: {
-    fontSize: 18,
-    fontWeight: "600",
-    color: "#333",
-    marginBottom: 4,
-  },
-  ratePrice: {
-    fontSize: 14,
-    color: "#666",
-  },
-  inputSection: {
-    marginBottom: 24,
-  },
-  inputLabel: {
-    fontSize: 12,
-    fontWeight: "600",
-    color: "#666",
-    letterSpacing: 0.5,
-    marginBottom: 8,
-  },
-  quantityInput: {
-    backgroundColor: "white",
-    borderRadius: 8,
-    padding: 16,
-    fontSize: 18,
-    fontWeight: "600",
-    borderWidth: 1,
-    borderColor: "#e0e0e0",
-    textAlign: "center",
-  },
-  descriptionInput: {
-    backgroundColor: "white",
-    borderRadius: 8,
-    padding: 16,
-    fontSize: 16,
-    borderWidth: 1,
-    borderColor: "#e0e0e0",
-    minHeight: 80,
-    textAlignVertical: "top",
-  },
-  totalSection: {
-    backgroundColor: "white",
-    borderRadius: 12,
-    padding: 16,
-    marginTop: "auto",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  totalRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 8,
-  },
-  totalLabel: {
-    fontSize: 18,
-    fontWeight: "600",
-    color: "#333",
-  },
-  totalAmount: {
-    fontSize: 24,
-    fontWeight: "700",
-    color: "#5e8a5e",
-  },
-  totalBreakdown: {
-    fontSize: 14,
-    color: "#666",
-    textAlign: "center",
-  },
-});

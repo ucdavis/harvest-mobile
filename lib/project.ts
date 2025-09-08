@@ -30,4 +30,29 @@ export const fakeProjects: Project[] = [
     name: "Quantum Materials for Energy Storage",
     piName: "Dr. Amina Yusuf",
   },
+  {
+    id: "proj-006",
+    name: "Next-Generation Biofuels Development",
+    piName: "Dr. Carlos Mendoza",
+  },
+  {
+    id: "proj-007",
+    name: "Precision Irrigation with IoT Sensors",
+    piName: "Dr. Sophia Li",
+  },
+  {
+    id: "proj-008",
+    name: "Genomics of Drought-Resistant Crops",
+    piName: "Dr. Rajesh Kumar",
+  },
+  {
+    id: "proj-009",
+    name: "Marine Algae for Carbon Sequestration",
+    piName: "Dr. Hannah Stein",
+  },
+  {
+    id: "proj-010",
+    name: "Smart Greenhouse Automation Systems",
+    piName: "Prof. David Okafor",
+  },
 ];
