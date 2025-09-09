@@ -28,7 +28,7 @@ stages:
           # try caching but we can remove if it causes issues
           - task: Cache@2
             inputs:
-              key: 'npm | "$(Agent.OS)" | package-lock.json'
+              key: 'npm | "$(Agent.OS)" | $(Build.SourcesDirectory)/package-lock.json'
               path: "$(Pipeline.Workspace)/.npm"
               restoreKeys: 'npm | "$(Agent.OS)" |'
             displayName: "Cache NPM"
@@ -41,6 +41,7 @@ stages:
 
       # --- iOS PREVIEW for PRs ---
       - job: ios_preview
+        dependsOn: checks
         displayName: "iOS (preview) on PR"
         condition: eq(variables['Build.Reason'], 'PullRequest')
         pool: { vmImage: "ubuntu-latest" }
@@ -60,6 +61,7 @@ stages:
 
       # --- iOS PROD on main ---
       - job: ios_prod
+        dependsOn: checks
         displayName: "iOS (production)"
         condition: eq(variables['Build.SourceBranch'], 'refs/heads/main')
         pool: { vmImage: "ubuntu-latest" }
