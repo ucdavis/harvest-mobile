@@ -5,10 +5,10 @@ import { ScrollView, View } from "react-native";
 export default function RecentProjectsScreen() {
   return (
     <ScrollView stickyHeaderIndices={[0]} className="flex-1 flex-col">
-      {/* Sticky header */}
+
       <TeamChooser onClose={() => console.log("Team chooser closed")} />
 
-      {/* Scrollable content */}
+
       <View className="p-4">
         <ProjectCard
           id="proj-001"
