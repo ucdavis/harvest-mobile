@@ -13,14 +13,18 @@
         "usesNonExemptEncryption": false
       },
       "supportsTablet": true,
-      "bundleIdentifier": "com.ucdavis.harvest-mobile"
+      "bundleIdentifier": "com.ucdavis.harvest-mobile",
+      "runtimeVersion": "1.0.0"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "runtimeVersion": {
+        "policy": "appVersion"
+      }
     },
     "web": {
       "bundler": "metro",
@@ -50,6 +54,9 @@
         "projectId": "2b6afc00-a0f1-4df2-b0f0-37df66f002e0"
       }
     },
-    "owner": "ucdavis"
+    "owner": "ucdavis",
+    "updates": {
+      "url": "https://u.expo.dev/2b6afc00-a0f1-4df2-b0f0-37df66f002e0"
+    }
   }
 }
