@@ -22,7 +22,7 @@ async function fetchRatesFromApi() {
 export const ratesApiQueryOptions = () =>
   queryOptions({
     queryKey: ["rates"] as const,
-    queryFn: fetchRatesFromApi,
+    queryFn: fetchFakeRatesFromApi,
     staleTime: 12 * HOUR_IN_MS,
   });
 

@@ -1,5 +1,7 @@
 import { focusManager, onlineManager } from "@tanstack/react-query";
 
+import { projectsApiQueryOptions } from "@/services/queries/projects";
+import { ratesApiQueryOptions } from "@/services/queries/rates";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import * as Network from "expo-network";
 import { useEffect } from "react";
@@ -28,11 +30,19 @@ export function QueryContext({ children }: { children: React.ReactNode }) {
     return () => sub.remove();
   }, []);
 
-  // refetch stuff on focus
+  // refetch stuff on focus if needed
   useEffect(() => {
-    const sub = AppState.addEventListener("change", (state) => {
+    const sub = AppState.addEventListener("change", async (state) => {
       if (state === "active") {
-        // TODO: call ensureQueryData on things
+        await queryClient.ensureQueryData({
+          ...projectsApiQueryOptions(),
+          revalidateIfStale: true,
+        });
+
+        await queryClient.ensureQueryData({
+          ...ratesApiQueryOptions(),
+          revalidateIfStale: true,
+        });
       }
     });
     return () => sub.remove();
