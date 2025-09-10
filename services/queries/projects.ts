@@ -1,31 +1,38 @@
 import { HOUR_IN_MS } from "@/components/context/queryClient";
-import { fakeProjects, Project } from "@/lib/project";
+import { TeamAuthInfo } from "@/lib/auth";
+import { Project } from "@/lib/project";
 import { queryOptions, useQuery } from "@tanstack/react-query";
 
-async function fetchFakeProjectsFromApi() {
-  // we'll just fake a few for now
-  // TODO: remove this!
-  const projects = [...fakeProjects];
+async function fetchProjectsFromApi(authInfo?: TeamAuthInfo) {
+  if (!authInfo) throw new Error("No auth info");
 
-  return projects;
-}
+  const res = await fetch(`${authInfo.apiBaseUrl}/api/mobile/projects`, {
+    headers: {
+      Authorization: `Bearer ${authInfo.token}`,
+      "Content-Type": "application/json",
+    },
+  });
 
-async function fetchProjectsFromApi() {
-  // TODO: actually have an API and refactor
-  const res = await fetch("http://harvest.caes.ucdavis.edu/api/projects");
+  if (!res.ok) {
+    throw new Error(
+      `Failed to fetch projects: ${res.status} ${res.statusText}`
+    );
+  }
+
   const projects = (await res.json()) as Project[];
 
   return projects;
 }
 
 // uses api data and caches it
-export const projectsApiQueryOptions = () =>
+export const projectsApiQueryOptions = (authInfo?: TeamAuthInfo) =>
   queryOptions({
-    queryKey: ["projects"] as const,
-    queryFn: fetchFakeProjectsFromApi,
+    queryKey: ["projects", authInfo?.team] as const,
+    queryFn: () => fetchProjectsFromApi(authInfo),
     staleTime: 12 * HOUR_IN_MS,
+    enabled: !!authInfo, // only run query if we have auth info
   });
 
-export const useProjects = () => {
-  return useQuery(projectsApiQueryOptions());
+export const useProjects = (authInfo?: TeamAuthInfo) => {
+  return useQuery(projectsApiQueryOptions(authInfo));
 };

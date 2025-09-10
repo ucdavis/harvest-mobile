@@ -16,13 +16,15 @@ import {
   XCircleIcon,
 } from "react-native-heroicons/outline";
 
+import { useAuth } from "@/components/context/AuthContext";
 import { ProjectCard } from "@/components/ui/ProjectCard";
 import { TeamChooser } from "@/components/ui/TeamChooser";
 import { Project } from "@/lib/project";
 import { useProjects } from "@/services/queries/projects";
 
 export default function AllProjectsScreen() {
-  const projectQuery = useProjects();
+  const { authInfo } = useAuth();
+  const projectQuery = useProjects(authInfo);
   const queryClient = useQueryClient();
   const router = useRouter();
   const [refreshing, setRefreshing] = useState(false);
@@ -44,7 +46,9 @@ export default function AllProjectsScreen() {
 
   const onRefresh = async () => {
     setRefreshing(true);
-    await queryClient.refetchQueries({ queryKey: ["projects"] });
+    await queryClient.refetchQueries({
+      queryKey: ["projects", authInfo?.team],
+    });
     setRefreshing(false);
   };
 
@@ -60,8 +64,8 @@ export default function AllProjectsScreen() {
 
   const renderProjectCard = ({ item }: { item: Project }) => (
     <ProjectCard
-      id={item.id}              // internal ID (shows in small text)
-      projectId={item.name}     // visible code
+      id={item.id} // internal ID (shows in small text)
+      projectId={item.name} // visible code
       piName={item.piName}
       onPress={() => handleProjectPress(item)}
       onEdit={() => handleProjectPress(item)}
@@ -116,7 +120,6 @@ export default function AllProjectsScreen() {
             }
           />
         </View>
-
       ) : projectQuery.data && projectQuery.data.length > 0 ? (
         <View className="items-center justify-center py-16 px-5">
           <MagnifyingGlassIcon size={80} color="#808080" />

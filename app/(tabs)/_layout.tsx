@@ -4,8 +4,6 @@ import { Platform } from "react-native";
 
 import { useAuth } from "@/components/context/AuthContext";
 import { HapticTab } from "@/components/HapticTab";
-import TabBarBackground from "@/components/ui/TabBarBackground";
-import { useColorScheme } from "@/hooks/useColorScheme";
 
 // ✅ Heroicons (solid set)
 import {
@@ -15,8 +13,9 @@ import {
 } from "react-native-heroicons/solid";
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, authInfo } = useAuth();
+
+  // console.log("auth info", authInfo);
 
   if (!isLoggedIn) {
     return <Redirect href="/login" />;
@@ -31,7 +30,6 @@ export default function TabLayout() {
         headerStyle: { backgroundColor: "#266041" },
         headerTintColor: "#fff",
         tabBarButton: HapticTab,
-        tabBarBackground: TabBarBackground,
         tabBarStyle: Platform.select({
           ios: { position: "absolute" },
           default: {},
