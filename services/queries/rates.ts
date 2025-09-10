@@ -1,31 +1,36 @@
 import { HOUR_IN_MS } from "@/components/context/queryClient";
-import { fakeRates, Rate } from "@/lib/expense";
+import { TeamAuthInfo } from "@/lib/auth";
+import { Rate } from "@/lib/expense";
 import { queryOptions, useQuery } from "@tanstack/react-query";
 
-async function fetchFakeRatesFromApi() {
-  // we'll just fake a few for now
-  // TODO: remove this!
-  const rates = [...fakeRates];
+async function fetchRatesFromApi(authInfo?: TeamAuthInfo) {
+  if (!authInfo) throw new Error("No auth info");
 
-  return rates;
-}
+  const res = await fetch(`${authInfo.apiBaseUrl}/api/mobile/activerates`, {
+    headers: {
+      Authorization: `Bearer ${authInfo.token}`,
+      "Content-Type": "application/json",
+    },
+  });
 
-async function fetchRatesFromApi() {
-  // TODO: actually have an API and refactor
-  const res = await fetch("http://harvest.caes.ucdavis.edu/api/rates");
+  if (!res.ok) {
+    throw new Error(`Failed to fetch rates: ${res.status} ${res.statusText}`);
+  }
+
   const rates = (await res.json()) as Rate[];
 
   return rates;
 }
 
 // uses api data and caches it
-export const ratesApiQueryOptions = () =>
+export const ratesApiQueryOptions = (authInfo?: TeamAuthInfo) =>
   queryOptions({
-    queryKey: ["rates"] as const,
-    queryFn: fetchFakeRatesFromApi,
+    queryKey: ["rates", authInfo?.team] as const,
+    queryFn: () => fetchRatesFromApi(authInfo),
     staleTime: 12 * HOUR_IN_MS,
+    enabled: !!authInfo, // only run query if we have auth info
   });
 
-export const useRates = () => {
-  return useQuery(ratesApiQueryOptions());
+export const useRates = (authInfo?: TeamAuthInfo) => {
+  return useQuery(ratesApiQueryOptions(authInfo));
 };

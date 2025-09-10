@@ -17,12 +17,14 @@ import {
   WrenchScrewdriverIcon,
 } from "react-native-heroicons/solid";
 
+import { useAuth } from "@/components/context/AuthContext";
 import { Rate } from "@/lib/expense";
 import { useRates } from "@/services/queries/rates";
 
 export default function RateSelectScreen() {
+  const { authInfo } = useAuth();
   const { projectId } = useLocalSearchParams<{ projectId: string }>();
-  const { data: rates, isLoading, error, refetch } = useRates();
+  const { data: rates, isLoading, error, refetch } = useRates(authInfo);
 
   const handleRateSelect = (rate: Rate) => {
     router.push({
@@ -122,9 +124,7 @@ export default function RateSelectScreen() {
         <TouchableOpacity onPress={handleCancel} className="py-2">
           <Text className="text-base text-white">Cancel</Text>
         </TouchableOpacity>
-        <Text className="text-lg font-semibold text-white">
-          Select Rate
-        </Text>
+        <Text className="text-lg font-semibold text-white">Select Rate</Text>
         <View className="w-[60px]" />
       </View>
 
@@ -140,7 +140,6 @@ export default function RateSelectScreen() {
     </View>
   );
 }
-
 
 const getRateTypeColor = (type: string) => {
   switch (type.toLowerCase()) {
