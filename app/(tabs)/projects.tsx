@@ -24,7 +24,7 @@ export default function AllProjectsScreen() {
 
   return (
     <View className="flex-1">
-      <TeamChooser onClose={() => console.log("Team chooser closed")} />
+      <TeamChooser />
       <ProjectsList
         projects={projectQuery.data || []}
         queryKey={["projects", authInfo?.team]}

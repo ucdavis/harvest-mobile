@@ -22,7 +22,7 @@ export default function RecentProjectsScreen() {
 
   return (
     <View className="flex-1">
-      <TeamChooser onClose={() => console.log("Team chooser closed")} />
+      <TeamChooser />
 
       <ProjectsList
         projects={recentProjects || []}
