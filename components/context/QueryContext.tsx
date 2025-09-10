@@ -1,7 +1,5 @@
 import { focusManager, onlineManager } from "@tanstack/react-query";
 
-import { projectsApiQueryOptions } from "@/services/queries/projects";
-import { ratesApiQueryOptions } from "@/services/queries/rates";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import * as Network from "expo-network";
 import { useEffect } from "react";
@@ -34,14 +32,16 @@ export function QueryContext({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const sub = AppState.addEventListener("change", async (state) => {
       if (state === "active") {
-        await queryClient.ensureQueryData({
-          ...projectsApiQueryOptions(),
-          revalidateIfStale: true,
+        // Refetch all project queries (for any team) if they exist and are stale
+        await queryClient.refetchQueries({
+          queryKey: ["projects"],
+          stale: true, // only refetch if data is stale
         });
 
-        await queryClient.ensureQueryData({
-          ...ratesApiQueryOptions(),
-          revalidateIfStale: true,
+        // Refetch all rate queries if they exist and are stale
+        await queryClient.refetchQueries({
+          queryKey: ["rates"],
+          stale: true,
         });
       }
     });
