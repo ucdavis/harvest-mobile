@@ -4,7 +4,7 @@ import { TeamChooser } from "@/components/ui/TeamChooser";
 import { Project } from "@/lib/project";
 import { useRecentProjects } from "@/services/queries/projects";
 import { router } from "expo-router";
-import { ScrollView } from "react-native";
+import { View } from "react-native";
 
 export default function RecentProjectsScreen() {
   const { authInfo } = useAuth();
@@ -21,8 +21,7 @@ export default function RecentProjectsScreen() {
   };
 
   return (
-    <ScrollView stickyHeaderIndices={[0]} className="flex-1 flex-col">
-      {/* Sticky header */}
+    <View className="flex-1">
       <TeamChooser onClose={() => console.log("Team chooser closed")} />
 
       <ProjectsList
@@ -30,6 +29,6 @@ export default function RecentProjectsScreen() {
         queryKey={["projects", authInfo?.team, "recent"]}
         onProjectPress={handleProjectPress}
       />
-    </ScrollView>
+    </View>
   );
 }
