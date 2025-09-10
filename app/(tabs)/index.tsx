@@ -1,8 +1,12 @@
+import { useAuth } from "@/components/context/AuthContext";
 import { ProjectCard } from "@/components/ui/ProjectCard";
 import { TeamChooser } from "@/components/ui/TeamChooser";
+import { useRecentProjects } from "@/services/queries/projects";
 import { ScrollView, View } from "react-native";
 
 export default function RecentProjectsScreen() {
+  const { authInfo } = useAuth();
+  const { data: recentProjects } = useRecentProjects(authInfo);
   return (
     <ScrollView stickyHeaderIndices={[0]} className="flex-1 flex-col">
       {/* Sticky header */}
@@ -10,18 +14,15 @@ export default function RecentProjectsScreen() {
 
       {/* Scrollable content */}
       <View className="p-4">
-        <ProjectCard
-          id="proj-001"
-          projectId="AE-12234"
-          piName="Brian McEligot"
-          onEdit={() => console.log("edit pressed")}
-        />
-        <ProjectCard
-          id="proj-002"
-          projectId="AE-27366 Corn Trials 2025"
-          piName="Brian McEligot"
-          onEdit={() => console.log("edit pressed")}
-        />
+        {recentProjects?.map((project) => (
+          <ProjectCard
+            key={project.id}
+            id={project.id}
+            projectId={project.id}
+            piName={project.piName}
+            onEdit={() => console.log("edit pressed")}
+          />
+        ))}
       </View>
     </ScrollView>
   );

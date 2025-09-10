@@ -20,3 +20,20 @@ export const projectsApiQueryOptions = (authInfo?: TeamAuthInfo) =>
 export const useProjects = (authInfo?: TeamAuthInfo) => {
   return useQuery(projectsApiQueryOptions(authInfo));
 };
+
+// now for recent projects, we'll be more agressive in caching here since it's not at critical and more time sensitive
+async function fetchRecentProjectsFromApi(authInfo?: TeamAuthInfo) {
+  return fetchFromApi<Project[]>("/api/mobile/recentprojects", authInfo);
+}
+
+export const recentProjectsApiQueryOptions = (authInfo?: TeamAuthInfo) =>
+  queryOptions({
+    queryKey: ["projects", authInfo?.team, "recent"] as const,
+    queryFn: () => fetchRecentProjectsFromApi(authInfo),
+    staleTime: 5 * HOUR_IN_MS,
+    enabled: !!authInfo, // only run query if we have auth info
+  });
+
+export const useRecentProjects = (authInfo?: TeamAuthInfo) => {
+  return useQuery(recentProjectsApiQueryOptions(authInfo));
+};
