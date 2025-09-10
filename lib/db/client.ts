@@ -18,23 +18,6 @@ export async function getDb(): Promise<SQLite.SQLiteDatabase> {
     // schema init (do it here so everyone shares the same path)
     await db.withExclusiveTransactionAsync(async (tx) => {
       // TODO: create expenses outbox table to keep record of unsync'd expenses
-
-      // TODO: get rid of rates table and refactor to use query cache
-      await tx.execAsync(`
-        CREATE TABLE IF NOT EXISTS rates (
-          id          TEXT PRIMARY KEY,
-          type        TEXT NOT NULL,
-          description TEXT NOT NULL,
-          unit        TEXT NOT NULL,
-          price       REAL NOT NULL
-        );
-      `);
-      await tx.execAsync(
-        `CREATE INDEX IF NOT EXISTS idx_rates_type ON rates(type);`
-      );
-      await tx.execAsync(
-        `CREATE INDEX IF NOT EXISTS idx_rates_description ON rates(description);`
-      );
     });
 
     dbInstance = db;
