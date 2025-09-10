@@ -1,33 +1,11 @@
 import { HOUR_IN_MS } from "@/components/context/queryClient";
-import { getCurrentTeamAuthInfo, TeamAuthInfo } from "@/lib/auth";
+import { TeamAuthInfo } from "@/lib/auth";
 import { Project } from "@/lib/project";
 import { queryOptions, useQuery } from "@tanstack/react-query";
+import { fetchFromApi } from "../api";
 
 async function fetchProjectsFromApi(authInfo?: TeamAuthInfo) {
-  if (!authInfo) {
-    // try to get auth info from local storage
-    authInfo = (await getCurrentTeamAuthInfo()) || undefined;
-
-    // still no, throw an error
-    if (!authInfo) throw new Error("No auth info");
-  }
-
-  const res = await fetch(`${authInfo.apiBaseUrl}/api/mobile/projects`, {
-    headers: {
-      Authorization: `Bearer ${authInfo.token}`,
-      "Content-Type": "application/json",
-    },
-  });
-
-  if (!res.ok) {
-    throw new Error(
-      `Failed to fetch projects: ${res.status} ${res.statusText}`
-    );
-  }
-
-  const projects = (await res.json()) as Project[];
-
-  return projects;
+  return fetchFromApi<Project[]>("/api/mobile/projects", authInfo);
 }
 
 // uses api data and caches it

@@ -1,31 +1,11 @@
 import { HOUR_IN_MS } from "@/components/context/queryClient";
-import { getCurrentTeamAuthInfo, TeamAuthInfo } from "@/lib/auth";
+import { TeamAuthInfo } from "@/lib/auth";
 import { Rate } from "@/lib/expense";
 import { queryOptions, useQuery } from "@tanstack/react-query";
+import { fetchFromApi } from "../api";
 
 async function fetchRatesFromApi(authInfo?: TeamAuthInfo) {
-  if (!authInfo) {
-    // try to get auth info from local storage
-    authInfo = (await getCurrentTeamAuthInfo()) || undefined;
-
-    // still no, throw an error
-    if (!authInfo) throw new Error("No auth info");
-  }
-
-  const res = await fetch(`${authInfo.apiBaseUrl}/api/mobile/activerates`, {
-    headers: {
-      Authorization: `Bearer ${authInfo.token}`,
-      "Content-Type": "application/json",
-    },
-  });
-
-  if (!res.ok) {
-    throw new Error(`Failed to fetch rates: ${res.status} ${res.statusText}`);
-  }
-
-  const rates = (await res.json()) as Rate[];
-
-  return rates;
+  return fetchFromApi<Rate[]>("/api/mobile/activerates", authInfo);
 }
 
 // uses api data and caches it
