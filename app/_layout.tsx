@@ -9,6 +9,7 @@ import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
 
 import { AuthProvider } from "@/components/context/AuthContext";
+import { ExpenseProvider } from "@/components/context/ExpenseContext";
 import { QueryContext } from "@/components/context/QueryContext";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { useInitDb } from "@/hooks/useInitDb";
@@ -20,10 +21,13 @@ function RootLayoutNav() {
 
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      <Stack screenOptions={{ headerShown: false,
-        headerStyle: { backgroundColor: "#266041" },
-        headerTintColor: "#fff",
-       }}>
+      <Stack
+        screenOptions={{
+          headerShown: false,
+          headerStyle: { backgroundColor: "#266041" },
+          headerTintColor: "#fff",
+        }}
+      >
         <Stack.Screen name="login" />
         <Stack.Screen name="(tabs)" options={{ title: "Harvest" }} />
         <Stack.Screen
@@ -68,7 +72,9 @@ export default function RootLayout() {
   return (
     <QueryContext>
       <AuthProvider>
-        <RootLayoutNav />
+        <ExpenseProvider>
+          <RootLayoutNav />
+        </ExpenseProvider>
       </AuthProvider>
     </QueryContext>
   );

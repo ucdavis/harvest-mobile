@@ -14,55 +14,29 @@ import {
   TrashIcon,
 } from "react-native-heroicons/solid";
 
-import { Expense, createExpenseWithUniqueId } from "@/lib/expense";
+import { useExpenses } from "@/components/context/ExpenseContext";
 
 export default function AddExpenseScreen() {
-  const { projectId, projectName, newExpense } = useLocalSearchParams<{
+  const { projectId, projectName } = useLocalSearchParams<{
     projectId: string;
     projectName: string;
     piName: string;
-    newExpense?: string;
   }>();
 
   const [description, setDescription] = useState("");
-  const [expenses, setExpenses] = useState<Expense[]>([
-    createExpenseWithUniqueId({
-      // TODO: testing
-      type: "labor",
-      description: "",
-      price: 100,
-      quantity: 1,
-      projectId: projectId,
-      rateId: "rate_1",
-      rate: {
-        unit: "hours",
-        description: "RR Farm Labor",
-        price: 100,
-        type: "equipment",
-        id: "rate_1",
-        isPassthrough: false,
-      },
-    }),
-  ]);
+  const { expenses, removeExpense, clearExpenses } = useExpenses();
 
+  // Clear expenses on mount (when navigating to a new project)
   useEffect(() => {
-    if (newExpense) {
-      try {
-        const parsedExpense: Expense = JSON.parse(newExpense);
-        setExpenses((prev) => [...prev, parsedExpense]);
-        router.setParams({ newExpense: undefined });
-      } catch (error) {
-        console.error("Failed to parse new expense:", error);
-      }
-    }
-  }, [newExpense]);
+    clearExpenses();
+  }, [clearExpenses]); // Include clearExpenses in dependencies
 
   const handleAddExpenses = () => {
     router.push({ pathname: "/rateSelect", params: { projectId } });
   };
 
   const handleDeleteExpense = (uniqueId: string) => {
-    setExpenses((prev) => prev.filter((e) => e.uniqueId !== uniqueId));
+    removeExpense(uniqueId);
   };
 
   const handleSubmit = () => {
