@@ -28,25 +28,7 @@ export function QueryContext({ children }: { children: React.ReactNode }) {
     return () => sub.remove();
   }, []);
 
-  // refetch stuff on focus if needed
-  useEffect(() => {
-    const sub = AppState.addEventListener("change", async (state) => {
-      if (state === "active") {
-        // Refetch all project queries (for any team) if they exist and are stale
-        await queryClient.refetchQueries({
-          queryKey: ["projects"],
-          stale: true, // only refetch if data is stale
-        });
-
-        // Refetch all rate queries if they exist and are stale
-        await queryClient.refetchQueries({
-          queryKey: ["rates"],
-          stale: true,
-        });
-      }
-    });
-    return () => sub.remove();
-  }, []);
+  // rely on focusManager + refetchOnWindowFocus (defaultOptions) to refetch stale queries
 
   return (
     <PersistQueryClientProvider
