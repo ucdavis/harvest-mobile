@@ -6,6 +6,7 @@ export type Rate = {
   description: string; // what the rate is for, like "Tractor X"
   unit: string; // e.g. hours, days
   price: number;
+  isPassthrough: boolean;
 };
 
 export type Expense = {
@@ -41,6 +42,7 @@ export const fakeRates: Rate[] = [
     description: "Senior Laborer",
     unit: "hours",
     price: 125.0,
+    isPassthrough: false,
   },
   {
     id: "rate-002",
@@ -48,6 +50,7 @@ export const fakeRates: Rate[] = [
     description: "John Deere 6120M Tractor",
     unit: "hours",
     price: 85.5,
+    isPassthrough: false,
   },
   {
     id: "rate-003",
@@ -55,6 +58,7 @@ export const fakeRates: Rate[] = [
     description: "Field Technician",
     unit: "hours",
     price: 45.0,
+    isPassthrough: false,
   },
   {
     id: "rate-004",
@@ -62,6 +66,7 @@ export const fakeRates: Rate[] = [
     description: "Kubota Excavator U35-4",
     unit: "days",
     price: 350.0,
+    isPassthrough: false,
   },
   {
     id: "rate-005",
@@ -69,5 +74,6 @@ export const fakeRates: Rate[] = [
     description: "Materials and Supplies",
     unit: "per item",
     price: 25.75,
+    isPassthrough: false,
   },
 ];

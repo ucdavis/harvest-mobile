@@ -4,18 +4,18 @@ import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client
 import * as Network from "expo-network";
 import { useEffect } from "react";
 import { AppState } from "react-native";
-import { queryClient, reactQueryPersister } from "./queryClient";
+import { DAY_IN_MS, queryClient, reactQueryPersister } from "./queryClient";
 
 export function QueryContext({ children }: { children: React.ReactNode }) {
   // Let query know about app focus (since it can't use window)
   useEffect(() => {
-    const sub = AppState.addEventListener("change", (state) => {
-      focusManager.setFocused(state === "active");
-    });
+    const sub = AppState.addEventListener("change", (state) =>
+      focusManager.setFocused(state === "active")
+    );
     return () => sub.remove();
   }, []);
 
-  // Online/Offline wiring
+  // Let query know about offline status
   useEffect(() => {
     Network.getNetworkStateAsync().then((s) => {
       onlineManager.setOnline(!!(s.isConnected && s.isInternetReachable));
@@ -28,15 +28,17 @@ export function QueryContext({ children }: { children: React.ReactNode }) {
     return () => sub.remove();
   }, []);
 
+  // rely on focusManager + refetchOnWindowFocus (defaultOptions) to refetch stale queries
+
   return (
     <PersistQueryClientProvider
       client={queryClient}
-      persistOptions={{ persister: reactQueryPersister }}
-      onSuccess={() =>
-        queryClient
-          .resumePausedMutations()
-          .then(() => queryClient.invalidateQueries())
-      }
+      persistOptions={{
+        persister: reactQueryPersister,
+        maxAge: 21 * DAY_IN_MS,
+        buster: "rqprovider:harvest:prod:v1",
+      }}
+      onSuccess={() => queryClient.resumePausedMutations()}
     >
       {children}
     </PersistQueryClientProvider>

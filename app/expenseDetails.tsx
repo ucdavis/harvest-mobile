@@ -18,6 +18,7 @@ import {
   WrenchScrewdriverIcon,
 } from "react-native-heroicons/solid";
 
+import { useExpenses } from "@/components/context/ExpenseContext";
 import { Rate, createExpenseWithUniqueId } from "@/lib/expense";
 
 export default function ExpenseDetailsScreen() {
@@ -28,6 +29,7 @@ export default function ExpenseDetailsScreen() {
 
   // Parse the rate from URL params
   const rate: Rate | null = rateParam ? JSON.parse(rateParam) : null;
+  const { addExpense } = useExpenses();
 
   const [quantity, setQuantity] = useState("1");
   const [description, setDescription] = useState("");
@@ -40,7 +42,10 @@ export default function ExpenseDetailsScreen() {
     const numericQuantity = parseFloat(quantity);
 
     if (!numericQuantity || numericQuantity <= 0) {
-      Alert.alert("Invalid Quantity", "Please enter a valid quantity greater than 0.");
+      Alert.alert(
+        "Invalid Quantity",
+        "Please enter a valid quantity greater than 0."
+      );
       return;
     }
 
@@ -60,12 +65,12 @@ export default function ExpenseDetailsScreen() {
       rate,
     });
 
-    // Navigate back to addExpenses with the new expense data
-    router.dismissAll();
-    router.push({
-      pathname: "/addExpenses",
-      params: { projectId, newExpense: JSON.stringify(newExpense) },
-    });
+    // Add expense to context
+    addExpense(newExpense);
+
+    // Navigate back to addExpenses
+    router.dismiss(); // dismiss expenseDetails modal
+    router.dismiss(); // dismiss rateSelect modal
   };
 
   const getTotalCost = () => {
@@ -87,7 +92,15 @@ export default function ExpenseDetailsScreen() {
     }
   };
 
-  const RateIcon = ({ type, color = "white", size = 20 }: { type: string; color?: string; size?: number }) => {
+  const RateIcon = ({
+    type,
+    color = "white",
+    size = 20,
+  }: {
+    type: string;
+    color?: string;
+    size?: number;
+  }) => {
     switch ((type || "").toLowerCase()) {
       case "labor":
         return <UserIcon size={size} color={color} />;
@@ -128,14 +141,19 @@ export default function ExpenseDetailsScreen() {
           <TouchableOpacity className="py-2" onPress={handleCancel}>
             <Text className="text-base text-white">Cancel</Text>
           </TouchableOpacity>
-          <Text className="text-lg font-semibold text-white">Expense Details</Text>
+          <Text className="text-lg font-semibold text-white">
+            Expense Details
+          </Text>
           <View className="w-[60px]" />
         </View>
 
         {/* Content */}
         <View className="flex-1">
           {/* Selected Rate Info */}
-          <View className="bg-white p-4 mb-2 border-b-2" style={{ borderColor: getRateTypeColor(rate.type) }}>
+          <View
+            className="bg-white p-4 mb-2 border-b-2"
+            style={{ borderColor: getRateTypeColor(rate.type) }}
+          >
             <View className="flex-row items-center">
               <View
                 className="mr-3 h-8 w-8 items-center justify-center rounded-full"
@@ -150,7 +168,6 @@ export default function ExpenseDetailsScreen() {
                 <Text className="text-xl font-semibold text-primary-font">
                   {rate.description}
                 </Text>
-
               </View>
               <View className="items-end">
                 <Text className="text-lg font-bold text-primary-font">
@@ -163,7 +180,6 @@ export default function ExpenseDetailsScreen() {
             </View>
           </View>
           <View className="p-4">
-
             {/* Quantity Input */}
             <View className="mb-6">
               <Text className="text-[12px] font-semibold text-neutral-500 tracking-tight mb-2">
@@ -195,27 +211,29 @@ export default function ExpenseDetailsScreen() {
                 textAlignVertical="top"
               />
             </View>
-
-
-
           </View>
           <View className="p-4 mb-4 bg-white border-t mt-auto border-primary-border">
             <View className="flex-row items-center justify-between mb-1">
-              <Text className="text-xl font-semibold text-primary-font">Total Cost</Text>
-              <Text className="text-xl font-extrabold" style={{ color: "#5e8a5e" }}>
+              <Text className="text-xl font-semibold text-primary-font">
+                Total Cost
+              </Text>
+              <Text
+                className="text-xl font-extrabold"
+                style={{ color: "#5e8a5e" }}
+              >
                 ${getTotalCost()}
               </Text>
             </View>
             <Text className="text-lg font-semibold text-primary-font/40 text-start mb-2">
               {quantity || "0"} {rate.unit} × ${rate.price} = ${getTotalCost()}
             </Text>
-            <TouchableOpacity className="harvest-button" onPress={handleConfirm}>
-              <Text className="harvest-button-text" >
-                Add Expense
-              </Text>
+            <TouchableOpacity
+              className="harvest-button"
+              onPress={handleConfirm}
+            >
+              <Text className="harvest-button-text">Add Expense</Text>
             </TouchableOpacity>
           </View>
-
         </View>
       </View>
     </KeyboardAvoidingView>
