@@ -1,7 +1,17 @@
 import { QueuedExpense } from "@/lib/expense";
-import { usePendingExpenses } from "@/services/queries/expenses";
+import {
+  useClearExpenseQueue,
+  usePendingExpenses,
+} from "@/services/queries/expenses";
 import React from "react";
-import { RefreshControl, ScrollView, Text, View } from "react-native";
+import {
+  Alert,
+  RefreshControl,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 interface ExpenseQueueProps {
   className?: string;
@@ -9,6 +19,7 @@ interface ExpenseQueueProps {
 
 export default function ExpenseQueue({ className }: ExpenseQueueProps) {
   const { data: expenses = [], isRefetching, refetch } = usePendingExpenses();
+  const clearExpenseQueueMutation = useClearExpenseQueue();
 
   const getStatusColor = (status: QueuedExpense["status"]) => {
     switch (status) {
@@ -37,15 +48,52 @@ export default function ExpenseQueue({ className }: ExpenseQueueProps) {
     refetch();
   };
 
+  const handleClearQueue = () => {
+    if (expenses.length === 0) return;
+
+    Alert.alert(
+      "Clear Expense Queue",
+      `Are you sure you want to clear all ${expenses.length} expenses from the queue? This action cannot be undone.`,
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Clear",
+          style: "destructive",
+          onPress: () => {
+            clearExpenseQueueMutation.mutate();
+          },
+        },
+      ]
+    );
+  };
+
   return (
     <View
       className={`bg-white rounded-lg shadow-sm border border-gray-200 ${className || ""}`}
     >
       <View className="p-4 border-b border-gray-200">
-        <Text className="text-lg font-semibold text-gray-900">
-          Expense Queue ({expenses.length})
-        </Text>
-        <Text className="text-sm text-gray-600 mt-1">
+        <View className="flex-row justify-between items-center mb-1">
+          <Text className="text-lg font-semibold text-gray-900">
+            Expense Queue ({expenses.length})
+          </Text>
+          {expenses.length > 0 && (
+            <TouchableOpacity
+              onPress={handleClearQueue}
+              className="bg-red-500 px-3 py-1 rounded-md"
+              disabled={clearExpenseQueueMutation.isPending}
+            >
+              <Text className="text-white text-sm font-medium">
+                {clearExpenseQueueMutation.isPending
+                  ? "Clearing..."
+                  : "Clear All"}
+              </Text>
+            </TouchableOpacity>
+          )}
+        </View>
+        <Text className="text-sm text-gray-600">
           Development Mode - Showing expense sync status
         </Text>
       </View>
