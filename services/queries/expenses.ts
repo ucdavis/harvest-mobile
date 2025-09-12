@@ -1,6 +1,6 @@
 import { getDbOrThrow } from "@/lib/db/client";
 import { Expense, QueuedExpense } from "@/lib/expense";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 // Insert expenses into the local database queue
 async function insertExpensesToDb(
@@ -98,13 +98,10 @@ async function getPendingExpensesFromDb(): Promise<QueuedExpense[]> {
 
 // Hook to get pending expenses
 export function usePendingExpenses() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: getPendingExpensesFromDb,
-    onSuccess: (data) => {
-      // Cache the result
-      queryClient.setQueryData(["expenses", "pending"], data);
-    },
+  return useQuery({
+    queryKey: ["expenses", "pending"],
+    queryFn: getPendingExpensesFromDb,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    refetchOnWindowFocus: false,
   });
 }

@@ -15,6 +15,7 @@ import {
 } from "react-native-heroicons/solid";
 
 import { useExpenses } from "@/components/context/ExpenseContext";
+import { useInsertExpenses } from "@/services/queries/expenses";
 
 export default function AddExpenseScreen() {
   const { projectId, projectName } = useLocalSearchParams<{
@@ -25,6 +26,7 @@ export default function AddExpenseScreen() {
 
   const [description, setDescription] = useState("");
   const { expenses, removeExpense, clearExpenses } = useExpenses();
+  const insertExpensesMutation = useInsertExpenses();
 
   // Clear expenses on mount (when navigating to a new project)
   useEffect(() => {
@@ -41,6 +43,16 @@ export default function AddExpenseScreen() {
 
   const handleSubmit = () => {
     console.log("Submit expense", { description, expenses });
+    insertExpensesMutation.mutate(expenses, {
+      onSuccess: () => {
+        // TODO: some kind of success message
+        clearExpenses(); // clear local expenses
+        router.back();
+      },
+      onError: (error) => {
+        console.error("Failed to submit expenses:", error);
+      },
+    });
   };
 
   return (

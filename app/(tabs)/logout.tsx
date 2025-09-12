@@ -1,4 +1,5 @@
 import { useAuth } from "@/components/context/AuthContext";
+import ExpenseQueue from "@/components/expenses/ExpenseQueue";
 import { Text, TouchableOpacity, View } from "react-native";
 import { ArrowRightOnRectangleIcon } from "react-native-heroicons/outline";
 
@@ -18,6 +19,12 @@ export default function LogoutScreen() {
           Log out of Harvest
         </Text>
       </TouchableOpacity>
+
+      {__DEV__ && (
+        <View className="mx-4 mt-8">
+          <ExpenseQueue />
+        </View>
+      )}
     </View>
   );
 }
