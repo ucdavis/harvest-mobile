@@ -15,7 +15,11 @@ import {
 } from "react-native-heroicons/solid";
 
 import { useExpenses } from "@/components/context/ExpenseContext";
-import { useSyncExpenseQueue } from "@/services/queries/expenseQueue";
+import { queryClient } from "@/components/context/queryClient";
+import {
+  MUTATION_KEY_SYNC_EXPENSES,
+  useSyncExpenseQueue,
+} from "@/services/queries/expenseQueue";
 import { useInsertExpenses } from "@/services/queries/expenses";
 
 export default function AddExpenseScreen() {
@@ -26,6 +30,7 @@ export default function AddExpenseScreen() {
   }>();
 
   const [description, setDescription] = useState("");
+
   const { expenses, removeExpense, clearExpenses } = useExpenses();
   const insertExpensesMutation = useInsertExpenses();
   const syncExpenseQueueMutation = useSyncExpenseQueue();
@@ -49,7 +54,11 @@ export default function AddExpenseScreen() {
       onSuccess: () => {
         // TODO: some kind of success message
         clearExpenses(); // clear local expenses
-        syncExpenseQueueMutation.mutate(); // trigger sync of expense queue
+
+        // if we aren't already syncing, trigger a sync
+        queryClient.isMutating({
+          mutationKey: [MUTATION_KEY_SYNC_EXPENSES],
+        }) === 0 && syncExpenseQueueMutation.mutate(); // trigger sync of expense queue
         router.back();
       },
       onError: (error) => {

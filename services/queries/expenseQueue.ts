@@ -1,10 +1,11 @@
+import { queryClient } from "@/components/context/queryClient";
 import { getDbOrThrow } from "@/lib/db/client";
 import {
   CreateExpenseResultsModel,
   Expense,
   QueuedExpense,
 } from "@/lib/expense";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { fetchFromApi } from "../api";
 
 async function insertExpensesToApi(
@@ -133,14 +134,14 @@ async function syncAllPendingExpenses(): Promise<void> {
   }
 }
 
+export const MUTATION_KEY_SYNC_EXPENSES = ["sync-expenses"] as const;
+
 /**
  * React Query mutation hook for syncing the expense queue
  */
 export function useSyncExpenseQueue() {
-  const queryClient = useQueryClient();
-
   return useMutation({
-    mutationKey: ["sync-expenses"], // Enables automatic deduplication
+    mutationKey: [MUTATION_KEY_SYNC_EXPENSES], // Enables automatic deduplication
     mutationFn: syncAllPendingExpenses,
     retry: (failureCount, error) => {
       // Retry up to 3 times for network errors
