@@ -20,14 +20,17 @@ async function ensureAuthInfo(authInfo?: TeamAuthInfo): Promise<TeamAuthInfo> {
  */
 export async function fetchFromApi<T>(
   endpoint: string,
+  init: RequestInit = {},
   authInfo?: TeamAuthInfo
 ): Promise<T> {
   const validAuthInfo = await ensureAuthInfo(authInfo);
 
   const res = await fetch(`${validAuthInfo.apiBaseUrl}${endpoint}`, {
+    ...init,
     headers: {
       Authorization: `Bearer ${validAuthInfo.token}`,
       "Content-Type": "application/json",
+      ...(init.headers || {}),
     },
   });
 

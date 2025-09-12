@@ -16,7 +16,7 @@ export type Expense = {
   description: string; // for other
   price: number; // rate amount, immutable
   quantity: number;
-  projectId: string;
+  projectId: number;
   rateId: string; // ties to specific rates
   rate?: Rate; // optional reference to the rate details
   uniqueId: string; // for tracking and sync
@@ -98,10 +98,10 @@ export interface CreateExpenseErrors {
 }
 
 export interface CreateExpenseResultItem {
-  workerMobileId?: string; // GUID
+  uniqueId?: string; // GUID
   expenseId?: number;
   createdDate: Date;
-  result: string;
+  result: "Created" | "Duplicate" | "Rejected";
   errors: CreateExpenseErrors;
 }
 

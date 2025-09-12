@@ -5,7 +5,7 @@ import { queryOptions, useQuery } from "@tanstack/react-query";
 import { fetchFromApi } from "../api";
 
 async function fetchRatesFromApi(authInfo?: TeamAuthInfo) {
-  return fetchFromApi<Rate[]>("/api/mobile/activerates", authInfo);
+  return fetchFromApi<Rate[]>("/api/mobile/activerates", {}, authInfo);
 }
 
 // uses api data and caches it

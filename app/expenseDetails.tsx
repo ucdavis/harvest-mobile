@@ -62,7 +62,7 @@ export default function ExpenseDetailsScreen() {
       description: description || rate.description,
       price: rate.price,
       quantity: numericQuantity,
-      projectId: projectId || "",
+      projectId: Number(projectId),
       rateId: rate.id,
       rate,
     });

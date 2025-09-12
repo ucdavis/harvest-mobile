@@ -1,6 +1,7 @@
 import { getDbOrThrow } from "@/lib/db/client";
 import { Expense, QueuedExpense } from "@/lib/expense";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
 
 // Insert expenses into the local database queue
 async function insertExpensesToDb(
@@ -27,7 +28,7 @@ async function insertExpensesToDb(
           syncAttempts
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
-          parseInt(expense.projectId), // Convert string to integer for projectId
+          expense.projectId,
           expense.rateId,
           expense.type,
           expense.description,
@@ -101,14 +102,44 @@ async function getPendingExpensesFromDb(): Promise<QueuedExpense[]> {
   }));
 }
 
-// Hook to get pending expenses
+// Hook to get pending expenses with auto-sync functionality
 export function usePendingExpenses() {
   return useQuery({
     queryKey: ["expenses", "pending"],
     queryFn: getPendingExpensesFromDb,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    refetchOnWindowFocus: false,
+    staleTime: 30 * 1000, // 30 seconds - shorter stale time for more responsive sync
+    refetchOnWindowFocus: true, // Trigger sync when app becomes active
+    refetchOnReconnect: true, // Trigger sync when network returns
+    refetchOnMount: true, // Trigger sync on component mount
   });
+}
+
+// Hook that combines pending expenses query with auto-sync functionality
+export function usePendingExpensesWithAutoSync() {
+  const pendingExpensesQuery = usePendingExpenses();
+  // const syncMutation = useSyncExpenseQueue(); // TODO: Uncomment when expenseQueue.ts is imported
+
+  // Auto-sync effect
+  useEffect(() => {
+    const data = pendingExpensesQuery.data;
+    if (data && data.length > 0) {
+      const pendingCount = data.filter((e) => e.status === "pending").length;
+
+      if (pendingCount > 0) {
+        console.log(
+          `Found ${pendingCount} pending expenses - sync would be triggered here`
+        );
+
+        // TODO: Uncomment when sync mutation is available:
+        // if (!syncMutation.isPending) {
+        //   console.log(`Triggering auto-sync for ${pendingCount} pending expenses`);
+        //   syncMutation.mutate();
+        // }
+      }
+    }
+  }, [pendingExpensesQuery.data]); // Re-run when data changes
+
+  return pendingExpensesQuery;
 }
 
 // Clear all expenses from the queue
