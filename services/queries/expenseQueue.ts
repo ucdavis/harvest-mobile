@@ -25,6 +25,9 @@ async function insertExpensesToApi(
     "/api/mobile/expense/createExpenses",
     {
       method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify(expensePayload),
     }
   );
@@ -149,14 +152,6 @@ export function useSyncExpenseQueue() {
     retryDelay: (attemptIndex) => {
       // Exponential backoff: 1s, 2s, 4s
       return Math.min(1000 * Math.pow(2, attemptIndex), 10000);
-    },
-    onSuccess: () => {
-      // Invalidate pending expenses query to refresh UI
-      queryClient.invalidateQueries({ queryKey: ["expenses", "pending"] });
-    },
-    onError: (error) => {
-      // Still refresh the UI to show updated error states
-      queryClient.invalidateQueries({ queryKey: ["expenses", "pending"] });
     },
     onSettled: () => {
       // Always refresh the pending expenses query after sync completes
