@@ -112,6 +112,12 @@ export default function ExpenseQueue({ className }: ExpenseQueueProps) {
                     {expense.projectId}
                   </Text>
                 </View>
+                <View className="flex-row justify-between">
+                  <Text className="text-sm text-gray-600">Rate ID:</Text>
+                  <Text className="text-sm text-gray-900">
+                    {expense.rateId}
+                  </Text>
+                </View>
 
                 <View className="flex-row justify-between">
                   <Text className="text-sm text-gray-600">Created:</Text>

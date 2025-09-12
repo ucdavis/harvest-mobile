@@ -27,6 +27,8 @@ export default function ExpenseDetailsScreen() {
     projectId: string;
   }>();
 
+  console.log("ExpenseDetailsScreen params:", { rateParam, projectId });
+
   // Parse the rate from URL params
   const rate: Rate | null = rateParam ? JSON.parse(rateParam) : null;
   const { addExpense } = useExpenses();

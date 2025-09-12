@@ -21,7 +21,7 @@ export default function AddExpenseScreen() {
   const { projectId, projectName } = useLocalSearchParams<{
     projectId: string;
     projectName: string;
-    piName: string;
+    piName: string; // TODO: use piName?
   }>();
 
   const [description, setDescription] = useState("");

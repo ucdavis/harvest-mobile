@@ -11,6 +11,7 @@ async function insertExpensesToDb(
 
   await db.withExclusiveTransactionAsync(async (tx) => {
     for (const expense of expenses) {
+      console.log("Inserting expense into DB:", expense);
       // Insert the expense into the queue
       const result = await tx.runAsync(
         `INSERT INTO expenses_queue (
@@ -39,6 +40,8 @@ async function insertExpensesToDb(
         ]
       );
 
+      console.log("Inserted expense with ID:", result);
+
       // Create the queued expense object with the generated ID
       const queuedExpense: QueuedExpense = {
         ...expense,
@@ -64,6 +67,8 @@ export function useInsertExpenses() {
     onSuccess: (data) => {
       // Invalidate and refetch any expense-related queries
       queryClient.invalidateQueries({ queryKey: ["expenses"] });
+      // Also specifically invalidate the pending expenses query
+      queryClient.invalidateQueries({ queryKey: ["expenses", "pending"] });
     },
     onError: (error) => {
       console.error("Failed to insert expenses:", error);
@@ -79,9 +84,11 @@ async function getPendingExpensesFromDb(): Promise<QueuedExpense[]> {
     `SELECT * FROM expenses_queue WHERE status = 'pending' ORDER BY createdDate DESC`
   );
 
+  console.log("Fetched pending expenses from DB:", result);
+
   return result.map((row: any) => ({
     id: row.id,
-    projectId: row.projectId.toString(), // Convert back to string for consistency
+    projectId: row.projectId ? row.projectId.toString() : null, // Safely convert to string if not null
     rateId: row.rateId,
     type: row.type,
     description: row.description,
