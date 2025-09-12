@@ -1,5 +1,6 @@
 import * as Crypto from "expo-crypto";
 
+// matched with harvest
 export type Rate = {
   id: string;
   type: string; // labor, equipment, or other
@@ -9,15 +10,26 @@ export type Rate = {
   isPassthrough: boolean;
 };
 
+// matched with harvest
 export type Expense = {
   type: string;
   description: string; // for other
   price: number; // rate amount, immutable
   quantity: number;
-  projectId: string;
+  projectId: number;
   rateId: string; // ties to specific rates
   rate?: Rate; // optional reference to the rate details
   uniqueId: string; // for tracking and sync
+};
+
+// queued expense w/ extra info
+export type QueuedExpense = Expense & {
+  id?: number; // AUTO INCREMENT PRIMARY KEY from database
+  status: "pending" | "syncing" | "synced" | "failed"; // queue status
+  createdDate: string; // ISO timestamp when created
+  syncAttempts: number; // number of sync attempts
+  lastSyncAttempt?: string; // ISO timestamp of last sync attempt
+  errorMessage?: string; // error message if sync failed
 };
 
 export function getExpenseUniqueId(): string {
@@ -77,3 +89,29 @@ export const fakeRates: Rate[] = [
     isPassthrough: false,
   },
 ];
+
+// Types for expense creation results
+export interface CreateExpenseErrors {
+  field: string;
+  code: string;
+  message: string;
+}
+
+export interface CreateExpenseResultItem {
+  uniqueId?: string; // GUID
+  expenseId?: number;
+  createdDate: Date;
+  result: "Created" | "Duplicate" | "Rejected";
+  errors: CreateExpenseErrors;
+}
+
+export interface CreateExpenseSummaryModel {
+  created: number;
+  duplicate: number;
+  rejected: number;
+}
+
+export interface CreateExpenseResultsModel {
+  results: CreateExpenseResultItem[];
+  summary: CreateExpenseSummaryModel;
+}

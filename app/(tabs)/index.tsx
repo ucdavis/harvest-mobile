@@ -14,7 +14,8 @@ export default function RecentProjectsScreen() {
     router.push({
       pathname: "/addExpenses",
       params: {
-        projectId: project.name,
+        projectId: project.id,
+        projectName: project.name,
         piName: project.piName,
       },
     });

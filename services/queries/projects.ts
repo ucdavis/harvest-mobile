@@ -5,7 +5,7 @@ import { queryOptions, useQuery } from "@tanstack/react-query";
 import { fetchFromApi } from "../api";
 
 async function fetchProjectsFromApi(authInfo?: TeamAuthInfo) {
-  return fetchFromApi<Project[]>("/api/mobile/projects", authInfo);
+  return fetchFromApi<Project[]>("/api/mobile/projects", {}, authInfo);
 }
 
 // uses api data and caches it
@@ -23,7 +23,7 @@ export const useProjects = (authInfo?: TeamAuthInfo) => {
 
 // now for recent projects, we'll be more agressive in caching here since it's not at critical and more time sensitive
 async function fetchRecentProjectsFromApi(authInfo?: TeamAuthInfo) {
-  return fetchFromApi<Project[]>("/api/mobile/recentprojects", authInfo);
+  return fetchFromApi<Project[]>("/api/mobile/recentprojects", {}, authInfo);
 }
 
 export const recentProjectsApiQueryOptions = (authInfo?: TeamAuthInfo) =>
