@@ -19,6 +19,8 @@ interface ExpenseQueueProps {
 
 export default function ExpenseQueue({ className }: ExpenseQueueProps) {
   const { data: expenses = [], isRefetching, refetch } = usePendingExpenses();
+
+  console.log("ExpenseQueue expenses:", expenses);
   const clearExpenseQueueMutation = useClearExpenseQueue();
 
   const getStatusColor = (status: QueuedExpense["status"]) => {

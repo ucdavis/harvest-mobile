@@ -7,10 +7,10 @@ async function insertExpensesToApi(
   expenses: QueuedExpense[]
 ): Promise<CreateExpenseResultsModel> {
   const result = await fetchFromApi<CreateExpenseResultsModel>(
-    "api/mobile/create",
+    "/api/mobile/expense/createExpenses",
     {
       method: "POST",
-      body: JSON.stringify({ expenses }),
+      body: JSON.stringify(expenses),
     }
   );
 
@@ -118,7 +118,7 @@ async function syncAllPendingExpenses(): Promise<void> {
     } else {
       await updateExpenseStatus(
         expense.id,
-        "failed",
+        "pending", // TODO: determine if we want to mark as failed or keep as pending, or should we always just remove?
         JSON.stringify(res.errors) || "Unknown error"
       );
       console.log(
@@ -152,8 +152,8 @@ export function useSyncExpenseQueue() {
     onMutate: () => {
       console.log("Expense sync started");
     },
-    onSuccess: (result) => {
-      console.log("Expense sync completed successfully:", result);
+    onSuccess: () => {
+      console.log("Expense sync completed successfully:");
 
       // Invalidate pending expenses query to refresh UI
       queryClient.invalidateQueries({ queryKey: ["expenses", "pending"] });
