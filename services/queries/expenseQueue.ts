@@ -1,16 +1,33 @@
 import { getDbOrThrow } from "@/lib/db/client";
-import { CreateExpenseResultsModel, QueuedExpense } from "@/lib/expense";
+import {
+  CreateExpenseResultsModel,
+  Expense,
+  QueuedExpense,
+} from "@/lib/expense";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { fetchFromApi } from "../api";
 
 async function insertExpensesToApi(
   expenses: QueuedExpense[]
 ): Promise<CreateExpenseResultsModel> {
+  console.log("Inserting expenses to API:", expenses);
+
+  // strip off fields that aren't part of the base expense model
+  const expensePayload: Expense[] = expenses.map((expense) => ({
+    projectId: expense.projectId,
+    rateId: expense.rateId,
+    type: expense.type,
+    description: expense.description,
+    quantity: expense.quantity,
+    price: expense.price,
+    uniqueId: expense.uniqueId,
+  }));
+
   const result = await fetchFromApi<CreateExpenseResultsModel>(
     "/api/mobile/expense/createExpenses",
     {
       method: "POST",
-      body: JSON.stringify(expenses),
+      body: JSON.stringify(expensePayload),
     }
   );
 
