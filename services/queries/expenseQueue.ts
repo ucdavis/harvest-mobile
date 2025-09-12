@@ -10,8 +10,6 @@ import { fetchFromApi } from "../api";
 async function insertExpensesToApi(
   expenses: QueuedExpense[]
 ): Promise<CreateExpenseResultsModel> {
-  console.log("Inserting expenses to API:", expenses);
-
   // strip off fields that aren't part of the base expense model
   const expensePayload: Expense[] = expenses.map((expense) => ({
     projectId: expense.projectId,
@@ -105,41 +103,28 @@ async function getPendingExpensesFromQueue(): Promise<QueuedExpense[]> {
  * Main sync function that processes all pending expenses
  */
 async function syncAllPendingExpenses(): Promise<void> {
-  console.log("Starting expense queue sync...");
-
   const pendingExpenses = await getPendingExpensesFromQueue();
 
   if (pendingExpenses.length === 0) {
-    console.log("No pending expenses to sync");
+    return;
   }
 
-  console.log(`Found ${pendingExpenses.length} pending expenses to sync`);
-
   const results = await insertExpensesToApi(pendingExpenses);
-
-  console.log("API sync results:", results);
 
   // Process results
   for (const res of results.results) {
     const expense = pendingExpenses.find((e) => e.uniqueId === res.uniqueId);
     if (!expense || !expense.id) {
-      console.warn(
-        `No matching local expense found for uniqueId ${res.uniqueId}`
-      );
       continue;
     }
 
     if (res.result === "Created" || res.result === "Duplicate") {
       await removeExpenseFromQueue(expense.id);
-      console.log(`Expense ${expense.id} synced and removed from queue`);
     } else {
       await updateExpenseStatus(
         expense.id,
         "pending", // TODO: determine if we want to mark as failed or keep as pending, or should we always just remove?
         JSON.stringify(res.errors) || "Unknown error"
-      );
-      console.log(
-        `Expense ${expense.id} failed to sync: ${JSON.stringify(res.errors) || "Unknown error"}`
       );
     }
   }
@@ -157,7 +142,6 @@ export function useSyncExpenseQueue() {
     retry: (failureCount, error) => {
       // Retry up to 3 times for network errors
       if (failureCount < 3) {
-        console.log(`Sync attempt ${failureCount + 1} failed, retrying...`);
         return true;
       }
       return false;
@@ -166,21 +150,11 @@ export function useSyncExpenseQueue() {
       // Exponential backoff: 1s, 2s, 4s
       return Math.min(1000 * Math.pow(2, attemptIndex), 10000);
     },
-    onMutate: () => {
-      console.log("Expense sync started");
-    },
     onSuccess: () => {
-      console.log("Expense sync completed successfully:");
-
       // Invalidate pending expenses query to refresh UI
       queryClient.invalidateQueries({ queryKey: ["expenses", "pending"] });
-
-      // If there are still pending expenses (new ones added during sync),
-      // we'll let the query's onSuccess handler trigger another sync
     },
     onError: (error) => {
-      console.error("Expense sync failed:", error);
-
       // Still refresh the UI to show updated error states
       queryClient.invalidateQueries({ queryKey: ["expenses", "pending"] });
     },
