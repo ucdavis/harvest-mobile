@@ -7,12 +7,12 @@ export type Project = {
 };
 
 export const getProjectLink = (projectId: string, authInfo: TeamAuthInfo) => {
+  if (!authInfo) return "";
   // need to grab current team and baseurl
   const projectInfoUrl = new URL(
     `${authInfo?.team}/project/details/${projectId}`,
     authInfo?.apiBaseUrl
   );
-  if (!authInfo) return ""; // shouldn't happen but we don't want to crash
   return projectInfoUrl.toString();
 };
 
