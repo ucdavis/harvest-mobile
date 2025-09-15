@@ -52,11 +52,12 @@ stages:
             inputs: { versionSpec: "$(NODE_VERSION)" }
           - script: npm ci
             displayName: "Install deps"
-          - script: npx --yes eas-cli@latest build \
-              --platform ios \
-              --profile preview \
-              --non-interactive \
-              --no-wait
+          - script: |
+              npx --yes eas-cli@latest build \
+                --platform ios \
+                --profile preview \
+                --non-interactive \
+                --no-wait
             env:
               EXPO_TOKEN: $(EXPO_TOKEN)
             displayName: "Trigger EAS iOS (preview)"
@@ -72,12 +73,13 @@ stages:
             inputs: { versionSpec: "$(NODE_VERSION)" }
           - script: npm ci
             displayName: "Install deps"
-          - script: npx --yes eas-cli@latest build \
-              --platform ios \
-              --profile production \
-              --non-interactive \
-              --no-wait \
-              --auto-submit
+          - script: |
+              npx --yes eas-cli@latest build \
+                --platform ios \
+                --profile production \
+                --non-interactive \
+                --no-wait \
+                --auto-submit
             env:
               EXPO_TOKEN: $(EXPO_TOKEN)
             displayName: "Trigger EAS iOS (prod + submit)"
