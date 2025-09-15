@@ -168,7 +168,11 @@ export default function AddExpenseScreen() {
 
       {/* Submit Button */}
       <View className="p-4 mb-4 bg-white border-t border-primary-border">
-        <TouchableOpacity className="harvest-button" onPress={handleSubmit}>
+        <TouchableOpacity
+          className={`harvest-button ${expenses.length === 0 ? "opacity-50" : ""}`}
+          onPress={expenses.length > 0 ? handleSubmit : undefined}
+          disabled={expenses.length === 0}
+        >
           <Text className="harvest-button-text">Submit</Text>
         </TouchableOpacity>
       </View>
