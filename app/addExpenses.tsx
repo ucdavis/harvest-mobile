@@ -1,4 +1,5 @@
 import { router, useLocalSearchParams } from "expo-router";
+import { openBrowserAsync } from "expo-web-browser";
 import { useEffect, useState } from "react";
 import {
   ScrollView,
@@ -14,8 +15,10 @@ import {
   TrashIcon,
 } from "react-native-heroicons/solid";
 
+import { useAuth } from "@/components/context/AuthContext";
 import { useExpenses } from "@/components/context/ExpenseContext";
 import { queryClient } from "@/components/context/queryClient";
+import { getProjectLink } from "@/lib/project";
 import {
   MUTATION_KEY_SYNC_EXPENSES,
   useSyncExpenseQueue,
@@ -29,6 +32,7 @@ export default function AddExpenseScreen() {
     piName: string; // TODO: use piName?
   }>();
 
+  const auth = useAuth();
   const [description, setDescription] = useState("");
 
   const { expenses, removeExpense, clearExpenses } = useExpenses();
@@ -48,12 +52,23 @@ export default function AddExpenseScreen() {
     removeExpense(uniqueId);
   };
 
+  const handleProjectInfo = async () => {
+    const url = getProjectLink(projectId, auth.authInfo!);
+    if (url) {
+      await openBrowserAsync(url);
+    }
+  };
+
   const handleSubmit = () => {
-    console.log("Submit expense", { description, expenses });
     insertExpensesMutation.mutate(expenses, {
       onSuccess: () => {
         // TODO: some kind of success message
         clearExpenses(); // clear local expenses
+
+        // invalidate the recent projects query to refresh recent projects
+        queryClient.invalidateQueries({
+          queryKey: ["projects", auth.authInfo?.team, "recent"],
+        });
 
         // if we aren't already syncing, trigger a sync
         queryClient.isMutating({
@@ -83,7 +98,9 @@ export default function AddExpenseScreen() {
                 {projectId}: {projectName}
               </Text>
             </View>
-            <InformationCircleIcon size={24} color="#a0a0a0" />
+            <TouchableOpacity onPress={handleProjectInfo}>
+              <InformationCircleIcon size={24} color="#a0a0a0" />
+            </TouchableOpacity>
           </View>
         </View>
 
@@ -106,6 +123,11 @@ export default function AddExpenseScreen() {
           <Text className="text-md uppercase font-bold text-harvest tracking-tight">
             Expenses
           </Text>
+          {expenses.length === 0 && (
+            <Text className="text-sm text-primary-font/80 mt-4">
+              no current expenses, add them using the button below
+            </Text>
+          )}
 
           {expenses.map((item) => (
             <View
@@ -113,9 +135,7 @@ export default function AddExpenseScreen() {
               className="flex-row items-end justify-between py-3 border-b border-primary-border"
             >
               <View className="flex-1">
-                <Text className="text-sm text-primary-font/40 uppercase font-bold">
-                  {item.type}
-                </Text>
+                <Text className="tertiary-label uppercase">{item.type}</Text>
                 <Text className="text-lg text-primary-font font-medium">
                   {item.rate?.description}
                 </Text>
@@ -125,6 +145,7 @@ export default function AddExpenseScreen() {
                 <Text className="text-base text-primary-font/80 font-semibold">
                   {item.quantity} {item.rate?.unit} @ ${item.price}
                 </Text>
+
                 <TouchableOpacity
                   className="ml-3"
                   onPress={() => handleDeleteExpense(item.uniqueId)}
@@ -135,20 +156,23 @@ export default function AddExpenseScreen() {
             </View>
           ))}
 
-          {/* Add Expenses Button */}
+          <TouchableOpacity
+            className="flex-row bg-harvest rounded-md mt-5 justify-between py-2 px-4"
+            onPress={handleAddExpenses}
+          >
+            <Text className="text-base text-white font-bold">Add expense</Text>
+            <ChevronRightIcon size={24} color="white" />
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity
-          className="flex-row bg-harvest rounded-md justify-between py-4 px-4"
-          onPress={handleAddExpenses}
-        >
-          <Text className="text-base text-white font-bold">Add expense</Text>
-          <ChevronRightIcon size={24} color="white" />
-        </TouchableOpacity>
       </ScrollView>
 
       {/* Submit Button */}
       <View className="p-4 mb-4 bg-white border-t border-primary-border">
-        <TouchableOpacity className="harvest-button" onPress={handleSubmit}>
+        <TouchableOpacity
+          className={`harvest-button ${expenses.length === 0 ? "opacity-50" : ""}`}
+          onPress={expenses.length > 0 ? handleSubmit : undefined}
+          disabled={expenses.length === 0}
+        >
           <Text className="harvest-button-text">Submit</Text>
         </TouchableOpacity>
       </View>

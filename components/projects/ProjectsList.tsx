@@ -147,21 +147,21 @@ export function ProjectsList({
       ) : searchTerm.length > 0 ? (
         <View className="items-center justify-center py-16 px-5">
           <MagnifyingGlassIcon size={80} color="#808080" />
-          <Text className="text-lg font-semibold mt-4 text-center text-neutral-800 dark:text-neutral-200">
+          <Text className="text-lg font-semibold mt-4 text-center text-harvest">
             No projects found
           </Text>
-          <Text className="text-sm mt-2 text-center text-neutral-500 dark:text-neutral-400">
+          <Text className="mt-2 text-center text-primary-font/80">
             Try adjusting your search terms
           </Text>
         </View>
       ) : (
         <View className="items-center justify-center py-16 px-5">
           <FolderPlusIcon size={80} color="#808080" />
-          <Text className="text-lg font-semibold mt-4 text-center text-neutral-800 dark:text-neutral-200">
+          <Text className="text-lg font-semibold mt-4 text-center text-primary-font">
             No projects yet
           </Text>
-          <Text className="text-sm mt-2 text-center text-neutral-500 dark:text-neutral-400">
-            Working on it!
+          <Text className="mt-2 text-center text-primary-font/80">
+            You can add recent projects by submitting an expense
           </Text>
         </View>
       )}

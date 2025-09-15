@@ -1,6 +1,5 @@
 import { useAuth } from "@/components/context/AuthContext";
 import { ProjectsList } from "@/components/projects/ProjectsList";
-import { TeamChooser } from "@/components/ui/TeamChooser";
 import { Project } from "@/lib/project";
 import { useRecentProjects } from "@/services/queries/projects";
 import { router } from "expo-router";
@@ -23,7 +22,7 @@ export default function RecentProjectsScreen() {
 
   return (
     <View className="flex-1">
-      <TeamChooser />
+      {/* <TeamChooser /> */}
 
       <ProjectsList
         projects={recentProjects || []}

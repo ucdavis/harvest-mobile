@@ -98,7 +98,7 @@ export function RatesList({
   const renderRateItem = ({ item }: { item: Rate }) => {
     const Icon = getRateTypeIcon(item.type);
     return (
-      <TouchableOpacity
+      <TouchableOpacity activeOpacity={0.7}
         onPress={() => handleRatePress(item)}
         className="mb-3 rounded-xl border border-primary-border bg-white p-4"
       >
@@ -111,7 +111,7 @@ export function RatesList({
           </View>
 
           <View className="flex-1">
-            <Text className="text-sm font-medium uppercase tracking-tight text-primary-font/40">
+            <Text className="tertiary-label uppercase">
               {item.type}
             </Text>
             <Text className="text-lg font-semibold text-primary-font">
@@ -120,11 +120,12 @@ export function RatesList({
           </View>
 
           <View className="items-end">
-            <Text className="text-lg font-bold text-primary-font">
-              ${item.price}
+
+            <Text className="tertiary-label text-right">
+              {item.unit}
             </Text>
-            <Text className="text-sm text-primary-font/40">
-              per {item.unit}
+            <Text className="text-lg font-semibold text-primary-font">
+              ${item.price}
             </Text>
           </View>
         </View>

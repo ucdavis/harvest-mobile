@@ -3,7 +3,6 @@ import { View } from "react-native";
 
 import { useAuth } from "@/components/context/AuthContext";
 import { ProjectsList } from "@/components/projects/ProjectsList";
-import { TeamChooser } from "@/components/ui/TeamChooser";
 import { Project } from "@/lib/project";
 import { useProjects } from "@/services/queries/projects";
 
@@ -25,7 +24,7 @@ export default function AllProjectsScreen() {
 
   return (
     <View className="flex-1">
-      <TeamChooser />
+      {/* <TeamChooser /> */}
       <ProjectsList
         projects={projectQuery.data || []}
         queryKey={["projects", authInfo?.team]}

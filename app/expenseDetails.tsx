@@ -151,7 +151,6 @@ export default function ExpenseDetailsScreen() {
 
         {/* Content */}
         <View className="flex-1">
-          {/* Selected Rate Info */}
           <View
             className="bg-white p-4 mb-2 border-b-2"
             style={{ borderColor: getRateTypeColor(rate.type) }}
@@ -164,19 +163,20 @@ export default function ExpenseDetailsScreen() {
                 <RateIcon type={rate.type} color="white" size={16} />
               </View>
               <View className="flex-1">
-                <Text className="text-base font-medium uppercase tracking-tight text-primary-font/40">
+                <Text className="tertiary-label uppercase">
                   {rate.type}
                 </Text>
-                <Text className="text-xl font-semibold text-primary-font">
+                <Text className="text-lg font-semibold text-primary-font">
                   {rate.description}
                 </Text>
               </View>
               <View className="items-end">
+
+                <Text className="tertiary-label text-right">
+                  {rate.unit}
+                </Text>
                 <Text className="text-lg font-bold text-primary-font">
                   ${rate.price}
-                </Text>
-                <Text className="text-sm text-primary-font/40">
-                  per {rate.unit}
                 </Text>
               </View>
             </View>
