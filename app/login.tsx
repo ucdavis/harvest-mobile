@@ -16,7 +16,7 @@ export default function LoginScreen() {
     console.log("Login button pressed");
     await WebBrowser.openBrowserAsync(
       process.env.EXPO_PUBLIC_LOGIN_URL ||
-      "https://harvest-test.azurewebsites.net/caes/mobile/token"
+        "https://harvest-test.azurewebsites.net/caes/mobile/token"
     );
   };
 
@@ -36,13 +36,16 @@ export default function LoginScreen() {
           Welcome to Harvest
         </Text>
 
-        <TouchableOpacity className="harvest-button my-6" onPress={onLoginPress}>
+        <TouchableOpacity
+          className="harvest-button my-6"
+          onPress={onLoginPress}
+        >
           <Text className="harvest-button-text">Login with UC Davis</Text>
         </TouchableOpacity>
 
         <Image
           source={require("../assets/images/caes-logo.png")}
-          className="w-60 h-16 mx-auto my-6"  // constrain this too
+          className="w-60 h-16 mx-auto my-6"
           resizeMode="contain"
         />
       </View>
