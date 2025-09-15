@@ -1,8 +1,4 @@
-# Welcome to your Expo app 👋
-
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
-
-## Get started
+## Get started (on Mac with Xcode for iOS setup)
 
 1. Install dependencies
 
@@ -13,28 +9,53 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
 2. Start the app
 
    ```bash
-   npx expo start
+   npx expo run:ios
    ```
 
-In the output, you'll find options to open the app in a
+More info about setup [using ios Simulator plus local build](https://docs.expo.dev/get-started/set-up-your-environment/?platform=ios&device=simulated&mode=development-build&buildEnv=local).
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## Testing
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+We don't have any testing setup yet. There are some placeholders in the package.json and azure-pipelines.yml for running tests, but no actual tests yet.
 
-## Learn more
+Eventually we can add following https://docs.expo.dev/develop/unit-testing/.
 
-To learn more about developing your project with Expo, look at the following resources:
+## Deployment
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+We use [Azure Pipelines](https://dev.azure.com/ucdavis/Harvest%20Mobile/_build) to build and deploy the app. The pipeline is defined in `azure-pipelines.yml`.
 
-## Join the community
+The pipeline basically just does some linting and testing. We aren't going to do automatic deployment.
 
-Join our community of developers creating universal apps.
+## Deployment
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+### Prerequisites
+
+Need the xcode tools, which you probably already have if you are doing iOS development. But if not:
+
+```bash
+xcode-select --install
+```
+
+Then install the Fastlane tools:
+
+```bash
+brew install fastlane
+```
+
+### Build and deploy
+
+Run the deployment build locally:
+
+```bash
+eas build -p ios --profile production --local
+```
+
+This might require some local setup the first time, like logging into your Apple Developer account.
+
+Then upload the build to App Store Connect:
+
+```bash
+eas submit -p ios --latest
+```
+
+This will upload the latest build to App Store Connect. You can then log into App Store Connect to manage the release.
