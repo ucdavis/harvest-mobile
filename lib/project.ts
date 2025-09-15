@@ -1,7 +1,20 @@
+import { getCurrentTeamAuthInfo } from "./auth";
+
 export type Project = {
   id: string;
   name: string;
   piName: string;
+};
+
+export const getProjectLink = async (projectId: string) => {
+  // need to grab current team and baseurl
+  const authInfo = await getCurrentTeamAuthInfo();
+  const projectInfoUrl = new URL(
+    `${authInfo?.team}/project/details/${projectId}`,
+    authInfo?.apiBaseUrl
+  );
+  if (!authInfo) return ""; // shouldn't happen but we don't want to crash
+  return projectInfoUrl.toString();
 };
 
 export const fakeProjects: Project[] = [

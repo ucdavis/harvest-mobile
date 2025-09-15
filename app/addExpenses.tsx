@@ -1,4 +1,5 @@
 import { router, useLocalSearchParams } from "expo-router";
+import { openBrowserAsync } from "expo-web-browser";
 import { useEffect, useState } from "react";
 import {
   ScrollView,
@@ -16,6 +17,7 @@ import {
 
 import { useExpenses } from "@/components/context/ExpenseContext";
 import { queryClient } from "@/components/context/queryClient";
+import { getProjectLink } from "@/lib/project";
 import {
   MUTATION_KEY_SYNC_EXPENSES,
   useSyncExpenseQueue,
@@ -46,6 +48,14 @@ export default function AddExpenseScreen() {
 
   const handleDeleteExpense = (uniqueId: string) => {
     removeExpense(uniqueId);
+  };
+
+  const handleProjectInfo = async () => {
+    const url = await getProjectLink(projectId);
+    console.log("Opening project info URL:", url);
+    if (url) {
+      await openBrowserAsync(url);
+    }
   };
 
   const handleSubmit = () => {
@@ -83,7 +93,9 @@ export default function AddExpenseScreen() {
                 {projectId}: {projectName}
               </Text>
             </View>
-            <InformationCircleIcon size={24} color="#a0a0a0" />
+            <TouchableOpacity onPress={handleProjectInfo}>
+              <InformationCircleIcon size={24} color="#a0a0a0" />
+            </TouchableOpacity>
           </View>
         </View>
 
@@ -116,9 +128,7 @@ export default function AddExpenseScreen() {
               className="flex-row items-end justify-between py-3 border-b border-primary-border"
             >
               <View className="flex-1">
-                <Text className="tertiary-label uppercase">
-                  {item.type}
-                </Text>
+                <Text className="tertiary-label uppercase">{item.type}</Text>
                 <Text className="text-lg text-primary-font font-medium">
                   {item.rate?.description}
                 </Text>
@@ -139,7 +149,6 @@ export default function AddExpenseScreen() {
             </View>
           ))}
 
-
           <TouchableOpacity
             className="flex-row bg-harvest rounded-md mt-5 justify-between py-2 px-4"
             onPress={handleAddExpenses}
@@ -148,7 +157,6 @@ export default function AddExpenseScreen() {
             <ChevronRightIcon size={24} color="white" />
           </TouchableOpacity>
         </View>
-
       </ScrollView>
 
       {/* Submit Button */}
