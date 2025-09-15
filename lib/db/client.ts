@@ -17,9 +17,6 @@ export async function getDb(): Promise<SQLite.SQLiteDatabase> {
 
     // schema init (do it here so everyone shares the same path)
     await db.withExclusiveTransactionAsync(async (tx) => {
-      // TODO: just one time, delete the old table if it exists
-      await tx.execAsync(`DROP TABLE IF EXISTS expenses_queue;`);
-
       // expenses queue table to keep record of unsync'd expenses
       await tx.execAsync(`
         CREATE TABLE IF NOT EXISTS expenses_queue (
