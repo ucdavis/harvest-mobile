@@ -14,59 +14,57 @@ import {
   TrashIcon,
 } from "react-native-heroicons/solid";
 
-
-import { Expense, createExpenseWithUniqueId } from "@/lib/expense";
+import { useExpenses } from "@/components/context/ExpenseContext";
+import { queryClient } from "@/components/context/queryClient";
+import {
+  MUTATION_KEY_SYNC_EXPENSES,
+  useSyncExpenseQueue,
+} from "@/services/queries/expenseQueue";
+import { useInsertExpenses } from "@/services/queries/expenses";
 
 export default function AddExpenseScreen() {
-  const { projectId, projectName, newExpense } = useLocalSearchParams<{
+  const { projectId, projectName } = useLocalSearchParams<{
     projectId: string;
     projectName: string;
-    piName: string;
-    newExpense?: string;
+    piName: string; // TODO: use piName?
   }>();
 
   const [description, setDescription] = useState("");
-  const [expenses, setExpenses] = useState<Expense[]>([
-    createExpenseWithUniqueId({
-      // TODO: testing
-      type: "labor",
-      description: "",
-      price: 100,
-      quantity: 1,
-      projectId: projectId,
-      rateId: "rate_1",
-      rate: {
-        unit: "hours",
-        description: "RR Farm Labor",
-        price: 100,
-        type: "equipment",
-        id: "rate_1",
-      },
-    }),
-  ]);
 
+  const { expenses, removeExpense, clearExpenses } = useExpenses();
+  const insertExpensesMutation = useInsertExpenses();
+  const syncExpenseQueueMutation = useSyncExpenseQueue();
+
+  // Clear expenses on mount (when navigating to a new project)
   useEffect(() => {
-    if (newExpense) {
-      try {
-        const parsedExpense: Expense = JSON.parse(newExpense);
-        setExpenses((prev) => [...prev, parsedExpense]);
-        router.setParams({ newExpense: undefined });
-      } catch (error) {
-        console.error("Failed to parse new expense:", error);
-      }
-    }
-  }, [newExpense]);
+    clearExpenses();
+  }, [clearExpenses]); // Include clearExpenses in dependencies
 
   const handleAddExpenses = () => {
     router.push({ pathname: "/rateSelect", params: { projectId } });
   };
 
   const handleDeleteExpense = (uniqueId: string) => {
-    setExpenses((prev) => prev.filter((e) => e.uniqueId !== uniqueId));
+    removeExpense(uniqueId);
   };
 
   const handleSubmit = () => {
     console.log("Submit expense", { description, expenses });
+    insertExpensesMutation.mutate(expenses, {
+      onSuccess: () => {
+        // TODO: some kind of success message
+        clearExpenses(); // clear local expenses
+
+        // if we aren't already syncing, trigger a sync
+        queryClient.isMutating({
+          mutationKey: [MUTATION_KEY_SYNC_EXPENSES],
+        }) === 0 && syncExpenseQueueMutation.mutate(); // trigger sync of expense queue
+        router.back();
+      },
+      onError: (error) => {
+        console.error("Failed to submit expenses:", error);
+      },
+    });
   };
 
   return (
@@ -75,7 +73,6 @@ export default function AddExpenseScreen() {
         className="flex-1 px-4 py-4"
         showsVerticalScrollIndicator={false}
       >
-
         <View className="card">
           <View className="flex-row items-start justify-between">
             <View>
@@ -88,9 +85,7 @@ export default function AddExpenseScreen() {
             </View>
             <InformationCircleIcon size={24} color="#a0a0a0" />
           </View>
-
         </View>
-
 
         <View className="card">
           <Text className="text-md uppercase font-bold text-harvest tracking-tight">
@@ -106,7 +101,6 @@ export default function AddExpenseScreen() {
             textAlignVertical="top"
           />
         </View>
-
 
         <View className="card">
           <Text className="text-md uppercase font-bold text-harvest tracking-tight">
@@ -131,7 +125,10 @@ export default function AddExpenseScreen() {
                 <Text className="text-base text-primary-font/80 font-semibold">
                   {item.quantity} {item.rate?.unit} @ ${item.price}
                 </Text>
-                <TouchableOpacity className="ml-3" onPress={() => handleDeleteExpense(item.uniqueId)}>
+                <TouchableOpacity
+                  className="ml-3"
+                  onPress={() => handleDeleteExpense(item.uniqueId)}
+                >
                   <TrashIcon size={16} color="#79242F" />
                 </TouchableOpacity>
               </View>
@@ -139,25 +136,19 @@ export default function AddExpenseScreen() {
           ))}
 
           {/* Add Expenses Button */}
-
         </View>
         <TouchableOpacity
           className="flex-row bg-harvest rounded-md justify-between py-4 px-4"
           onPress={handleAddExpenses}
         >
-          <Text className="text-base text-white font-bold">
-            Add expense
-          </Text>
+          <Text className="text-base text-white font-bold">Add expense</Text>
           <ChevronRightIcon size={24} color="white" />
         </TouchableOpacity>
       </ScrollView>
 
       {/* Submit Button */}
       <View className="p-4 mb-4 bg-white border-t border-primary-border">
-        <TouchableOpacity
-          className="harvest-button"
-          onPress={handleSubmit}
-        >
+        <TouchableOpacity className="harvest-button" onPress={handleSubmit}>
           <Text className="harvest-button-text">Submit</Text>
         </TouchableOpacity>
       </View>

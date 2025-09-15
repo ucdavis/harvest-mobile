@@ -17,35 +17,29 @@ export async function getDb(): Promise<SQLite.SQLiteDatabase> {
 
     // schema init (do it here so everyone shares the same path)
     await db.withExclusiveTransactionAsync(async (tx) => {
+      // expenses queue table to keep record of unsync'd expenses
       await tx.execAsync(`
-        CREATE TABLE IF NOT EXISTS projects (
-          id        TEXT PRIMARY KEY,
-          name      TEXT NOT NULL,
-          piName    TEXT NOT NULL
-        );
-      `);
-      await tx.execAsync(
-        `CREATE INDEX IF NOT EXISTS idx_projects_name ON projects(name);`
-      );
-      await tx.execAsync(
-        `CREATE INDEX IF NOT EXISTS idx_projects_piName ON projects(piName);`
-      );
-
-      await tx.execAsync(`
-        CREATE TABLE IF NOT EXISTS rates (
-          id          TEXT PRIMARY KEY,
-          type        TEXT NOT NULL,
+        CREATE TABLE IF NOT EXISTS expenses_queue (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          projectId INTEGER NOT NULL,
+          rateId TEXT NOT NULL,
+          type TEXT NOT NULL,
           description TEXT NOT NULL,
-          unit        TEXT NOT NULL,
-          price       REAL NOT NULL
+          quantity REAL NOT NULL,
+          price REAL NOT NULL,
+          uniqueId TEXT NOT NULL UNIQUE,
+          status TEXT NOT NULL DEFAULT 'pending',
+          createdDate TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now')),
+          syncAttempts INTEGER NOT NULL DEFAULT 0,
+          lastSyncAttempt TEXT,
+          errorMessage TEXT
         );
       `);
-      await tx.execAsync(
-        `CREATE INDEX IF NOT EXISTS idx_rates_type ON rates(type);`
-      );
-      await tx.execAsync(
-        `CREATE INDEX IF NOT EXISTS idx_rates_description ON rates(description);`
-      );
+
+      // we'll search on status a lot
+      await tx.execAsync(`
+        CREATE INDEX IF NOT EXISTS idx_expq_status ON expenses_queue(status);
+      `);
     });
 
     dbInstance = db;

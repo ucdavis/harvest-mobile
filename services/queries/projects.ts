@@ -1,71 +1,39 @@
-import { queryClient } from "@/components/context/queryClient";
-import { getDbOrThrow } from "@/lib/db/client";
-import { fakeProjects, Project } from "@/lib/project";
-import { onlineManager, useQuery } from "@tanstack/react-query";
+import { HOUR_IN_MS } from "@/components/context/queryClient";
+import { TeamAuthInfo } from "@/lib/auth";
+import { Project } from "@/lib/project";
+import { queryOptions, useQuery } from "@tanstack/react-query";
+import { fetchFromApi } from "../api";
 
-// we either get projects from the db (cache) or query from the API (and overwrite cache)
-async function fetchProjectsFromDb() {
-  const result = await getDbOrThrow().getAllAsync<Project>(
-    "SELECT * FROM projects ORDER BY name ASC"
-  );
-  return result;
+async function fetchProjectsFromApi(authInfo?: TeamAuthInfo) {
+  return fetchFromApi<Project[]>("/api/mobile/projects", {}, authInfo);
 }
 
-async function fetchFakeProjectsFromApi() {
-  // we'll just fake a few for now
-  // TODO: remove this!
-  const projects = [...fakeProjects];
-  await getDbOrThrow().withExclusiveTransactionAsync(async (tx) => {
-    await tx.execAsync("DELETE FROM projects");
-
-    for (const p of projects) {
-      await tx.runAsync(
-        "INSERT INTO projects (id, name, piName) VALUES (?,?,?)",
-        p.id,
-        p.name,
-        p.piName
-      );
-    }
+// uses api data and caches it
+export const projectsApiQueryOptions = (authInfo?: TeamAuthInfo) =>
+  queryOptions({
+    queryKey: ["projects", authInfo?.team] as const,
+    queryFn: () => fetchProjectsFromApi(authInfo),
+    staleTime: 12 * HOUR_IN_MS,
+    enabled: !!authInfo, // only run query if we have auth info
   });
 
-  return projects;
+export const useProjects = (authInfo?: TeamAuthInfo) => {
+  return useQuery(projectsApiQueryOptions(authInfo));
+};
+
+// now for recent projects, we'll be more agressive in caching here since it's not at critical and more time sensitive
+async function fetchRecentProjectsFromApi(authInfo?: TeamAuthInfo) {
+  return fetchFromApi<Project[]>("/api/mobile/recentprojects", {}, authInfo);
 }
 
-async function fetchProjectsFromApi() {
-  // TODO: actually have an API and refactor
-  const res = await fetch("http://harvest.caes.ucdavis.edu/api/projects");
-  const projects = (await res.json()) as Project[];
-  // update the local DB in a transaction
-  await getDbOrThrow().withExclusiveTransactionAsync(async (tx) => {
-    await tx.execAsync("DELETE FROM projects");
-    for (const p of projects) {
-      await tx.runAsync(
-        "INSERT INTO projects (id, name, updatedAt) VALUES (?,?,?)",
-        p.id,
-        p.name,
-        p.piName
-      );
-    }
+export const recentProjectsApiQueryOptions = (authInfo?: TeamAuthInfo) =>
+  queryOptions({
+    queryKey: ["projects", authInfo?.team, "recent"] as const,
+    queryFn: () => fetchRecentProjectsFromApi(authInfo),
+    staleTime: 5 * HOUR_IN_MS,
+    enabled: !!authInfo, // only run query if we have auth info
   });
-  return projects;
-}
 
-// now here's our actual hook to query projects
-// react-query will take care of when to call our fn based on our caching rules
-export function useProjects() {
-  return useQuery<Project[]>({
-    queryKey: ["projects"],
-    queryFn: async () => {
-      // if offline, return cached projects; if online, fetch from API
-      const cached = await fetchProjectsFromDb();
-      if (!onlineManager.isOnline()) {
-        return cached;
-      }
-
-      const fresh = await fetchFakeProjectsFromApi();
-      return fresh;
-    },
-    initialData: () => queryClient.getQueryData(["projects"]) as Project[] | [],
-    // we could overwrite cache/gc time here if we want to.  for now let's use the global settings
-  });
-}
+export const useRecentProjects = (authInfo?: TeamAuthInfo) => {
+  return useQuery(recentProjectsApiQueryOptions(authInfo));
+};
