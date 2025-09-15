@@ -38,7 +38,7 @@ export default function RateSelectScreen() {
       {/* Rates List */}
       <RatesList
         rates={rates || []}
-       queryKey={["rates", authInfo?.team]}
+        queryKey={["rates", authInfo?.team]}
         onRatePress={handleRateSelect}
         isLoading={isLoading}
         error={error}

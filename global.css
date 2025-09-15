@@ -21,3 +21,7 @@
 .harvest-button {
     @apply bg-harvest py-4 rounded-xl items-center;
 }
+
+.tertiary-label {
+    @apply text-sm font-medium tracking-tight text-primary-font/40
+}

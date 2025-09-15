@@ -106,6 +106,9 @@ export default function AddExpenseScreen() {
           <Text className="text-md uppercase font-bold text-harvest tracking-tight">
             Expenses
           </Text>
+          <Text className="text-sm text-primary-font/80 mt-4">
+            no current expenses, add them using the button below
+          </Text>
 
           {expenses.map((item) => (
             <View
@@ -113,7 +116,7 @@ export default function AddExpenseScreen() {
               className="flex-row items-end justify-between py-3 border-b border-primary-border"
             >
               <View className="flex-1">
-                <Text className="text-sm text-primary-font/40 uppercase font-bold">
+                <Text className="tertiary-label uppercase">
                   {item.type}
                 </Text>
                 <Text className="text-lg text-primary-font font-medium">
@@ -125,6 +128,7 @@ export default function AddExpenseScreen() {
                 <Text className="text-base text-primary-font/80 font-semibold">
                   {item.quantity} {item.rate?.unit} @ ${item.price}
                 </Text>
+
                 <TouchableOpacity
                   className="ml-3"
                   onPress={() => handleDeleteExpense(item.uniqueId)}
@@ -135,15 +139,16 @@ export default function AddExpenseScreen() {
             </View>
           ))}
 
-          {/* Add Expenses Button */}
+
+          <TouchableOpacity
+            className="flex-row bg-harvest rounded-md mt-5 justify-between py-2 px-4"
+            onPress={handleAddExpenses}
+          >
+            <Text className="text-base text-white font-bold">Add expense</Text>
+            <ChevronRightIcon size={24} color="white" />
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity
-          className="flex-row bg-harvest rounded-md justify-between py-4 px-4"
-          onPress={handleAddExpenses}
-        >
-          <Text className="text-base text-white font-bold">Add expense</Text>
-          <ChevronRightIcon size={24} color="white" />
-        </TouchableOpacity>
+
       </ScrollView>
 
       {/* Submit Button */}
