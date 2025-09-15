@@ -11,6 +11,8 @@ async function insertExpensesToDb(
 
   await db.withExclusiveTransactionAsync(async (tx) => {
     for (const expense of expenses) {
+      const createdDate = new Date().toISOString();
+
       console.log("Inserting expense into DB:", expense);
       // Insert the expense into the queue
       const result = await tx.runAsync(
@@ -25,7 +27,7 @@ async function insertExpensesToDb(
           status,
           createdDate,
           syncAttempts
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT(uniqueId) DO NOTHING;`, // ignore if duplicate
         [
           expense.projectId,
           expense.rateId,
@@ -35,7 +37,7 @@ async function insertExpensesToDb(
           expense.price,
           expense.uniqueId,
           "pending",
-          new Date().toISOString(),
+          createdDate,
           0,
         ]
       );
@@ -45,7 +47,7 @@ async function insertExpensesToDb(
         ...expense,
         id: result.lastInsertRowId,
         status: "pending" as const,
-        createdDate: new Date().toISOString(),
+        createdDate,
         syncAttempts: 0,
       };
 
@@ -76,27 +78,11 @@ export function useInsertExpenses() {
 async function getPendingExpensesFromDb(): Promise<QueuedExpense[]> {
   const db = getDbOrThrow();
 
-  const result = await db.getAllAsync(
+  const result = await db.getAllAsync<QueuedExpense>(
     `SELECT * FROM expenses_queue WHERE status = 'pending' ORDER BY createdDate DESC`
   );
 
-  console.log("Fetched pending expenses from DB:", result);
-
-  return result.map((row: any) => ({
-    id: row.id,
-    projectId: row.projectId ? row.projectId.toString() : null, // Safely convert to string if not null
-    rateId: row.rateId,
-    type: row.type,
-    description: row.description,
-    quantity: row.quantity,
-    price: row.price,
-    uniqueId: row.uniqueId,
-    status: row.status as QueuedExpense["status"],
-    createdDate: row.createdDate,
-    syncAttempts: row.syncAttempts,
-    lastSyncAttempt: row.lastSyncAttempt,
-    errorMessage: row.errorMessage,
-  }));
+  return result;
 }
 
 // Hook to get pending expenses with auto-sync functionality

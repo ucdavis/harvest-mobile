@@ -2,16 +2,16 @@ import { Text, TouchableOpacity, View } from "react-native";
 import { PencilSquareIcon } from "react-native-heroicons/outline";
 
 type ProjectCardProps = {
-  id?: string;           // internal ID e.g. "proj-001"
-  projectId: string;     // visible project code e.g. "AE-12234"
-  piName?: string;       // PI name
+  id: number; // internal ID, just a number
+  projectName: string;
+  piName?: string; // PI name
   onEdit?: () => void;
   onPress?: () => void;
 };
 
 export function ProjectCard({
   id,
-  projectId,
+  projectName,
   piName,
   onEdit,
   onPress,
@@ -39,7 +39,7 @@ export function ProjectCard({
             numberOfLines={1}
             ellipsizeMode="tail"
           >
-            {projectId}
+            {projectName}
           </Text>
 
           {piName ? (

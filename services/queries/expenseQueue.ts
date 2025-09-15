@@ -82,25 +82,11 @@ async function removeExpenseFromQueue(expenseId: number): Promise<void> {
 async function getPendingExpensesFromQueue(): Promise<QueuedExpense[]> {
   const db = getDbOrThrow();
 
-  const result = await db.getAllAsync(
+  const result = await db.getAllAsync<QueuedExpense>(
     `SELECT * FROM expenses_queue WHERE status = 'pending' ORDER BY createdDate ASC`
   );
 
-  return result.map((row: any) => ({
-    id: row.id,
-    projectId: row.projectId ? row.projectId.toString() : null,
-    rateId: row.rateId,
-    type: row.type,
-    description: row.description,
-    quantity: row.quantity,
-    price: row.price,
-    uniqueId: row.uniqueId,
-    status: row.status as QueuedExpense["status"],
-    createdDate: row.createdDate,
-    syncAttempts: row.syncAttempts,
-    lastSyncAttempt: row.lastSyncAttempt,
-    errorMessage: row.errorMessage,
-  }));
+  return result;
 }
 
 /**
