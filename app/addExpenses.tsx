@@ -15,6 +15,7 @@ import {
   TrashIcon,
 } from "react-native-heroicons/solid";
 
+import { useAuth } from "@/components/context/AuthContext";
 import { useExpenses } from "@/components/context/ExpenseContext";
 import { queryClient } from "@/components/context/queryClient";
 import { getProjectLink } from "@/lib/project";
@@ -31,6 +32,7 @@ export default function AddExpenseScreen() {
     piName: string; // TODO: use piName?
   }>();
 
+  const auth = useAuth();
   const [description, setDescription] = useState("");
 
   const { expenses, removeExpense, clearExpenses } = useExpenses();
@@ -51,19 +53,22 @@ export default function AddExpenseScreen() {
   };
 
   const handleProjectInfo = async () => {
-    const url = await getProjectLink(projectId);
-    console.log("Opening project info URL:", url);
+    const url = await getProjectLink(projectId, auth.authInfo!);
     if (url) {
       await openBrowserAsync(url);
     }
   };
 
   const handleSubmit = () => {
-    console.log("Submit expense", { description, expenses });
     insertExpensesMutation.mutate(expenses, {
       onSuccess: () => {
         // TODO: some kind of success message
         clearExpenses(); // clear local expenses
+
+        // invalidate the recent projects query to refresh recent projects
+        queryClient.invalidateQueries({
+          queryKey: ["projects", auth.authInfo?.team, "recent"],
+        });
 
         // if we aren't already syncing, trigger a sync
         queryClient.isMutating({

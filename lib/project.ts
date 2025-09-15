@@ -1,4 +1,4 @@
-import { getCurrentTeamAuthInfo } from "./auth";
+import { TeamAuthInfo } from "./auth";
 
 export type Project = {
   id: string;
@@ -6,9 +6,11 @@ export type Project = {
   piName: string;
 };
 
-export const getProjectLink = async (projectId: string) => {
+export const getProjectLink = async (
+  projectId: string,
+  authInfo: TeamAuthInfo
+) => {
   // need to grab current team and baseurl
-  const authInfo = await getCurrentTeamAuthInfo();
   const projectInfoUrl = new URL(
     `${authInfo?.team}/project/details/${projectId}`,
     authInfo?.apiBaseUrl
