@@ -8,7 +8,9 @@ pr:
       - "*"
 
 variables:
-  NODE_VERSION: "20.x"
+  - group: Secrets
+  - name: NODE_VERSION
+    value: "20.x"
 
 stages:
   - stage: CI
