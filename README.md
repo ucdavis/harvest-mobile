@@ -42,20 +42,16 @@ Then install the Fastlane tools:
 brew install fastlane
 ```
 
+Then install the Mac app "Transporter" [from the App Store](https://apps.apple.com/us/app/transporter/id1450874784?mt=12). You don't really need it, but it makes it easier to upload the app to App Store Connect. Otherwise you can use Xcode or any other way to upload the finished .ipa file.
+
 ### Build and deploy
 
 Run the deployment build locally:
 
 ```bash
-eas build -p ios --profile production --local
+eas build -p ios --profile production --local --output build/
 ```
 
 This might require some local setup the first time, like logging into your Apple Developer account.
 
-Then upload the build to App Store Connect:
-
-```bash
-eas submit -p ios --latest
-```
-
-This will upload the latest build to App Store Connect. You can then log into App Store Connect to manage the release.
+This will create an .ipa file in `build/*.ipa`. You can then upload this to App Store Connect using Transporter or Xcode or any other way you like.
