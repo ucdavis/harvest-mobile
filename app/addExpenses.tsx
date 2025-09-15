@@ -15,16 +15,25 @@ import {
 } from "react-native-heroicons/solid";
 
 import { useExpenses } from "@/components/context/ExpenseContext";
+import { queryClient } from "@/components/context/queryClient";
+import {
+  MUTATION_KEY_SYNC_EXPENSES,
+  useSyncExpenseQueue,
+} from "@/services/queries/expenseQueue";
+import { useInsertExpenses } from "@/services/queries/expenses";
 
 export default function AddExpenseScreen() {
   const { projectId, projectName } = useLocalSearchParams<{
     projectId: string;
     projectName: string;
-    piName: string;
+    piName: string; // TODO: use piName?
   }>();
 
   const [description, setDescription] = useState("");
+
   const { expenses, removeExpense, clearExpenses } = useExpenses();
+  const insertExpensesMutation = useInsertExpenses();
+  const syncExpenseQueueMutation = useSyncExpenseQueue();
 
   // Clear expenses on mount (when navigating to a new project)
   useEffect(() => {
@@ -41,6 +50,21 @@ export default function AddExpenseScreen() {
 
   const handleSubmit = () => {
     console.log("Submit expense", { description, expenses });
+    insertExpensesMutation.mutate(expenses, {
+      onSuccess: () => {
+        // TODO: some kind of success message
+        clearExpenses(); // clear local expenses
+
+        // if we aren't already syncing, trigger a sync
+        queryClient.isMutating({
+          mutationKey: [MUTATION_KEY_SYNC_EXPENSES],
+        }) === 0 && syncExpenseQueueMutation.mutate(); // trigger sync of expense queue
+        router.back();
+      },
+      onError: (error) => {
+        console.error("Failed to submit expenses:", error);
+      },
+    });
   };
 
   return (

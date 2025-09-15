@@ -63,8 +63,8 @@ export function ProjectsList({
 
   const renderProjectCard = ({ item }: { item: Project }) => (
     <ProjectCard
-      id={item.id} // internal ID (shows in small text)
-      projectId={item.name} // visible code
+      id={Number(item.id)}
+      projectName={item.name}
       piName={item.piName}
       onPress={() => handleProjectPress(item)}
       onEdit={() => handleProjectPress(item)}

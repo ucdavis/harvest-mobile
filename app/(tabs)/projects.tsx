@@ -16,7 +16,8 @@ export default function AllProjectsScreen() {
     router.push({
       pathname: "/addExpenses",
       params: {
-        projectId: project.name,
+        projectId: project.id,
+        projectName: project.name,
         piName: project.piName,
       },
     });

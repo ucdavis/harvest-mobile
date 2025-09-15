@@ -27,6 +27,8 @@ export default function ExpenseDetailsScreen() {
     projectId: string;
   }>();
 
+  console.log("ExpenseDetailsScreen params:", { rateParam, projectId });
+
   // Parse the rate from URL params
   const rate: Rate | null = rateParam ? JSON.parse(rateParam) : null;
   const { addExpense } = useExpenses();
@@ -60,7 +62,7 @@ export default function ExpenseDetailsScreen() {
       description: description || rate.description,
       price: rate.price,
       quantity: numericQuantity,
-      projectId: projectId || "",
+      projectId: Number(projectId),
       rateId: rate.id,
       rate,
     });

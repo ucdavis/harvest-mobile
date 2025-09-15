@@ -17,7 +17,29 @@ export async function getDb(): Promise<SQLite.SQLiteDatabase> {
 
     // schema init (do it here so everyone shares the same path)
     await db.withExclusiveTransactionAsync(async (tx) => {
-      // TODO: create expenses outbox table to keep record of unsync'd expenses
+      // expenses queue table to keep record of unsync'd expenses
+      await tx.execAsync(`
+        CREATE TABLE IF NOT EXISTS expenses_queue (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          projectId INTEGER NOT NULL,
+          rateId TEXT NOT NULL,
+          type TEXT NOT NULL,
+          description TEXT NOT NULL,
+          quantity REAL NOT NULL,
+          price REAL NOT NULL,
+          uniqueId TEXT NOT NULL UNIQUE,
+          status TEXT NOT NULL DEFAULT 'pending',
+          createdDate TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now')),
+          syncAttempts INTEGER NOT NULL DEFAULT 0,
+          lastSyncAttempt TEXT,
+          errorMessage TEXT
+        );
+      `);
+
+      // we'll search on status a lot
+      await tx.execAsync(`
+        CREATE INDEX IF NOT EXISTS idx_expq_status ON expenses_queue(status);
+      `);
     });
 
     dbInstance = db;

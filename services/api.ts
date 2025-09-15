@@ -20,15 +20,27 @@ async function ensureAuthInfo(authInfo?: TeamAuthInfo): Promise<TeamAuthInfo> {
  */
 export async function fetchFromApi<T>(
   endpoint: string,
+  init: RequestInit = {},
   authInfo?: TeamAuthInfo
 ): Promise<T> {
   const validAuthInfo = await ensureAuthInfo(authInfo);
 
-  const res = await fetch(`${validAuthInfo.apiBaseUrl}${endpoint}`, {
-    headers: {
-      Authorization: `Bearer ${validAuthInfo.token}`,
-      "Content-Type": "application/json",
-    },
+  const url = new URL(endpoint, validAuthInfo.apiBaseUrl);
+
+  const { headers: initHeaders, ...restInit } = init; // peel off headers if any
+  const headers = new Headers(initHeaders);
+
+  // Only set JSON content type if caller didn't specify one (e.g., multipart/form-data).  default to JSON.
+  if (!headers.has("Content-Type") && !(init.body instanceof FormData)) {
+    headers.set("Content-Type", "application/json");
+  }
+
+  // always set auth header
+  headers.set("Authorization", `Bearer ${validAuthInfo.token}`);
+
+  const res = await fetch(url, {
+    ...restInit, // everything except headers
+    headers,
   });
 
   if (!res.ok) {
