@@ -13,9 +13,7 @@ import {
 } from "react-native-heroicons/solid";
 
 export default function TabLayout() {
-  const { isLoggedIn, authInfo } = useAuth();
-
-  // console.log("auth info", authInfo);
+  const { isLoggedIn } = useAuth();
 
   if (!isLoggedIn) {
     return <Redirect href="/login" />;
