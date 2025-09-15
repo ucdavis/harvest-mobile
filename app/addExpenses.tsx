@@ -118,9 +118,11 @@ export default function AddExpenseScreen() {
           <Text className="text-md uppercase font-bold text-harvest tracking-tight">
             Expenses
           </Text>
-          <Text className="text-sm text-primary-font/80 mt-4">
-            no current expenses, add them using the button below
-          </Text>
+          {expenses.length === 0 && (
+            <Text className="text-sm text-primary-font/80 mt-4">
+              no current expenses, add them using the button below
+            </Text>
+          )}
 
           {expenses.map((item) => (
             <View
