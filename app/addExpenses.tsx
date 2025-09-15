@@ -53,7 +53,7 @@ export default function AddExpenseScreen() {
   };
 
   const handleProjectInfo = async () => {
-    const url = await getProjectLink(projectId, auth.authInfo!);
+    const url = getProjectLink(projectId, auth.authInfo!);
     if (url) {
       await openBrowserAsync(url);
     }

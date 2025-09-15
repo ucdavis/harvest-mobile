@@ -6,10 +6,7 @@ export type Project = {
   piName: string;
 };
 
-export const getProjectLink = async (
-  projectId: string,
-  authInfo: TeamAuthInfo
-) => {
+export const getProjectLink = (projectId: string, authInfo: TeamAuthInfo) => {
   // need to grab current team and baseurl
   const projectInfoUrl = new URL(
     `${authInfo?.team}/project/details/${projectId}`,
