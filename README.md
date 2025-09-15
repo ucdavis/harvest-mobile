@@ -49,7 +49,7 @@ Then install the Mac app "Transporter" [from the App Store](https://apps.apple.c
 Run the deployment build locally:
 
 ```bash
-eas build -p ios --profile production --local --output build/
+npm run build:ios
 ```
 
 This might require some local setup the first time, like logging into your Apple Developer account.
