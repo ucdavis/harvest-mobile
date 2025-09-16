@@ -1,7 +1,11 @@
 trigger:
-  branches: [main]
+  branches:
+    include:
+      - main
 pr:
-  branches: ["*"]
+  branches:
+    include:
+      - "*"
 
 variables:
   NODE_VERSION: "20.x"
