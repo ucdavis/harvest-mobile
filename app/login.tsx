@@ -21,7 +21,7 @@ export default function LoginScreen() {
   };
 
   return (
-    <View className="flex-1 p-4 bg-secondary-bg">
+    <View className="flex-1 p-4">
       <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
       <View className="flex-1 items-center justify-center">
         <Image

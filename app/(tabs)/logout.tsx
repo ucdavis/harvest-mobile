@@ -8,6 +8,10 @@ export default function LogoutScreen() {
 
   return (
     <View className="main">
+      <Text className="mt-20 text-center text-xl font-semibold text-primary-font">
+        Current User:
+
+      </Text>
       <TouchableOpacity
         onPress={logout}
         className="flex-row items-center gap-1 px-4 py-2 rounded-md bg-harvest mx-auto mt-10"
