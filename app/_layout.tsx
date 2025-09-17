@@ -1,7 +1,6 @@
 import {
-  DarkTheme,
   DefaultTheme,
-  ThemeProvider,
+  ThemeProvider
 } from "@react-navigation/native";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
@@ -11,16 +10,21 @@ import "react-native-reanimated";
 import { AuthProvider } from "@/components/context/AuthContext";
 import { ExpenseProvider } from "@/components/context/ExpenseContext";
 import { QueryContext } from "@/components/context/QueryContext";
-import { useColorScheme } from "@/hooks/useColorScheme";
 import { useInitDb } from "@/hooks/useInitDb";
 
 import "../global.css";
 
 function RootLayoutNav() {
-  const colorScheme = useColorScheme();
+  const theme = {
+    ...DefaultTheme,
+    colors: {
+      ...DefaultTheme.colors,
+      background: "#f7f7f7",
+    },
+  };
 
   return (
-    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+    <ThemeProvider value={theme}>
       <Stack
         screenOptions={{
           headerShown: false,
