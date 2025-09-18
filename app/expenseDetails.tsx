@@ -1,5 +1,5 @@
 import { router, useLocalSearchParams } from "expo-router";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Alert,
   KeyboardAvoidingView,
@@ -33,8 +33,18 @@ export default function ExpenseDetailsScreen() {
   const rate: Rate | null = rateParam ? JSON.parse(rateParam) : null;
   const { addExpense } = useExpenses();
 
-  const [quantity, setQuantity] = useState("1");
+  const [quantity, setQuantity] = useState("");
   const [description, setDescription] = useState("");
+  const quantityInputRef = useRef<TextInput>(null);
+
+  // Focus on quantity input when component mounts
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      quantityInputRef.current?.focus();
+    }, 100); // Small delay to ensure the component is fully mounted
+
+    return () => clearTimeout(timer);
+  }, []);
 
   // rate needs to be other and passthrough, but all passthrough rates are other so just check that
   const showDescriptionInput = rate?.isPassthrough || false;
@@ -46,7 +56,7 @@ export default function ExpenseDetailsScreen() {
   const handleConfirm = () => {
     const numericQuantity = parseFloat(quantity);
 
-    if (!numericQuantity || numericQuantity <= 0) {
+    if (!quantity.trim() || isNaN(numericQuantity) || numericQuantity <= 0) {
       Alert.alert(
         "Invalid Quantity",
         "Please enter a valid quantity greater than 0."
@@ -56,6 +66,14 @@ export default function ExpenseDetailsScreen() {
 
     if (!rate) {
       Alert.alert("Error", "Rate information is missing.");
+      return;
+    }
+
+    if (showDescriptionInput && !description.trim()) {
+      Alert.alert(
+        "Description Required",
+        "Please enter a description for this expense (required for passthrough)."
+      );
       return;
     }
 
@@ -187,10 +205,11 @@ export default function ExpenseDetailsScreen() {
                 Quantity ({rate.unit})
               </Text>
               <TextInput
+                ref={quantityInputRef}
                 className="bg-white rounded-lg p-4 text-[18px] font-semibold border border-neutral-200 text-center"
                 value={quantity}
                 onChangeText={setQuantity}
-                placeholder="Enter quantity"
+                placeholder="0.00"
                 placeholderTextColor="#999"
                 keyboardType="numeric"
                 selectTextOnFocus
@@ -201,13 +220,13 @@ export default function ExpenseDetailsScreen() {
             {showDescriptionInput && (
               <View className="mb-6">
                 <Text className="text-sm font-semibold text-neutral-500 tracking-tight mb-2">
-                  Description
+                  Description (required for passthrough)
                 </Text>
                 <TextInput
                   className="bg-white rounded-lg p-4 text-base border border-neutral-200 min-h-[80px]"
                   value={description}
                   onChangeText={setDescription}
-                  placeholder={`Enter custom description or leave blank to use "${rate.description}"`}
+                  placeholder="Enter description (required)"
                   placeholderTextColor="#999"
                   multiline
                   textAlignVertical="top"
