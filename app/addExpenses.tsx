@@ -101,13 +101,13 @@ export default function AddExpenseScreen() {
         <View className="card">
           <View className="flex-row items-start justify-between">
             <View>
-              <Text className="text-md uppercase font-bold text-harvest tracking-tight mb-1">
-                Project
+              <Text className="text-md uppercase font-bold text-primary-font/40 tracking-tight mb-1">
+                {projectId}
               </Text>
-              <Text className="text-lg font-semibold text-primary-font">
-                {projectId}: {projectName}
+              <Text className="text-xl font-bold text-harvest">
+                {projectName}
               </Text>
-              <Text className="text-sm text-primary-font/80">PI: {piName}</Text>
+              <Text className="text-md font-medium text-primary-font">PI: {piName}</Text>
             </View>
             {showMoreProjectInfoButton && (
               <TouchableOpacity onPress={handleProjectInfo}>
