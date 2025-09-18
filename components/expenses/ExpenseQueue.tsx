@@ -74,31 +74,31 @@ export default function ExpenseQueue({ className }: ExpenseQueueProps) {
 
   return (
     <View
-      className={`bg-white rounded-lg shadow-sm border border-gray-200 ${className || ""}`}
+      className={`card ${className || ""}`}
     >
-      <View className="p-4 border-b border-gray-200">
-        <View className="flex-row justify-between items-center mb-1">
-          <Text className="text-lg font-semibold text-gray-900">
-            Expense Queue ({expenses.length})
-          </Text>
-          {expenses.length > 0 && (
-            <TouchableOpacity
-              onPress={handleClearQueue}
-              className="bg-red-500 px-3 py-1 rounded-md"
-              disabled={clearExpenseQueueMutation.isPending}
-            >
-              <Text className="text-white text-sm font-medium">
-                {clearExpenseQueueMutation.isPending
-                  ? "Clearing..."
-                  : "Clear All"}
-              </Text>
-            </TouchableOpacity>
-          )}
-        </View>
-        <Text className="text-sm text-gray-600">
-          Development Mode - Showing expense sync status
+
+      <View className="flex-row justify-between items-center mb-1">
+        <Text className="text-md uppercase font-bold text-harvest tracking-tight">
+          Expense Queue ({expenses.length})
         </Text>
+        {expenses.length > 0 && (
+          <TouchableOpacity
+            onPress={handleClearQueue}
+            className="bg-red-500 px-3 py-1 rounded-md"
+            disabled={clearExpenseQueueMutation.isPending}
+          >
+            <Text className="text-white text-sm font-medium">
+              {clearExpenseQueueMutation.isPending
+                ? "Clearing..."
+                : "Clear All"}
+            </Text>
+          </TouchableOpacity>
+        )}
       </View>
+      <Text className="text-sm text-primary-font/80 mb-2 pb-2">
+        Development Mode - Showing expense sync status
+      </Text>
+
 
       <ScrollView
         className="max-h-96"

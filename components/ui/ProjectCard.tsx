@@ -20,11 +20,11 @@ export function ProjectCard({
 
   return (
     <CardWrapper
-      className="mb-4 rounded-md border border-primary-border bg-white overflow-hidden shadow-sm android:elevation-2"
+      className="mb-4 rounded-md border border-primary-border bg-white overflow-hidden"
       {...(onPress ? { onPress, activeOpacity: 0.7 } : {})}
     >
       {/* Header row */}
-      <View className="p-4 pb-2 flex-row items-center justify-between border-l-harvest border-l-8">
+      <View className="px-4 py-2 flex-row items-center justify-between border-l-harvest border-l-8">
         <View className="flex-1 pr-3">
           {/* Show ID here */}
           {id ? (
@@ -35,7 +35,7 @@ export function ProjectCard({
 
           {/* Show human-readable project code */}
           <Text
-            className="text-xl tracking-tight font-medium text-harvest max-w-[80%]"
+            className="text-xl tracking-tight font-semibold text-harvest max-w-[80%]"
             numberOfLines={1}
             ellipsizeMode="tail"
           >
@@ -44,7 +44,7 @@ export function ProjectCard({
 
           {piName ? (
             <Text
-              className="text-base font-semibold"
+              className="text-base font-medium"
               numberOfLines={1}
               ellipsizeMode="tail"
             >
