@@ -7,8 +7,8 @@ import { HapticTab } from "@/components/HapticTab";
 
 // ✅ Heroicons (solid set)
 import {
-  ArrowRightOnRectangleIcon,
   ClockIcon,
+  CogIcon,
   ListBulletIcon,
 } from "react-native-heroicons/solid";
 
@@ -49,12 +49,10 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="logout"
+        name="settings"
         options={{
-          title: "Log out",
-          tabBarIcon: ({ color }) => (
-            <ArrowRightOnRectangleIcon size={28} color={color} />
-          ),
+          title: "Settings",
+          tabBarIcon: ({ color }) => <CogIcon size={28} color={color} />,
         }}
       />
     </Tabs>
