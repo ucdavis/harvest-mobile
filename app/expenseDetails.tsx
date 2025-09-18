@@ -293,29 +293,34 @@ export default function ExpenseDetailsScreen() {
         {/* sticky bottom bar outside of the scroll view */}
         <View
           style={{ paddingBottom: (insets.bottom || 12) + 12 }}
-          className="border-t border-neutral-200 bg-white px-4 pt-3"
+          className="border-t border-primary-border bg-white px-2 pt-1"
         >
-          <View className="p-4 mb-4 bg-white border-t mt-auto border-primary-border">
+          <View className="p-4 bg-white">
             <View className="flex-row items-center justify-between mb-1">
-              <Text className="text-xl font-semibold text-primary-font">
-                Total Cost
-              </Text>
-              <Text
-                className="text-xl font-extrabold"
-                style={{ color: "#5e8a5e" }}
+              <View>
+                <Text className="text-lg font-semibold text-primary-font -mb-1">
+                  Total Cost
+                </Text>
+                <Text className="text-base font-semibold text-primary-font/40 text-start -mb-1">
+                  {quantity || "0"} {rate.unit} × ${rate.price}
+                </Text>
+                <Text
+                  className="text-lg font-extrabold"
+                  style={{ color: "#266041" }}
+                >
+                  ${getTotalCost()}
+                </Text>
+
+              </View>
+
+              <TouchableOpacity
+                className="harvest-button w-[55%]"
+                onPress={handleConfirm}
               >
-                ${getTotalCost()}
-              </Text>
+                <Text className="harvest-button-text">Add Expense</Text>
+              </TouchableOpacity>
             </View>
-            <Text className="text-lg font-semibold text-primary-font/40 text-start mb-2">
-              {quantity || "0"} {rate.unit} × ${rate.price} = ${getTotalCost()}
-            </Text>
-            <TouchableOpacity
-              className="harvest-button"
-              onPress={handleConfirm}
-            >
-              <Text className="harvest-button-text">Add Expense</Text>
-            </TouchableOpacity>
+
           </View>
         </View>
       </Pressable>
