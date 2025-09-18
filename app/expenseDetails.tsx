@@ -33,7 +33,12 @@ export default function ExpenseDetailsScreen() {
   }>();
 
   // Parse the rate from URL params
-  const rate: Rate | null = rateParam ? JSON.parse(rateParam) : null;
+  let rate: Rate | null = null;
+  try {
+    rate = rateParam ? JSON.parse(rateParam) : null;
+  } catch {
+    rate = null;
+  }
   const { addExpense } = useExpenses();
 
   // for positioning submit button
