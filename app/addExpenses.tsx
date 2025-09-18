@@ -25,6 +25,8 @@ import {
 } from "@/services/queries/expenseQueue";
 import { useInsertExpenses } from "@/services/queries/expenses";
 
+const showMoreProjectInfoButton = false; // false for now since workers can't see project details
+
 export default function AddExpenseScreen() {
   const { projectId, projectName } = useLocalSearchParams<{
     projectId: string;
@@ -33,7 +35,7 @@ export default function AddExpenseScreen() {
   }>();
 
   const auth = useAuth();
-  const [description, setDescription] = useState("");
+  const [activity, setActivity] = useState("");
 
   const { expenses, removeExpense, clearExpenses } = useExpenses();
   const insertExpensesMutation = useInsertExpenses();
@@ -60,7 +62,12 @@ export default function AddExpenseScreen() {
   };
 
   const handleSubmit = () => {
-    insertExpensesMutation.mutate(expenses, {
+    // add activity to each expense (flattened)
+    const expensesWithActivity = expenses.map((expense) => ({
+      ...expense,
+      activity: activity.trim(),
+    }));
+    insertExpensesMutation.mutate(expensesWithActivity, {
       onSuccess: () => {
         // TODO: some kind of success message
         clearExpenses(); // clear local expenses
@@ -98,22 +105,24 @@ export default function AddExpenseScreen() {
                 {projectId}: {projectName}
               </Text>
             </View>
-            <TouchableOpacity onPress={handleProjectInfo}>
-              <InformationCircleIcon size={24} color="#a0a0a0" />
-            </TouchableOpacity>
+            {showMoreProjectInfoButton && (
+              <TouchableOpacity onPress={handleProjectInfo}>
+                <InformationCircleIcon size={24} color="#a0a0a0" />
+              </TouchableOpacity>
+            )}
           </View>
         </View>
 
         <View className="card">
           <Text className="text-md uppercase font-bold text-harvest tracking-tight">
-            Description
+            Activity
           </Text>
           <TextInput
             className="border mt-5 border-primary-border rounded-md p-3 text-base min-h-[60px] bg-gray-50"
-            placeholder="Add expense description..."
+            placeholder="Add expense activity..."
             placeholderTextColor="#999"
-            value={description}
-            onChangeText={setDescription}
+            value={activity}
+            onChangeText={setActivity}
             multiline
             textAlignVertical="top"
           />

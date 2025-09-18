@@ -36,6 +36,9 @@ export default function ExpenseDetailsScreen() {
   const [quantity, setQuantity] = useState("1");
   const [description, setDescription] = useState("");
 
+  // rate needs to be other and passthrough, but all passthrough rates are other so just check that
+  const showDescriptionInput = rate?.isPassthrough || false;
+
   const handleCancel = () => {
     router.back();
   };
@@ -59,6 +62,7 @@ export default function ExpenseDetailsScreen() {
     // Create the new expense
     const newExpense = createExpenseWithUniqueId({
       type: rate.type,
+      activity: "", // activity will be set in addExpenses screen
       description: description || rate.description,
       price: rate.price,
       quantity: numericQuantity,
@@ -163,18 +167,13 @@ export default function ExpenseDetailsScreen() {
                 <RateIcon type={rate.type} color="white" size={16} />
               </View>
               <View className="flex-1">
-                <Text className="tertiary-label uppercase">
-                  {rate.type}
-                </Text>
+                <Text className="tertiary-label uppercase">{rate.type}</Text>
                 <Text className="text-lg font-semibold text-primary-font">
                   {rate.description}
                 </Text>
               </View>
               <View className="items-end">
-
-                <Text className="tertiary-label text-right">
-                  {rate.unit}
-                </Text>
+                <Text className="tertiary-label text-right">{rate.unit}</Text>
                 <Text className="text-lg font-bold text-primary-font">
                   ${rate.price}
                 </Text>
@@ -199,20 +198,22 @@ export default function ExpenseDetailsScreen() {
             </View>
 
             {/* Description Input */}
-            <View className="mb-6">
-              <Text className="text-sm font-semibold text-neutral-500 tracking-tight mb-2">
-                Description (optional)
-              </Text>
-              <TextInput
-                className="bg-white rounded-lg p-4 text-base border border-neutral-200 min-h-[80px]"
-                value={description}
-                onChangeText={setDescription}
-                placeholder={`Enter custom description or leave blank to use "${rate.description}"`}
-                placeholderTextColor="#999"
-                multiline
-                textAlignVertical="top"
-              />
-            </View>
+            {showDescriptionInput && (
+              <View className="mb-6">
+                <Text className="text-sm font-semibold text-neutral-500 tracking-tight mb-2">
+                  Description
+                </Text>
+                <TextInput
+                  className="bg-white rounded-lg p-4 text-base border border-neutral-200 min-h-[80px]"
+                  value={description}
+                  onChangeText={setDescription}
+                  placeholder={`Enter custom description or leave blank to use "${rate.description}"`}
+                  placeholderTextColor="#999"
+                  multiline
+                  textAlignVertical="top"
+                />
+              </View>
+            )}
           </View>
           <View className="p-4 mb-4 bg-white border-t mt-auto border-primary-border">
             <View className="flex-row items-center justify-between mb-1">

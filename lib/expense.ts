@@ -13,6 +13,7 @@ export type Rate = {
 // matched with harvest
 export type Expense = {
   type: string;
+  activity: string; // description of the overall activity which is flattened onto each expense
   description: string; // for other
   price: number; // rate amount, immutable
   quantity: number;
