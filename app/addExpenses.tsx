@@ -28,10 +28,10 @@ import { useInsertExpenses } from "@/services/queries/expenses";
 const showMoreProjectInfoButton = false; // false for now since workers can't see project details
 
 export default function AddExpenseScreen() {
-  const { projectId, projectName } = useLocalSearchParams<{
+  const { projectId, projectName, piName } = useLocalSearchParams<{
     projectId: string;
     projectName: string;
-    piName: string; // TODO: use piName?
+    piName: string;
   }>();
 
   const auth = useAuth();
@@ -107,6 +107,7 @@ export default function AddExpenseScreen() {
               <Text className="text-lg font-semibold text-primary-font">
                 {projectId}: {projectName}
               </Text>
+              <Text className="text-sm text-primary-font/80">PI: {piName}</Text>
             </View>
             {showMoreProjectInfoButton && (
               <TouchableOpacity onPress={handleProjectInfo}>

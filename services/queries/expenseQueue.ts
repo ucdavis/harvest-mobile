@@ -16,6 +16,7 @@ async function insertExpensesToApi(
     projectId: expense.projectId,
     rateId: expense.rateId,
     type: expense.type,
+    activity: expense.activity,
     description: expense.description,
     quantity: expense.quantity,
     price: expense.price,
