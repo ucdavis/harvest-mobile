@@ -20,7 +20,6 @@ interface ExpenseQueueProps {
 export default function ExpenseQueue({ className }: ExpenseQueueProps) {
   const { data: expenses = [], isRefetching, refetch } = usePendingExpenses();
 
-  console.log("ExpenseQueue expenses:", expenses);
   const clearExpenseQueueMutation = useClearExpenseQueue();
 
   const getStatusColor = (status: QueuedExpense["status"]) => {
@@ -96,7 +95,7 @@ export default function ExpenseQueue({ className }: ExpenseQueueProps) {
           )}
         </View>
         <Text className="text-sm text-gray-600">
-          Development Mode - Showing expense sync status
+          Showing expense sync status
         </Text>
       </View>
 
