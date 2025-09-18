@@ -35,6 +35,35 @@ export default function ExpenseDetailsScreen() {
 
   const [quantity, setQuantity] = useState("");
   const [description, setDescription] = useState("");
+
+  const handleQuantityChange = (value: string) => {
+    // Allow empty string for clearing the input
+    if (value === "") {
+      setQuantity("");
+      return;
+    }
+
+    // Remove non-numeric characters except decimal point
+    const numericValue = value.replace(/[^0-9.]/g, "");
+
+    // Prevent multiple decimal points
+    const parts = numericValue.split(".");
+    if (parts.length > 2) {
+      return; // Don't update if multiple decimal points
+    }
+
+    // Limit to 2 decimal places
+    if (parts.length === 2 && parts[1].length > 2) {
+      return; // Don't update if more than 2 decimal places
+    }
+
+    // Prevent leading zeros before decimal (except single 0)
+    if (parts[0].length > 1 && parts[0].startsWith("0") && parts.length === 1) {
+      return;
+    }
+
+    setQuantity(numericValue);
+  };
   const quantityInputRef = useRef<TextInput>(null);
 
   // Focus on quantity input when component mounts
@@ -208,10 +237,10 @@ export default function ExpenseDetailsScreen() {
                 ref={quantityInputRef}
                 className="bg-white rounded-lg p-4 text-[18px] font-semibold border border-neutral-200 text-center"
                 value={quantity}
-                onChangeText={setQuantity}
+                onChangeText={handleQuantityChange}
                 placeholder="0.00"
                 placeholderTextColor="#999"
-                keyboardType="numeric"
+                keyboardType="decimal-pad"
                 selectTextOnFocus
               />
             </View>
