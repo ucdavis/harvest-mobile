@@ -20,7 +20,6 @@ interface ExpenseQueueProps {
 export default function ExpenseQueue({ className }: ExpenseQueueProps) {
   const { data: expenses = [], isRefetching, refetch } = usePendingExpenses();
 
-  console.log("ExpenseQueue expenses:", expenses);
   const clearExpenseQueueMutation = useClearExpenseQueue();
 
   const getStatusColor = (status: QueuedExpense["status"]) => {
@@ -76,10 +75,27 @@ export default function ExpenseQueue({ className }: ExpenseQueueProps) {
     <View
       className={`card ${className || ""}`}
     >
-
-      <View className="flex-row justify-between items-center mb-1">
-        <Text className="text-md uppercase font-bold text-harvest tracking-tight">
-          Expense Queue ({expenses.length})
+      <View className="p-4 border-b border-gray-200">
+        <View className="flex-row justify-between items-center mb-1">
+          <Text className="text-lg font-semibold text-gray-900">
+            Expense Queue ({expenses.length})
+          </Text>
+          {expenses.length > 0 && (
+            <TouchableOpacity
+              onPress={handleClearQueue}
+              className="bg-red-500 px-3 py-1 rounded-md"
+              disabled={clearExpenseQueueMutation.isPending}
+            >
+              <Text className="text-white text-sm font-medium">
+                {clearExpenseQueueMutation.isPending
+                  ? "Clearing..."
+                  : "Clear All"}
+              </Text>
+            </TouchableOpacity>
+          )}
+        </View>
+        <Text className="text-sm text-gray-600">
+          Showing expense sync status
         </Text>
         {expenses.length > 0 && (
           <TouchableOpacity

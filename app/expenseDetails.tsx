@@ -1,5 +1,5 @@
 import { router, useLocalSearchParams } from "expo-router";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Alert,
   KeyboardAvoidingView,
@@ -27,14 +27,54 @@ export default function ExpenseDetailsScreen() {
     projectId: string;
   }>();
 
-  console.log("ExpenseDetailsScreen params:", { rateParam, projectId });
-
   // Parse the rate from URL params
   const rate: Rate | null = rateParam ? JSON.parse(rateParam) : null;
   const { addExpense } = useExpenses();
 
-  const [quantity, setQuantity] = useState("1");
+  const [quantity, setQuantity] = useState("");
   const [description, setDescription] = useState("");
+
+  const handleQuantityChange = (value: string) => {
+    // Allow empty string for clearing the input
+    if (value === "") {
+      setQuantity("");
+      return;
+    }
+
+    // Remove non-numeric characters except decimal point
+    const numericValue = value.replace(/[^0-9.]/g, "");
+
+    // Prevent multiple decimal points
+    const parts = numericValue.split(".");
+    if (parts.length > 2) {
+      return; // Don't update if multiple decimal points
+    }
+
+    // Limit to 2 decimal places
+    if (parts.length === 2 && parts[1].length > 2) {
+      return; // Don't update if more than 2 decimal places
+    }
+
+    // Prevent leading zeros before decimal (except single 0)
+    if (parts[0].length > 1 && parts[0].startsWith("0") && parts.length === 1) {
+      return;
+    }
+
+    setQuantity(numericValue);
+  };
+  const quantityInputRef = useRef<TextInput>(null);
+
+  // Focus on quantity input when component mounts
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      quantityInputRef.current?.focus();
+    }, 100); // Small delay to ensure the component is fully mounted
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  // rate needs to be other and passthrough, but all passthrough rates are other so just check that
+  const showDescriptionInput = rate?.isPassthrough || false;
 
   const handleCancel = () => {
     router.back();
@@ -43,7 +83,7 @@ export default function ExpenseDetailsScreen() {
   const handleConfirm = () => {
     const numericQuantity = parseFloat(quantity);
 
-    if (!numericQuantity || numericQuantity <= 0) {
+    if (!quantity.trim() || isNaN(numericQuantity) || numericQuantity <= 0) {
       Alert.alert(
         "Invalid Quantity",
         "Please enter a valid quantity greater than 0."
@@ -56,9 +96,18 @@ export default function ExpenseDetailsScreen() {
       return;
     }
 
+    if (showDescriptionInput && !description.trim()) {
+      Alert.alert(
+        "Description Required",
+        "Please enter a description for this expense (required for passthrough)."
+      );
+      return;
+    }
+
     // Create the new expense
     const newExpense = createExpenseWithUniqueId({
       type: rate.type,
+      activity: "", // activity will be set in addExpenses screen
       description: description || rate.description,
       price: rate.price,
       quantity: numericQuantity,
@@ -163,18 +212,13 @@ export default function ExpenseDetailsScreen() {
                 <RateIcon type={rate.type} color="white" size={16} />
               </View>
               <View className="flex-1">
-                <Text className="tertiary-label uppercase">
-                  {rate.type}
-                </Text>
+                <Text className="tertiary-label uppercase">{rate.type}</Text>
                 <Text className="text-lg font-semibold text-primary-font">
                   {rate.description}
                 </Text>
               </View>
               <View className="items-end">
-
-                <Text className="tertiary-label text-right">
-                  {rate.unit}
-                </Text>
+                <Text className="tertiary-label text-right">{rate.unit}</Text>
                 <Text className="text-lg font-bold text-primary-font">
                   ${rate.price}
                 </Text>
@@ -188,31 +232,34 @@ export default function ExpenseDetailsScreen() {
                 Quantity ({rate.unit})
               </Text>
               <TextInput
+                ref={quantityInputRef}
                 className="bg-white rounded-lg p-4 text-[18px] font-semibold border border-neutral-200 text-center"
                 value={quantity}
-                onChangeText={setQuantity}
-                placeholder="Enter quantity"
+                onChangeText={handleQuantityChange}
+                placeholder="0.00"
                 placeholderTextColor="#999"
-                keyboardType="numeric"
+                keyboardType="decimal-pad"
                 selectTextOnFocus
               />
             </View>
 
             {/* Description Input */}
-            <View className="mb-6">
-              <Text className="text-sm font-semibold text-neutral-500 tracking-tight mb-2">
-                Description (optional)
-              </Text>
-              <TextInput
-                className="bg-white rounded-lg p-4 text-base border border-neutral-200 min-h-[80px]"
-                value={description}
-                onChangeText={setDescription}
-                placeholder={`Enter custom description or leave blank to use "${rate.description}"`}
-                placeholderTextColor="#999"
-                multiline
-                textAlignVertical="top"
-              />
-            </View>
+            {showDescriptionInput && (
+              <View className="mb-6">
+                <Text className="text-sm font-semibold text-neutral-500 tracking-tight mb-2">
+                  Description (required for passthrough)
+                </Text>
+                <TextInput
+                  className="bg-white rounded-lg p-4 text-base border border-neutral-200 min-h-[80px]"
+                  value={description}
+                  onChangeText={setDescription}
+                  placeholder="Enter description (required)"
+                  placeholderTextColor="#999"
+                  multiline
+                  textAlignVertical="top"
+                />
+              </View>
+            )}
           </View>
           <View className="p-4 mb-4 bg-white border-t mt-auto border-primary-border">
             <View className="flex-row items-center justify-between mb-1">

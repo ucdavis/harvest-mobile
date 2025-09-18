@@ -1,4 +1,5 @@
 import { router, useLocalSearchParams } from "expo-router";
+import { openBrowserAsync } from "expo-web-browser";
 import { useEffect, useState } from "react";
 import {
   ScrollView,
@@ -10,27 +11,31 @@ import {
 
 import {
   ChevronRightIcon,
-  TrashIcon
+  InformationCircleIcon,
+  TrashIcon,
 } from "react-native-heroicons/solid";
 
 import { useAuth } from "@/components/context/AuthContext";
 import { useExpenses } from "@/components/context/ExpenseContext";
 import { queryClient } from "@/components/context/queryClient";
+import { getProjectLink } from "@/lib/project";
 import {
   MUTATION_KEY_SYNC_EXPENSES,
   useSyncExpenseQueue,
 } from "@/services/queries/expenseQueue";
 import { useInsertExpenses } from "@/services/queries/expenses";
 
+const showMoreProjectInfoButton = false; // false for now since workers can't see project details
+
 export default function AddExpenseScreen() {
-  const { projectId, projectName, piName } = useLocalSearchParams<{
+  const { projectId, projectName } = useLocalSearchParams<{
     projectId: string;
     projectName: string;
     piName: string; // TODO: use piName?
   }>();
 
   const auth = useAuth();
-  const [description, setDescription] = useState("");
+  const [activity, setActivity] = useState("");
 
   const { expenses, removeExpense, clearExpenses } = useExpenses();
   const insertExpensesMutation = useInsertExpenses();
@@ -49,9 +54,23 @@ export default function AddExpenseScreen() {
     removeExpense(uniqueId);
   };
 
+  const handleProjectInfo = async () => {
+    const url = getProjectLink(projectId, auth.authInfo!);
+    if (url) {
+      await openBrowserAsync(url);
+    }
+  };
 
   const handleSubmit = () => {
-    insertExpensesMutation.mutate(expenses, {
+    // prep the expenses for submission
+    // add activity to each expense (flattened)
+    // remove the rate object, we only need the rateId
+    const expensesWithActivity = expenses.map((expense) => ({
+      ...expense,
+      rate: undefined, // remove rate object
+      activity: activity.trim(),
+    }));
+    insertExpensesMutation.mutate(expensesWithActivity, {
       onSuccess: () => {
         // TODO: some kind of success message
         clearExpenses(); // clear local expenses
@@ -80,36 +99,33 @@ export default function AddExpenseScreen() {
         showsVerticalScrollIndicator={false}
       >
         <View className="card">
-          <View className="flex-col items-start justify-between">
-
-            <Text className="text-sm tracking-tight font-bold uppercase text-primary-font/40">
-              {projectId}
-            </Text>
-
-            <Text className="text-2xl tracking-tight font-bold text-harvest ">
-              {projectName}
-            </Text>
-            <Text
-              className="text-base font-semibold"
-              numberOfLines={1}
-              ellipsizeMode="tail"
-            >
-              {piName}
-            </Text>
-
+          <View className="flex-row items-start justify-between">
+            <View>
+              <Text className="text-md uppercase font-bold text-harvest tracking-tight mb-1">
+                Project
+              </Text>
+              <Text className="text-lg font-semibold text-primary-font">
+                {projectId}: {projectName}
+              </Text>
+            </View>
+            {showMoreProjectInfoButton && (
+              <TouchableOpacity onPress={handleProjectInfo}>
+                <InformationCircleIcon size={24} color="#a0a0a0" />
+              </TouchableOpacity>
+            )}
           </View>
         </View>
 
         <View className="card">
           <Text className="text-md uppercase font-bold text-harvest tracking-tight">
-            Description
+            Activity
           </Text>
           <TextInput
             className="border mt-5 border-primary-border rounded-md p-3 text-base min-h-[60px] bg-gray-50"
-            placeholder="Add expense description..."
+            placeholder="Add expense activity..."
             placeholderTextColor="#999"
-            value={description}
-            onChangeText={setDescription}
+            value={activity}
+            onChangeText={setActivity}
             multiline
             textAlignVertical="top"
           />
@@ -120,7 +136,7 @@ export default function AddExpenseScreen() {
             Expenses
           </Text>
           {expenses.length === 0 && (
-            <Text className="text-sm text-primary-font/80 mt-2">
+            <Text className="text-sm text-primary-font/80 mt-4">
               no current expenses, add them using the button below
             </Text>
           )}
@@ -153,7 +169,7 @@ export default function AddExpenseScreen() {
           ))}
 
           <TouchableOpacity
-            className="harvest-button-icon"
+            className="flex-row bg-harvest rounded-md mt-5 justify-between py-2 px-4"
             onPress={handleAddExpenses}
           >
             <Text className="text-base text-white font-bold">Add expense</Text>
