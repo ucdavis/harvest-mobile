@@ -10,13 +10,20 @@ export default function LogoutScreen() {
   const { logout, authInfo } = useAuth();
 
   const userQuery = useUserInfo(authInfo);
-  const expenseQueueMutation = useClearExpenseQueue();
+  const clearExpenseQueueMutation = useClearExpenseQueue();
 
   const onLogoutPress = async () => {
     // invalidate all queries, clear the expense queue and logout
-    await expenseQueueMutation.mutateAsync();
-    await queryClient.invalidateQueries();
-    logout();
+    await queryClient.cancelQueries(); // cancel in-flight queries
+
+    try {
+      await clearExpenseQueueMutation.mutateAsync();
+    } catch (error) {
+      console.error("Failed to clear expense queue:", error);
+    } finally {
+      queryClient.clear(); // Clear all cached queries
+      logout();
+    }
   };
 
   return (
