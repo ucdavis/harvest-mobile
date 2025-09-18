@@ -107,7 +107,7 @@ export default function AddExpenseScreen() {
               <Text className="text-lg font-semibold text-primary-font">
                 {projectId}: {projectName}
               </Text>
-              <Text className="text-sm text-primary-font/80">{piName}</Text>
+              <Text className="text-sm text-primary-font/80">PI: {piName}</Text>
             </View>
             {showMoreProjectInfoButton && (
               <TouchableOpacity onPress={handleProjectInfo}>
