@@ -94,7 +94,7 @@ export default function ExpenseQueue({ className }: ExpenseQueueProps) {
           </TouchableOpacity>
         )}
       </View>
-      <Text className="text-sm text-gray-600">
+      <Text className="text-sm text-primary-font/80">
         Showing expense sync status
       </Text>
       {expenses.length > 0 && (
@@ -124,7 +124,7 @@ export default function ExpenseQueue({ className }: ExpenseQueueProps) {
       >
         {expenses.length === 0 ? (
           <View className="p-4">
-            <Text className="text-gray-500 text-center">
+            <Text className="text-primary-font/40 text-center">
               No expenses in queue
             </Text>
           </View>
