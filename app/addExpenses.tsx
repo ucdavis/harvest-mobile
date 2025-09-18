@@ -62,9 +62,12 @@ export default function AddExpenseScreen() {
   };
 
   const handleSubmit = () => {
+    // prep the expenses for submission
     // add activity to each expense (flattened)
+    // remove the rate object, we only need the rateId
     const expensesWithActivity = expenses.map((expense) => ({
       ...expense,
+      rate: undefined, // remove rate object
       activity: activity.trim(),
     }));
     insertExpensesMutation.mutate(expensesWithActivity, {
