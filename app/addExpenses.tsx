@@ -136,8 +136,8 @@ export default function AddExpenseScreen() {
             Expenses
           </Text>
           {expenses.length === 0 && (
-            <Text className="text-sm text-primary-font/80 mt-4">
-              no current expenses, add them using the button below
+            <Text className="text-primary-font/80 mt-2">
+              No expenses added.
             </Text>
           )}
 
