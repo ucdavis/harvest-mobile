@@ -1,6 +1,7 @@
 import { useAuth } from "@/components/context/AuthContext";
 import { queryClient } from "@/components/context/queryClient";
 import ExpenseQueue from "@/components/expenses/ExpenseQueue";
+import { useClearExpenseQueue } from "@/services/queries/expenses";
 import { useUserInfo } from "@/services/queries/users";
 import { Text, TouchableOpacity, View } from "react-native";
 import { ArrowRightOnRectangleIcon } from "react-native-heroicons/outline";
@@ -9,10 +10,12 @@ export default function LogoutScreen() {
   const { logout, authInfo } = useAuth();
 
   const userQuery = useUserInfo(authInfo);
+  const expenseQueueMutation = useClearExpenseQueue();
 
-  const onLogoutPress = () => {
-    // invalidate all queries and logout
-    queryClient.invalidateQueries();
+  const onLogoutPress = async () => {
+    // invalidate all queries, clear the expense queue and logout
+    await expenseQueueMutation.mutateAsync();
+    await queryClient.invalidateQueries();
     logout();
   };
 
