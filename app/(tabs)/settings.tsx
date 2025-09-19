@@ -28,25 +28,33 @@ export default function LogoutScreen() {
 
   return (
     <View className="main">
-      <Text className="mt-20 text-center text-xl font-semibold text-primary-font">
-        Current User: {userQuery.data?.user.email || "Loading User"} in team{" "}
-        {userQuery.data?.teamSlug || "Unknown Team"}
-      </Text>
-      <TouchableOpacity
-        onPress={onLogoutPress}
-        className="flex-row items-center gap-1 px-4 py-2 rounded-md bg-harvest mx-auto mt-10"
-        accessibilityRole="button"
-        accessibilityLabel="Logout"
-      >
-        <ArrowRightOnRectangleIcon size={36} color="#fff" />
-        <Text className="text-lg font-semibold text-white">
-          Log out of Harvest
+      <View className="card">
+        <Text className="text-md uppercase font-bold text-harvest tracking-tight">User Details</Text>
+        <Text className="text-lg font-semibold text-primary-font">
+          Current User:
         </Text>
-      </TouchableOpacity>
+        <Text className="text-lg text-primary-font">
+          {userQuery.data?.user.email || "Loading User"} in team{" "}
+          {userQuery.data?.teamSlug || "Unknown Team"}
+        </Text>
+        <TouchableOpacity
+          onPress={onLogoutPress}
+          className="harvest-button-icon"
+          accessibilityRole="button"
+          accessibilityLabel="Logout"
+        >
 
-      <View className="mx-4 mt-8">
-        <ExpenseQueue />
+          <Text className="harvest-button-text">
+            Log out of Harvest
+          </Text>
+          <ArrowRightOnRectangleIcon size={24} color="#fff" />
+        </TouchableOpacity>
       </View>
+
+
+
+      <ExpenseQueue />
+
     </View>
   );
 }

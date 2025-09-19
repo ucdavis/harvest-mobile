@@ -7,9 +7,9 @@ import { HapticTab } from "@/components/HapticTab";
 
 // ✅ Heroicons (solid set)
 import {
+  ClipboardDocumentListIcon,
   ClockIcon,
-  CogIcon,
-  ListBulletIcon,
+  CogIcon
 } from "react-native-heroicons/solid";
 
 export default function TabLayout() {
@@ -45,7 +45,7 @@ export default function TabLayout() {
         name="projects"
         options={{
           title: "All Projects",
-          tabBarIcon: ({ color }) => <ListBulletIcon size={28} color={color} />,
+          tabBarIcon: ({ color }) => <ClipboardDocumentListIcon size={28} color={color} />,
         }}
       />
       <Tabs.Screen

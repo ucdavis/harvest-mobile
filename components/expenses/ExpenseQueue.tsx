@@ -12,6 +12,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { ChevronRightIcon } from "react-native-heroicons/solid";
 
 interface ExpenseQueueProps {
   className?: string;
@@ -73,31 +74,35 @@ export default function ExpenseQueue({ className }: ExpenseQueueProps) {
 
   return (
     <View
-      className={`bg-white rounded-lg shadow-sm border border-gray-200 ${className || ""}`}
+      className={`card ${className || ""}`}
     >
-      <View className="p-4 border-b border-gray-200">
-        <View className="flex-row justify-between items-center mb-1">
-          <Text className="text-lg font-semibold text-gray-900">
-            Expense Queue ({expenses.length})
-          </Text>
-          {expenses.length > 0 && (
-            <TouchableOpacity
-              onPress={handleClearQueue}
-              className="bg-red-500 px-3 py-1 rounded-md"
-              disabled={clearExpenseQueueMutation.isPending}
-            >
-              <Text className="text-white text-sm font-medium">
-                {clearExpenseQueueMutation.isPending
-                  ? "Clearing..."
-                  : "Clear All"}
-              </Text>
-            </TouchableOpacity>
-          )}
-        </View>
-        <Text className="text-sm text-gray-600">
-          Showing expense sync status
+
+      <View className="flex-row justify-between items-center mb-1">
+        <Text className="text-md uppercase font-bold text-harvest tracking-tight">
+          Expense Queue ({expenses.length})
         </Text>
+
       </View>
+      <Text className="text-sm text-primary-font/80 mb-2">
+        Showing expense sync status
+      </Text>
+      {expenses.length > 0 && (
+        <TouchableOpacity
+          onPress={handleClearQueue}
+          className="flex-row bg-merlot rounded-md mt-5 justify-between py-2 px-4"
+          disabled={clearExpenseQueueMutation.isPending}
+        >
+          <Text className="text-white text-sm font-medium">
+            {clearExpenseQueueMutation.isPending
+              ? "Clearing..."
+              : "Clear All"}
+          </Text>
+          <ChevronRightIcon size={16} color="white" />
+        </TouchableOpacity>
+      )}
+
+
+
 
       <ScrollView
         className="max-h-96"
@@ -107,7 +112,7 @@ export default function ExpenseQueue({ className }: ExpenseQueueProps) {
       >
         {expenses.length === 0 ? (
           <View className="p-4">
-            <Text className="text-gray-500 text-center">
+            <Text className="text-primary-font/40 text-center">
               No expenses in queue
             </Text>
           </View>
