@@ -23,6 +23,8 @@ async function insertExpensesToApi(
     uniqueId: expense.uniqueId,
   }));
 
+  console.log("Syncing expenses to API:", expensePayload);
+
   const result = await fetchFromApi<CreateExpenseResultsModel>(
     "/api/mobile/expense/createExpenses",
     {
