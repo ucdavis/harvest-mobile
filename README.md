@@ -44,7 +44,17 @@ brew install fastlane
 
 Then install the Mac app "Transporter" [from the App Store](https://apps.apple.com/us/app/transporter/id1450874784?mt=12). You don't really need it, but it makes it easier to upload the app to App Store Connect. Otherwise you can use Xcode or any other way to upload the finished .ipa file.
 
-### Build and deploy
+## Build and deploy
+
+### Prebuild
+
+If core assets have been changed, like the loading screen or app icon, then you need to run the prebuild step to regenerate the native iOS project files.
+
+```bash
+npx expo prebuild
+```
+
+### Build
 
 Run the deployment build locally:
 
