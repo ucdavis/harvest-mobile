@@ -12,6 +12,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { ChevronRightIcon } from "react-native-heroicons/solid";
 
 interface ExpenseQueueProps {
   className?: string;
@@ -82,13 +83,13 @@ export default function ExpenseQueue({ className }: ExpenseQueueProps) {
         </Text>
 
       </View>
-      <Text className="text-sm text-primary-font/80">
+      <Text className="text-sm text-primary-font/80 mb-2">
         Showing expense sync status
       </Text>
       {expenses.length > 0 && (
         <TouchableOpacity
           onPress={handleClearQueue}
-          className="bg-red-500 px-3 py-1 rounded-md"
+          className="flex-row bg-merlot rounded-md mt-5 justify-between py-2 px-4"
           disabled={clearExpenseQueueMutation.isPending}
         >
           <Text className="text-white text-sm font-medium">
@@ -96,12 +97,11 @@ export default function ExpenseQueue({ className }: ExpenseQueueProps) {
               ? "Clearing..."
               : "Clear All"}
           </Text>
+          <ChevronRightIcon size={16} color="white" />
         </TouchableOpacity>
       )}
 
-      <Text className="text-sm text-primary-font/80 mb-2 pb-2">
-        Development Mode - Showing expense sync status
-      </Text>
+
 
 
       <ScrollView

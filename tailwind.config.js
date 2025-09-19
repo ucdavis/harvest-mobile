@@ -5,7 +5,8 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        harvest: "#266041",        // brand primary
+        harvest: "#266041",
+        merlot: "#79242F",      // brand primary
         "secondary-bg": "#F7F7F7",
         "primary-font": "#1F1F1F",
         "primary-border": "#DFDFDF",
