@@ -80,19 +80,7 @@ export default function ExpenseQueue({ className }: ExpenseQueueProps) {
         <Text className="text-md uppercase font-bold text-harvest tracking-tight">
           Expense Queue ({expenses.length})
         </Text>
-        {expenses.length > 0 && (
-          <TouchableOpacity
-            onPress={handleClearQueue}
-            className="bg-red-500 px-3 py-1 rounded-md"
-            disabled={clearExpenseQueueMutation.isPending}
-          >
-            <Text className="text-white text-sm font-medium">
-              {clearExpenseQueueMutation.isPending
-                ? "Clearing..."
-                : "Clear All"}
-            </Text>
-          </TouchableOpacity>
-        )}
+
       </View>
       <Text className="text-sm text-primary-font/80">
         Showing expense sync status
