@@ -51,7 +51,7 @@ Then install the Mac app "Transporter" [from the App Store](https://apps.apple.c
 If core assets have been changed, like the loading screen or app icon, then you need to run the prebuild step to regenerate the native iOS project files.
 
 ```bash
-npx expo prebuild
+npx expo prebuild -p ios
 ```
 
 ### Build
