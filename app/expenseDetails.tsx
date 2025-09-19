@@ -293,7 +293,7 @@ export default function ExpenseDetailsScreen() {
         {/* sticky bottom bar outside of the scroll view */}
         <View
           style={{ paddingBottom: (insets.bottom || 12) + 12 }}
-          className="border-t border-primary-border bg-white px-2 pt-1"
+          className="border-t border-primary-border bg-white px-2 pt-1 pb-4"
         >
           <View className="p-4 bg-white">
             <View className="flex-row items-center justify-between mb-1">
