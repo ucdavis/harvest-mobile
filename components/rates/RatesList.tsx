@@ -10,6 +10,7 @@ import {
   View,
 } from "react-native";
 import {
+  AdjustmentsHorizontalIcon,
   ExclamationTriangleIcon,
   MagnifyingGlassIcon,
   WrenchScrewdriverIcon,
@@ -38,21 +39,34 @@ export function RatesList({
   const [refreshing, setRefreshing] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Filter rates based on search term
+  const [filtersOpen, setFiltersOpen] = useState(true);
+  const [selectedType, setSelectedType] = useState<string | null>(null);
+
+
+  const uniqueTypes = useMemo(() => {
+    const set = new Set<string>();
+    (rates ?? []).forEach((r) => set.add(String(r.type)));
+    return Array.from(set);
+  }, [rates]);
+
+
   const filteredRates = useMemo(() => {
     if (!rates) return [];
-    if (!searchTerm.trim()) return rates;
+    const q = searchTerm.trim().toLowerCase();
 
-    const q = searchTerm.toLowerCase();
-
-    return rates.filter(
-      (r) =>
+    return rates.filter((r) => {
+      const matchesSearch =
+        !q ||
         String(r.description).toLowerCase().includes(q) ||
         String(r.type).toLowerCase().includes(q) ||
         String(r.unit).toLowerCase().includes(q) ||
-        String(r.price).toLowerCase().includes(q)
-    );
-  }, [rates, searchTerm]);
+        String(r.price).toLowerCase().includes(q);
+
+      const matchesType = !selectedType || String(r.type) === selectedType;
+
+      return matchesSearch && matchesType;
+    });
+  }, [rates, searchTerm, selectedType]);
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -65,7 +79,7 @@ export function RatesList({
   };
 
   const renderRateItem = ({ item }: { item: Rate }) => {
-    const bg = getRateTypeColor(item.type);
+    const bg = getRateTypeColor(item.type as any);
     return (
       <TouchableOpacity
         activeOpacity={0.7}
@@ -77,8 +91,7 @@ export function RatesList({
             className="mr-3 h-8 w-8 items-center justify-center rounded-full"
             style={{ backgroundColor: bg }}
           >
-            {/* Icon color is white; background uses mapped color */}
-            <RateTypeIcon type={item.type} size={16} colorOverride="white" />
+            <RateTypeIcon type={item.type as any} size={16} colorOverride="white" />
           </View>
 
           <View className="flex-1">
@@ -99,31 +112,100 @@ export function RatesList({
     );
   };
 
-  // Show loading state
+  // Shared Search Bar with Filters toggle
+  const SearchBar = (
+    <>
+      <View className="flex-row items-center p-4 bg-white border-b border-primary-border">
+        <MagnifyingGlassIcon size={20} color="#a0a0a0" />
+        <TextInput
+          className="flex-1 text-lg mx-2 text-primary-font"
+          placeholder="Search rates, types, or units…"
+          placeholderTextColor="#a0a0a0"
+          value={searchTerm}
+          onChangeText={setSearchTerm}
+          returnKeyType="search"
+        />
+        {searchTerm.length > 0 && (
+          <TouchableOpacity
+            onPress={() => setSearchTerm("")}
+            className="p-1 mr-1"
+            accessibilityRole="button"
+            accessibilityLabel="Clear search"
+          >
+            <XCircleIcon size={24} color="#a0a0a0" />
+          </TouchableOpacity>
+        )}
+        <TouchableOpacity
+          onPress={() => setFiltersOpen((v) => !v)}
+          className="p-1"
+          accessibilityRole="button"
+          accessibilityLabel={filtersOpen ? "Hide filters" : "Show filters"}
+        >
+          <AdjustmentsHorizontalIcon
+            size={24}
+            color={filtersOpen || selectedType ? "#266041" : "#a0a0a0"}
+          />
+        </TouchableOpacity>
+      </View>
+
+      {/* Collapsible filter chips row */}
+      {filtersOpen && (
+        <View className="bg-white border-b border-primary-border px-4 py-3">
+          <View className="flex-row flex-wrap">
+            {uniqueTypes.map((t) => {
+              const isActive = selectedType === t;
+              const tint = getRateTypeColor(t as any);
+              return (
+                <TouchableOpacity
+                  key={t}
+                  onPress={() => setSelectedType(isActive ? null : t)}
+                  className="mr-2 rounded-full border px-3 py-2"
+                  style={{
+                    borderColor: isActive ? tint : "#e5e7eb",
+                    backgroundColor: isActive ? "#f3f4f6" : "#ffffff",
+                  }}
+                >
+                  <View className="flex-row items-center">
+                    <RateTypeIcon
+                      type={t as any}
+                      size={14}
+                      colorOverride={isActive ? String(tint) : "#a0a0a0"}
+                    />
+                    <Text
+                      className="ml-1 text-sm font-medium"
+                      style={{ color: isActive ? tint : "#4b5563" }}
+                    >
+                      {t}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              );
+            })}
+
+            {selectedType && (
+              <TouchableOpacity
+                onPress={() => setSelectedType(null)}
+                className="mr-2 rounded-full border border-primary-border px-3 py-2"
+                accessibilityRole="button"
+                accessibilityLabel="Clear filter"
+              >
+                <Text className="text-sm text-primary-font/80">Clear</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+        </View>
+      )}
+    </>
+  );
+
+  // Loading state
   if (isLoading) {
     return (
       <View className="flex-1">
-        {/* Search Bar */}
-        <View className="flex-row items-center p-4 bg-white border-b border-primary-border">
-          <MagnifyingGlassIcon size={20} color="#a0a0a0" />
-          <TextInput
-            className="flex-1 text-lg mx-2 text-primary-font"
-            placeholder="Search rates, types, or units…"
-            placeholderTextColor="#a0a0a0"
-            value={searchTerm}
-            onChangeText={setSearchTerm}
-            returnKeyType="search"
-          />
-          {searchTerm.length > 0 && (
-            <TouchableOpacity onPress={() => setSearchTerm("")} className="p-1">
-              <XCircleIcon size={24} color="#a0a0a0" />
-            </TouchableOpacity>
-          )}
-        </View>
-
+        {SearchBar}
         <View className="flex-1 items-center justify-center">
-          <ActivityIndicator size="large" color="#5e8a5e" />
-          <Text className="mt-4 text-base text-neutral-500 dark:text-neutral-400">
+          <ActivityIndicator size="large" color="#266041" />
+          <Text className="mt-4 text-base text-primary-font/80">
             Loading rates...
           </Text>
         </View>
@@ -131,12 +213,12 @@ export function RatesList({
     );
   }
 
-  // Show error state
+  // Error state
   if (error) {
     return (
       <View className="flex-1 items-center justify-center p-8">
-        <ExclamationTriangleIcon size={48} color="#EF4444" />
-        <Text className="mt-4 text-center text-base text-neutral-500 dark:text-neutral-400">
+        <ExclamationTriangleIcon size={48} color="#79242F" />
+        <Text className="mt-4 text-center text-base text-primary-font/80">
           Failed to load rates
         </Text>
         <TouchableOpacity
@@ -149,32 +231,18 @@ export function RatesList({
     );
   }
 
+  // Normal state
   return (
     <View className="flex-1">
-      {/* Search Bar */}
-      <View className="flex-row items-center p-4 bg-white border-b border-primary-border">
-        <MagnifyingGlassIcon size={20} color="#a0a0a0" />
-        <TextInput
-          className="flex-1 text-lg mx-2 text-primary-font"
-          placeholder="Search rates, types, or units…"
-          placeholderTextColor="#a0a0a0"
-          value={searchTerm}
-          onChangeText={setSearchTerm}
-          returnKeyType="search"
-        />
-        {searchTerm.length > 0 && (
-          <TouchableOpacity onPress={() => setSearchTerm("")} className="p-1">
-            <XCircleIcon size={24} color="#a0a0a0" />
-          </TouchableOpacity>
-        )}
-      </View>
+      {SearchBar}
 
       {/* Counter */}
-      {searchTerm.length > 0 && (
-        <View className="items-center mb-2">
-          <Text className="text-sm text-neutral-500 dark:text-neutral-400">
+      {(searchTerm.length > 0 || selectedType) && (
+        <View className="items-center mt-2">
+          <Text className="text-sm text-primary-font/80">
             {filteredRates.length} result
             {filteredRates.length !== 1 ? "s" : ""} found
+            {selectedType ? ` • filtered by ${selectedType}` : ""}
           </Text>
         </View>
       )}
@@ -193,23 +261,23 @@ export function RatesList({
             }
           />
         </View>
-      ) : searchTerm.length > 0 ? (
+      ) : searchTerm.length > 0 || selectedType ? (
         <View className="items-center justify-center py-16 px-5">
-          <MagnifyingGlassIcon size={80} color="#808080" />
-          <Text className="text-lg font-semibold mt-4 text-center text-neutral-800 dark:text-neutral-200">
+          <MagnifyingGlassIcon size={80} color="#a0a0a0" />
+          <Text className="text-lg font-semibold mt-4 text-center text-primary-font/40">
             No rates found
           </Text>
-          <Text className="text-sm mt-2 text-center text-neutral-500 dark:text-neutral-400">
-            Try adjusting your search terms
+          <Text className="text-sm mt-2 text-center text-primary-font/40">
+            Try adjusting your search terms or filters
           </Text>
         </View>
       ) : (
         <View className="items-center justify-center py-16 px-5">
-          <WrenchScrewdriverIcon size={80} color="#808080" />
-          <Text className="text-lg font-semibold mt-4 text-center text-neutral-800 dark:text-neutral-200">
+          <WrenchScrewdriverIcon size={80} color="#a0a0a0" />
+          <Text className="text-lg font-semibold mt-4 text-center text-primary-font/40">
             No rates available
           </Text>
-          <Text className="text-sm mt-2 text-center text-neutral-500 dark:text-neutral-400">
+          <Text className="text-sm mt-2 text-center text-primary-font/40">
             Contact your administrator
           </Text>
         </View>
