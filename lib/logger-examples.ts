@@ -7,7 +7,7 @@ import { debug, error, info, logger, warn } from "./logger";
 
 // Example 1: Basic logging
 export function basicLoggingExample() {
-  // Using the singleton instance
+  // Using the singleton instance (preferred)
   logger.info("User logged in successfully");
   logger.warn("API response took longer than expected", { responseTime: 5000 });
   logger.error(
