@@ -10,11 +10,11 @@ import { ExpenseProvider } from "@/components/context/ExpenseContext";
 import { QueryContext } from "@/components/context/QueryContext";
 import { useInitDb } from "@/hooks/useInitDb";
 
+import * as Sentry from "@sentry/react-native";
 import "../global.css";
-import * as Sentry from '@sentry/react-native';
 
 Sentry.init({
-  dsn: 'https://fab598815739ee48f41e03c092212c08@o4507619154657280.ingest.us.sentry.io/4510064547332096',
+  dsn: "https://fab598815739ee48f41e03c092212c08@o4507619154657280.ingest.us.sentry.io/4510064547332096",
 
   // Adds more context data to events (IP address, cookies, user, etc.)
   // For more information, visit: https://docs.sentry.io/platforms/react-native/data-management/data-collected/
