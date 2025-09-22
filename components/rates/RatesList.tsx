@@ -13,12 +13,12 @@ import {
   AdjustmentsHorizontalIcon,
   ExclamationTriangleIcon,
   MagnifyingGlassIcon,
-  WrenchScrewdriverIcon,
-  XCircleIcon,
+  WrenchScrewdriverIcon
 } from "react-native-heroicons/outline";
 
 import { RateTypeIcon, getRateTypeColor } from "@/components/ui/rateType";
 import { Rate } from "@/lib/expense";
+import { XMarkIcon } from "react-native-heroicons/solid";
 
 type RatesListProps = {
   rates: Rate[];
@@ -115,15 +115,16 @@ export function RatesList({
   // Shared Search Bar with Filters toggle
   const SearchBar = (
     <>
-      <View className="flex-row items-center p-4 bg-white border-b border-primary-border">
+      <View className="flex-row items-center px-4 py-2 bg-white border-b border-primary-border">
         <MagnifyingGlassIcon size={20} color="#a0a0a0" />
         <TextInput
-          className="flex-1 text-lg mx-2 text-primary-font"
+          className="flex-1 text-lg leading-6 mx-2 text-primary-font"
           placeholder="Search rates, types, or units…"
           placeholderTextColor="#a0a0a0"
           value={searchTerm}
           onChangeText={setSearchTerm}
           returnKeyType="search"
+
         />
         {searchTerm.length > 0 && (
           <TouchableOpacity
@@ -132,7 +133,7 @@ export function RatesList({
             accessibilityRole="button"
             accessibilityLabel="Clear search"
           >
-            <XCircleIcon size={24} color="#a0a0a0" />
+            <XMarkIcon size={20} color="#a0a0a0" />
           </TouchableOpacity>
         )}
         <TouchableOpacity

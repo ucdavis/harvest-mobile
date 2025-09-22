@@ -103,20 +103,36 @@ export function ProjectsList({
 
   return (
     <View className="flex-1">
-      {/* Search Bar */}
-      <View className="flex-row items-center leading-6 p-4 bg-white border-b border-primary-border">
+
+      <View className="flex-row items-center p-4 bg-white border-b border-primary-border h-14">
         <MagnifyingGlassIcon size={20} color="#a0a0a0" />
         <TextInput
-          className="flex-1 leading-6 text-lg mx-2 text-primary-font"
+          className="flex-1 mx-2 text-primary-font text-lg leading-6"
           placeholder="Search project IDs or PIs…"
           placeholderTextColor="#a0a0a0"
           value={searchTerm}
           onChangeText={setSearchTerm}
           returnKeyType="search"
+          // ↓ keep the height stable across placeholder/typed text
+          multiline={false}
+          numberOfLines={1}
+          style={{
+            lineHeight: 20,   // match leading-6 (24)
+            height: 24,       // lock intrinsic height
+            paddingTop: 0,
+            paddingBottom: 0,
+          }}
+        // optional: stop system text scaling from changing height
+        // allowFontScaling={false}
         />
         {searchTerm.length > 0 && (
-          <TouchableOpacity onPress={() => setSearchTerm("")} className="p-1">
-            <XMarkIcon className="m-0 p-0" size={16} color="#a0a0a0" />
+          <TouchableOpacity
+            className="p-1 mr-1"
+            accessibilityRole="button"
+            accessibilityLabel="Clear search"
+            onPress={() => setSearchTerm("")}
+          >
+            <XMarkIcon size={20} color="#a0a0a0" />
           </TouchableOpacity>
         )}
       </View>
