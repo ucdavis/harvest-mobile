@@ -5,6 +5,7 @@ import {
   Expense,
   QueuedExpense,
 } from "@/lib/expense";
+import { logger } from "@/lib/logger";
 import { useMutation } from "@tanstack/react-query";
 import { fetchFromApi } from "../api";
 
@@ -23,20 +24,37 @@ async function insertExpensesToApi(
     uniqueId: expense.uniqueId,
   }));
 
-  console.log("Syncing expenses to API:", expensePayload);
+  try {
+    const result = await fetchFromApi<CreateExpenseResultsModel>(
+      "/api/mobile/expense/createExpenses",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(expensePayload),
+      }
+    );
 
-  const result = await fetchFromApi<CreateExpenseResultsModel>(
-    "/api/mobile/expense/createExpenses",
-    {
+    logger.info("API sync completed", {
+      expenseCount: expenses.length,
+      successCount: result.results.filter(
+        (r) => r.result === "Created" || r.result === "Duplicate"
+      ).length,
+      failureCount: result.results.filter(
+        (r) => r.result !== "Created" && r.result !== "Duplicate"
+      ).length,
+    });
+
+    return result;
+  } catch (error) {
+    logger.error("Failed to sync expenses to API", error, {
+      expenseCount: expenses.length,
+      endpoint: "/api/mobile/expense/createExpenses",
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(expensePayload),
-    }
-  );
-
-  return result;
+    });
+    throw error;
+  }
 }
 
 /**
@@ -49,23 +67,32 @@ async function updateExpenseStatus(
 ): Promise<void> {
   const db = getDbOrThrow();
 
-  await db.withExclusiveTransactionAsync(async (tx) => {
-    const updateQuery = `
-      UPDATE expenses_queue 
-      SET status = ?, 
-          lastSyncAttempt = ?, 
-          syncAttempts = syncAttempts + 1,
-          errorMessage = ?
-      WHERE id = ?
-    `;
+  try {
+    await db.withExclusiveTransactionAsync(async (tx) => {
+      const updateQuery = `
+        UPDATE expenses_queue 
+        SET status = ?, 
+            lastSyncAttempt = ?, 
+            syncAttempts = syncAttempts + 1,
+            errorMessage = ?
+        WHERE id = ?
+      `;
 
-    await tx.runAsync(updateQuery, [
-      status,
-      new Date().toISOString(),
-      errorMessage || null,
+      await tx.runAsync(updateQuery, [
+        status,
+        new Date().toISOString(),
+        errorMessage || null,
+        expenseId,
+      ]);
+    });
+  } catch (error) {
+    logger.error("Failed to update expense status", error, {
       expenseId,
-    ]);
-  });
+      status,
+      errorMessage,
+    });
+    throw error;
+  }
 }
 
 /**
@@ -74,9 +101,16 @@ async function updateExpenseStatus(
 async function removeExpenseFromQueue(expenseId: number): Promise<void> {
   const db = getDbOrThrow();
 
-  await db.withExclusiveTransactionAsync(async (tx) => {
-    await tx.runAsync("DELETE FROM expenses_queue WHERE id = ?", [expenseId]);
-  });
+  try {
+    await db.withExclusiveTransactionAsync(async (tx) => {
+      await tx.runAsync("DELETE FROM expenses_queue WHERE id = ?", [expenseId]);
+    });
+  } catch (error) {
+    logger.error("Failed to remove expense from queue", error, {
+      expenseId,
+    });
+    throw error;
+  }
 }
 
 /**
@@ -96,30 +130,66 @@ async function getPendingExpensesFromQueue(): Promise<QueuedExpense[]> {
  * Main sync function that processes all pending expenses
  */
 async function syncAllPendingExpenses(): Promise<void> {
-  const pendingExpenses = await getPendingExpensesFromQueue();
+  try {
+    const pendingExpenses = await getPendingExpensesFromQueue();
 
-  if (pendingExpenses.length === 0) {
-    return;
-  }
-
-  const results = await insertExpensesToApi(pendingExpenses);
-
-  // Process results
-  for (const res of results.results) {
-    const expense = pendingExpenses.find((e) => e.uniqueId === res.uniqueId);
-    if (!expense || !expense.id) {
-      continue;
+    if (pendingExpenses.length === 0) {
+      return;
     }
 
-    if (res.result === "Created" || res.result === "Duplicate") {
-      await removeExpenseFromQueue(expense.id);
-    } else {
-      await updateExpenseStatus(
-        expense.id,
-        "pending", // TODO: determine if we want to mark as failed or keep as pending, or should we always just remove?
-        JSON.stringify(res.errors) || "Unknown error"
-      );
+    const results = await insertExpensesToApi(pendingExpenses);
+
+    let processedCount = 0;
+    let successCount = 0;
+    let failureCount = 0;
+
+    // Process results
+    for (const res of results.results) {
+      const expense = pendingExpenses.find((e) => e.uniqueId === res.uniqueId);
+      if (!expense || !expense.id) {
+        logger.warn("Could not find expense for sync result", {
+          uniqueId: res.uniqueId,
+        });
+        continue;
+      }
+
+      processedCount++;
+
+      if (res.result === "Created" || res.result === "Duplicate") {
+        await removeExpenseFromQueue(expense.id);
+        successCount++;
+        logger.info("Expense synced successfully", {
+          expenseId: expense.id,
+          uniqueId: expense.uniqueId,
+          result: res.result,
+        });
+      } else {
+        await updateExpenseStatus(
+          expense.id,
+          "pending", // TODO: determine if we want to mark as failed or keep as pending, or should we always just remove?
+          JSON.stringify(res.errors) || "Unknown error"
+        );
+        failureCount++;
+        logger.warn("Expense sync failed", {
+          expenseId: expense.id,
+          uniqueId: expense.uniqueId,
+          result: res.result,
+          errors: res.errors,
+        });
+      }
     }
+
+    logger.info("Expense sync completed", {
+      totalPending: pendingExpenses.length,
+      processed: processedCount,
+      successful: successCount,
+      failed: failureCount,
+    });
+  } catch (error) {
+    logger.error("Expense sync operation failed", error, {
+      operation: "syncAllPendingExpenses",
+    });
+    throw error;
   }
 }
 
@@ -141,7 +211,18 @@ export function useSyncExpenseQueue() {
     },
     retryDelay: (attemptIndex) => {
       // Exponential backoff: 1s, 2s, 4s
-      return Math.min(1000 * Math.pow(2, attemptIndex), 10000);
+      const delay = Math.min(1000 * Math.pow(2, attemptIndex), 10000);
+
+      return delay;
+    },
+    onSuccess: () => {
+      logger.info("Sync expense queue mutation succeeded");
+    },
+    onError: (error, variables, context) => {
+      logger.error("Sync expense queue mutation failed", error, {
+        mutationType: "syncExpenseQueue",
+        retryAttempts: context,
+      });
     },
     onSettled: () => {
       // Always refresh the pending expenses query after sync completes

@@ -1,5 +1,6 @@
 import { getDbOrThrow } from "@/lib/db/client";
 import { Expense, QueuedExpense } from "@/lib/expense";
+import { logger } from "@/lib/logger";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 // Insert expenses into the local database queue
@@ -9,14 +10,14 @@ async function insertExpensesToDb(
   const db = getDbOrThrow();
   const results: QueuedExpense[] = [];
 
-  await db.withExclusiveTransactionAsync(async (tx) => {
-    for (const expense of expenses) {
-      const createdDate = new Date().toISOString();
+  try {
+    await db.withExclusiveTransactionAsync(async (tx) => {
+      for (const expense of expenses) {
+        const createdDate = new Date().toISOString();
 
-      console.log("Inserting expense into DB:", expense);
-      // Insert the expense into the queue
-      const result = await tx.runAsync(
-        `INSERT INTO expenses_queue (
+        // Insert the expense into the queue
+        const result = await tx.runAsync(
+          `INSERT INTO expenses_queue (
           projectId, 
           rateId,
           type, 
@@ -29,35 +30,51 @@ async function insertExpensesToDb(
           createdDate,
           syncAttempts
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT(uniqueId) DO NOTHING;`, // ignore if duplicate
-        [
-          expense.projectId,
-          expense.rateId,
-          expense.type,
-          expense.activity,
-          expense.description,
-          expense.quantity,
-          expense.price,
-          expense.uniqueId,
-          "pending",
+          [
+            expense.projectId,
+            expense.rateId,
+            expense.type,
+            expense.activity,
+            expense.description,
+            expense.quantity,
+            expense.price,
+            expense.uniqueId,
+            "pending",
+            createdDate,
+            0,
+          ]
+        );
+
+        // Create the queued expense object with the generated ID
+        const queuedExpense: QueuedExpense = {
+          ...expense,
+          id: result.lastInsertRowId,
+          status: "pending" as const,
           createdDate,
-          0,
-        ]
-      );
+          syncAttempts: 0,
+        };
 
-      // Create the queued expense object with the generated ID
-      const queuedExpense: QueuedExpense = {
-        ...expense,
-        id: result.lastInsertRowId,
-        status: "pending" as const,
-        createdDate,
-        syncAttempts: 0,
-      };
+        results.push(queuedExpense);
+      }
+    });
 
-      results.push(queuedExpense);
-    }
-  });
+    logger.info("Successfully inserted expenses to DB", {
+      expenseCount: expenses.length,
+      resultCount: results.length,
+    });
 
-  return results;
+    return results;
+  } catch (error) {
+    logger.error("Failed to insert expenses to DB", error, {
+      expenseCount: expenses.length,
+      expenses: expenses.map((e) => ({
+        uniqueId: e.uniqueId,
+        projectId: e.projectId,
+        description: e.description,
+      })),
+    });
+    throw error;
+  }
 }
 
 // React Query mutation hook for inserting expenses
@@ -72,7 +89,10 @@ export function useInsertExpenses() {
       queryClient.invalidateQueries({ queryKey: ["expenses"] });
     },
     onError: (error) => {
-      console.error("Failed to insert expenses:", error);
+      logger.error("Insert expenses mutation failed", error, {
+        mutationType: "insertExpenses",
+        networkMode: "offlineFirst",
+      });
     },
   });
 }
@@ -104,11 +124,16 @@ export function usePendingExpenses() {
 async function clearExpenseQueue(): Promise<void> {
   const db = getDbOrThrow();
 
-  await db.withExclusiveTransactionAsync(async (tx) => {
-    console.log("Clearing all expenses from queue");
-    await tx.runAsync(`DELETE FROM expenses_queue`);
-    console.log("Expense queue cleared successfully");
-  });
+  try {
+    await db.withExclusiveTransactionAsync(async (tx) => {
+      await tx.runAsync(`DELETE FROM expenses_queue`);
+    });
+  } catch (error) {
+    logger.error("Failed to clear expense queue", error, {
+      operation: "clearExpenseQueue",
+    });
+    throw error;
+  }
 }
 
 // Only for development/testing purposes
@@ -123,7 +148,10 @@ export function useClearExpenseQueue() {
       queryClient.invalidateQueries({ queryKey: ["expenses"] });
     },
     onError: (error) => {
-      console.error("Failed to clear expense queue:", error);
+      logger.error("Clear expense queue mutation failed", error, {
+        mutationType: "clearExpenseQueue",
+        networkMode: "offlineFirst",
+      });
     },
   });
 }
