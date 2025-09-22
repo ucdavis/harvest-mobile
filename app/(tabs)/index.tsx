@@ -10,7 +10,8 @@ import { View } from "react-native";
 
 export default function RecentProjectsScreen() {
   const { authInfo } = useAuth();
-  const { data: recentProjects } = useRecentProjects(authInfo);
+  const { data: recentProjects, isLoading: isLoadingProjects } =
+    useRecentProjects(authInfo);
   const userQuery = useUserInfo(authInfo);
 
   useEffect(() => {
@@ -43,6 +44,7 @@ export default function RecentProjectsScreen() {
         projects={recentProjects || []}
         queryKey={["projects", authInfo?.team, "recent"]}
         onProjectPress={handleProjectPress}
+        isLoading={isLoadingProjects}
       />
     </View>
   );
