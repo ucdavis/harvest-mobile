@@ -6,6 +6,12 @@ export function registerOnUnauthorized(handler: () => void | Promise<void>) {
   onUnauthorized = handler;
 }
 
+export function unRegisterOnUnauthorized(handler: () => void | Promise<void>) {
+  if (onUnauthorized === handler) {
+    onUnauthorized = null;
+  }
+}
+
 /**
  * Ensures we have valid auth info, either from the provided parameter or local storage
  */
