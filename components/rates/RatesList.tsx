@@ -16,8 +16,8 @@ import {
   XCircleIcon,
 } from "react-native-heroicons/outline";
 
+import { RateTypeIcon, getRateTypeColor } from "@/components/ui/rateType";
 import { Rate } from "@/lib/expense";
-import { RateTypeIcon, getRateTypeColor } from "../ui/rateType";
 
 type RatesListProps = {
   rates: Rate[];

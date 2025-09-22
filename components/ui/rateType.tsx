@@ -19,9 +19,9 @@ const ICONS: Record<RateType, IconComp> = {
 };
 
 const COLORS: Record<RateType, string> = {
-  labor: "#00524C",
-  equipment: "#8A532F",
-  other: "#003A5D",
+  labor: "#8A532F",
+  equipment: "#003A5D",
+  other: "#481268",
 };
 
 const DEFAULT_ICON = QuestionMarkCircleIcon;
