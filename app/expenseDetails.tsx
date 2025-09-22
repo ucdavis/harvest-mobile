@@ -14,17 +14,13 @@ import {
   View,
 } from "react-native";
 
-import {
-  CubeIcon,
-  ExclamationTriangleIcon,
-  QuestionMarkCircleIcon,
-  UserIcon,
-  WrenchScrewdriverIcon,
-} from "react-native-heroicons/solid";
+import { ExclamationTriangleIcon } from "react-native-heroicons/solid";
 
 import { useExpenses } from "@/components/context/ExpenseContext";
 import { createExpenseWithUniqueId, Rate } from "@/lib/expense";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+import { getRateTypeColor, RateTypeIcon } from "@/components/ui/rateType";
 
 export default function ExpenseDetailsScreen() {
   const { rate: rateParam, projectId } = useLocalSearchParams<{
@@ -143,41 +139,6 @@ export default function ExpenseDetailsScreen() {
     return (numericQuantity * (rate?.price || 0)).toFixed(2);
   };
 
-  // keep your existing color scheme
-  const getRateTypeColor = (type: string) => {
-    switch (type.toLowerCase()) {
-      case "labor":
-        return "#00524C";
-      case "equipment":
-        return "#8A532F";
-      case "other":
-        return "#003A5D";
-      default:
-        return "#d7d7d7";
-    }
-  };
-
-  const RateIcon = ({
-    type,
-    color = "white",
-    size = 20,
-  }: {
-    type: string;
-    color?: string;
-    size?: number;
-  }) => {
-    switch ((type || "").toLowerCase()) {
-      case "labor":
-        return <UserIcon size={size} color={color} />;
-      case "equipment":
-        return <WrenchScrewdriverIcon size={size} color={color} />;
-      case "other":
-        return <CubeIcon size={size} color={color} />;
-      default:
-        return <QuestionMarkCircleIcon size={size} color={color} />;
-    }
-  };
-
   if (!rate) {
     return (
       <View className="flex-1 items-center justify-center bg-[#f8f9fa] p-8">
@@ -228,7 +189,8 @@ export default function ExpenseDetailsScreen() {
                     className="mr-3 h-8 w-8 items-center justify-center rounded-full"
                     style={{ backgroundColor: getRateTypeColor(rate.type) }}
                   >
-                    <RateIcon type={rate.type} color="white" size={16} />
+                    {/* ⬇️ shared icon; white on colored circle */}
+                    <RateTypeIcon type={rate.type} colorOverride="white" size={16} />
                   </View>
                   <View className="flex-1">
                     <Text className="tertiary-label uppercase">
@@ -263,6 +225,7 @@ export default function ExpenseDetailsScreen() {
                     placeholderTextColor="#999"
                     keyboardType="decimal-pad"
                     selectTextOnFocus
+                    inputAccessoryViewID={Platform.OS === "ios" ? accessoryID : undefined}
                   />
                 </View>
 
@@ -310,7 +273,6 @@ export default function ExpenseDetailsScreen() {
                 >
                   ${getTotalCost()}
                 </Text>
-
               </View>
 
               <TouchableOpacity
@@ -320,7 +282,6 @@ export default function ExpenseDetailsScreen() {
                 <Text className="harvest-button-text">Add Expense</Text>
               </TouchableOpacity>
             </View>
-
           </View>
         </View>
       </Pressable>

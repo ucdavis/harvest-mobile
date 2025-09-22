@@ -10,16 +10,14 @@ import {
   View,
 } from "react-native";
 import {
-  CubeIcon,
   ExclamationTriangleIcon,
   MagnifyingGlassIcon,
-  QuestionMarkCircleIcon,
-  UserIcon,
   WrenchScrewdriverIcon,
   XCircleIcon,
 } from "react-native-heroicons/outline";
 
 import { Rate } from "@/lib/expense";
+import { RateTypeIcon, getRateTypeColor } from "../ui/rateType";
 
 type RatesListProps = {
   rates: Rate[];
@@ -58,9 +56,7 @@ export function RatesList({
 
   const onRefresh = async () => {
     setRefreshing(true);
-    await queryClient.refetchQueries({
-      queryKey,
-    });
+    await queryClient.refetchQueries({ queryKey });
     setRefreshing(false);
   };
 
@@ -68,62 +64,32 @@ export function RatesList({
     onRatePress(rate);
   };
 
-  // Pick Heroicon by type
-  const getRateTypeIcon = (type: string) => {
-    switch (type.toLowerCase()) {
-      case "labor":
-        return UserIcon;
-      case "equipment":
-        return WrenchScrewdriverIcon;
-      case "other":
-        return CubeIcon;
-      default:
-        return QuestionMarkCircleIcon;
-    }
-  };
-
-  const getRateTypeColor = (type: string) => {
-    switch (type.toLowerCase()) {
-      case "labor":
-        return "#00524C";
-      case "equipment":
-        return "#8A532F";
-      case "other":
-        return "#003A5D";
-      default:
-        return "#d7d7d7";
-    }
-  };
-
   const renderRateItem = ({ item }: { item: Rate }) => {
-    const Icon = getRateTypeIcon(item.type);
+    const bg = getRateTypeColor(item.type);
     return (
-      <TouchableOpacity activeOpacity={0.7}
+      <TouchableOpacity
+        activeOpacity={0.7}
         onPress={() => handleRatePress(item)}
         className="mb-3 rounded-xl border border-primary-border bg-white p-4"
       >
         <View className="relative flex-row items-center">
           <View
             className="mr-3 h-8 w-8 items-center justify-center rounded-full"
-            style={{ backgroundColor: getRateTypeColor(item.type) }}
+            style={{ backgroundColor: bg }}
           >
-            <Icon size={16} color="white" />
+            {/* Icon color is white; background uses mapped color */}
+            <RateTypeIcon type={item.type} size={16} colorOverride="white" />
           </View>
 
           <View className="flex-1">
-            <Text className="tertiary-label uppercase">
-              {item.type}
-            </Text>
+            <Text className="tertiary-label uppercase">{item.type}</Text>
             <Text className="text-lg font-semibold text-primary-font">
               {item.description}
             </Text>
           </View>
 
           <View className="items-end">
-
-            <Text className="tertiary-label text-right">
-              {item.unit}
-            </Text>
+            <Text className="tertiary-label text-right">{item.unit}</Text>
             <Text className="text-lg font-semibold text-primary-font">
               ${item.price}
             </Text>
