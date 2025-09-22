@@ -2,12 +2,27 @@ import { useAuth } from "@/components/context/AuthContext";
 import { ProjectsList } from "@/components/projects/ProjectsList";
 import { Project } from "@/lib/project";
 import { useRecentProjects } from "@/services/queries/projects";
+import { useUserInfo } from "@/services/queries/users";
+import { setUser } from "@sentry/react-native";
 import { router } from "expo-router";
+import { useEffect } from "react";
 import { View } from "react-native";
 
 export default function RecentProjectsScreen() {
   const { authInfo } = useAuth();
   const { data: recentProjects } = useRecentProjects(authInfo);
+  const userQuery = useUserInfo(authInfo);
+
+  useEffect(() => {
+    // whenever the user info changes, update sentry
+    if (userQuery?.data?.user) {
+      setUser({
+        id: userQuery.data.user.id,
+        email: userQuery.data.user.email,
+        team: userQuery.data.teamSlug,
+      });
+    }
+  }, [userQuery.data]);
 
   const handleProjectPress = (project: Project) => {
     router.push({
