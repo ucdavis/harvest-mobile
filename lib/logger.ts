@@ -60,16 +60,12 @@ export class Logger {
   warn(message: string, context?: Record<string, any>): void {
     this.logToConsole("warn", message, context);
 
-    // Send warning as a message to Sentry
-    Sentry.captureMessage(message, "warning");
-
     // Add context if provided
-    if (context) {
-      Sentry.withScope((scope) => {
-        scope.setContext("warning_context", context);
-        Sentry.captureMessage(message, "warning");
-      });
-    }
+    Sentry.withScope((scope) => {
+      if (context) scope.setContext("warning_context", context);
+      scope.setLevel("warning");
+      Sentry.captureMessage(message, "warning");
+    });
   }
 
   /**
@@ -152,12 +148,14 @@ export class Logger {
    * Set user context for all subsequent logs
    * @param user - User information
    */
-  setUser(user: {
-    id?: string;
-    email?: string;
-    username?: string;
-    [key: string]: any;
-  }): void {
+  setUser(
+    user: {
+      id?: string;
+      email?: string;
+      username?: string;
+      [key: string]: any;
+    } | null
+  ): void {
     Sentry.setUser(user);
   }
 

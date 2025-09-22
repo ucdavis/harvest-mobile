@@ -4,6 +4,7 @@ import {
   setOrUpdateUserAuthInfo,
   TeamAuthInfo,
 } from "@/lib/auth";
+import { setUser } from "@/lib/logger";
 import React, {
   createContext,
   useCallback,
@@ -32,6 +33,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setAuthInfo(undefined);
       setIsLoading(false);
       setIsLoggedIn(false);
+      setUser(null); // clear user info from logger
     });
   }, []);
 

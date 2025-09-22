@@ -47,16 +47,18 @@ export async function fetchFromApi<T>(
   if (!res.ok) {
     const body = await res.text().catch(() => ""); // try to get body text, ignore errors
 
-    logger.error("API fetch error", {
+    const err = new Error(
+      `Failed to fetch ${endpoint}: ${res.status} ${res.statusText}`
+    );
+
+    logger.error("API fetch error", err, {
       status: res.status,
       statusText: res.statusText,
       url: res.url,
       body,
     });
 
-    throw new Error(
-      `Failed to fetch ${endpoint}: ${res.status} ${res.statusText}`
-    );
+    throw err;
   }
 
   return (await res.json()) as T;
