@@ -43,7 +43,15 @@
         }
       ],
       "expo-secure-store",
-      "expo-sqlite"
+      "expo-sqlite",
+      [
+        "@sentry/react-native/expo",
+        {
+          "url": "https://sentry.io/",
+          "project": "harvest-mobile",
+          "organization": "ucdavis"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
