@@ -66,6 +66,7 @@ export function useInsertExpenses() {
 
   return useMutation({
     mutationFn: insertExpensesToDb,
+    networkMode: "offlineFirst", // don't require network to insert to db
     onSuccess: (data) => {
       // Invalidate and refetch any expense-related queries
       queryClient.invalidateQueries({ queryKey: ["expenses"] });
@@ -116,6 +117,7 @@ export function useClearExpenseQueue() {
 
   return useMutation({
     mutationFn: clearExpenseQueue,
+    networkMode: "offlineFirst", // don't require network to clear db
     onSuccess: () => {
       // Invalidate and refetch expense-related queries
       queryClient.invalidateQueries({ queryKey: ["expenses"] });
