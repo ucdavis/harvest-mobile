@@ -35,6 +35,14 @@ defaults.url=https://sentry.io/
 
 ```
 
+You also need an `.env.local` if you want to log to Sentry in development mode. It should look like this:
+
+```
+SENTRY_AUTH_TOKEN=<YOUR_AUTH_TOKEN>
+```
+
+I'm not sure if you need the auth token in both places or just one. Guessing maybe just `.env.local` is enough but TBD.
+
 ## Deployment
 
 We use [Azure Pipelines](https://dev.azure.com/ucdavis/Harvest%20Mobile/_build) to build and deploy the app. The pipeline is defined in `azure-pipelines.yml`.
