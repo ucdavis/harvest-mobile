@@ -12,6 +12,7 @@ import React, {
   useEffect,
   useState,
 } from "react";
+import { registerOnUnauthorized } from "../../services/api";
 
 interface AuthContextType {
   isLoggedIn: boolean;
@@ -55,6 +56,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setIsLoading(false);
     });
   }, []);
+
+  useEffect(() => {
+  registerOnUnauthorized(logout);
+}, [logout]);
 
   console.log("AuthProvider rendered, isLoggedIn:", isLoggedIn);
 
