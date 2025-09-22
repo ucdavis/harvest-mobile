@@ -115,7 +115,7 @@ export function RatesList({
   // Shared Search Bar with Filters toggle
   const SearchBar = (
     <>
-      <View className="flex-row items-center px-4 py-2 bg-white border-b border-primary-border">
+      <View className="flex-row items-center px-4 h-14 bg-white border-b border-primary-border">
         <MagnifyingGlassIcon size={20} color="#a0a0a0" />
         <TextInput
           className="flex-1 text-lg leading-6 mx-2 text-primary-font"
