@@ -21,8 +21,9 @@ npm run lint       # Takes ~3 seconds
 **NEVER CANCEL BUILDS OR LONG-RUNNING COMMANDS** - Some operations may take 30-60+ minutes.
 
 **CRITICAL TIMEOUT REQUIREMENTS**:
+
 - Metro bundler: Set timeout to 3+ minutes
-- iOS builds: Set timeout to 90+ minutes  
+- iOS builds: Set timeout to 90+ minutes
 - npm install: Set timeout to 2+ minutes
 
 ## Development Setup
@@ -30,14 +31,8 @@ npm run lint       # Takes ~3 seconds
 Start development server:
 
 ```bash
-# For localhost development (recommended)
-npx expo start --localhost  # Metro bundler starts in ~75 seconds. NEVER CANCEL.
-
 # For iOS development (requires Xcode and iOS Simulator)
 npx expo run:ios  # Requires iOS development environment
-
-# For web development (limited functionality due to SQLite)
-npx expo start --web  # Metro bundler starts, limited by SQLite WASM issues
 ```
 
 **Development Server Timing**: Metro bundler takes ~75 seconds to fully initialize. Set timeout to 2+ minutes.
@@ -74,6 +69,7 @@ npm run build:ios  # Runs ./scripts/build-ios.sh
 ### Build Process Details
 
 The build script:
+
 1. Creates `build/` directory
 2. Generates timestamped IPA filename
 3. Uses EAS CLI with production profile
@@ -170,7 +166,7 @@ Brand colors (defined in `tailwind.config.js`):
 
 - Primary: `#266041` (harvest green)
 - Secondary Background: `#F7F7F7`
-- Text: `#1F1F1F` 
+- Text: `#1F1F1F`
 - Borders: `#DFDFDF`
 - Danger: `#79242F`
 
@@ -179,23 +175,124 @@ Typography: Proxima Nova font (loaded via expo-font)
 ## Key Dependencies
 
 Core framework:
+
 - `expo` (~53.0.20) - Expo SDK
 - `react-native` (0.79.5) - React Native framework
 - `expo-router` (~5.1.4) - File-based routing
 
 UI & Styling:
+
 - `nativewind` (^4.1.23) - Tailwind CSS for React Native
 - `tailwindcss` (^3.4.17) - CSS framework
 - `react-native-heroicons` (^4.0.0) - Icon library
 
 State & Data:
+
 - `@tanstack/react-query` (^5.85.5) - Server state management
 - `expo-sqlite` (~15.2.14) - Local database
 - `expo-secure-store` (~14.2.3) - Secure storage
 
 Authentication:
+
 - `expo-auth-session` (~6.2.1) - OAuth authentication
 - `expo-crypto` (~14.1.5) - Cryptographic functions
+
+Monitoring & Logging:
+
+- `@sentry/react-native` - Error tracking and performance monitoring
+
+## Logging & Error Tracking
+
+The app uses a centralized logging utility (`lib/logger.ts`) integrated with Sentry for comprehensive error tracking and debugging.
+
+### Logger Usage
+
+```typescript
+import { logger, info, error, warn, debug } from "@/lib/logger";
+
+// Basic logging
+logger.info("User action completed");
+logger.warn("API response slow", { responseTime: 5000 });
+logger.error("Operation failed", new Error("Network timeout"));
+
+// With context objects
+logger.info("Expense created", {
+  userId: "12345",
+  projectId: "67890",
+  amount: 25.5,
+  description: "Coffee meeting",
+});
+
+// Direct imports for convenience
+info("Quick info message");
+error("Something went wrong", apiError, { userId: "123" });
+```
+
+### Logger Methods
+
+- `logger.info(message, context?)` - Informational messages (console + Sentry breadcrumbs)
+- `logger.debug(message, context?)` - Debug messages (dev only + breadcrumbs)
+- `logger.warn(message, context?)` - Warnings (console + Sentry messages)
+- `logger.error(message, error?, context?)` - Errors (console + Sentry exceptions)
+- `logger.fatal(message, error?, context?)` - Critical errors (highest Sentry severity)
+
+### Context Management
+
+```typescript
+// Set user context (applied to all subsequent logs)
+logger.setUser({ id: "123", email: "user@example.com" });
+
+// Add tags for categorization
+logger.setTag("app_version", "1.0.2");
+logger.setTag("user_type", "premium");
+
+// Set additional context
+logger.setContext("device_info", {
+  platform: "ios",
+  version: "17.0",
+  model: "iPhone 14 Pro",
+});
+```
+
+### Error Handling Best Practices
+
+```typescript
+// In try-catch blocks
+try {
+  await apiCall();
+  logger.info("API call successful");
+} catch (error) {
+  logger.error("API call failed", error, {
+    endpoint: "/api/expenses",
+    method: "POST",
+    userId: currentUser.id,
+  });
+  throw error; // Re-throw if needed
+}
+
+// For debugging user flows
+logger.addBreadcrumb("User opened expenses screen", "navigation");
+logger.addBreadcrumb("User tapped add button", "ui.click");
+// Later errors will include these breadcrumbs for context
+```
+
+### Logging Guidelines
+
+1. **Use appropriate levels**: `info` for user actions, `warn` for degraded performance, `error` for failures, `fatal` for crashes
+2. **Always include context**: Add relevant data like user IDs, request parameters, response times
+3. **Don't log sensitive data**: Avoid passwords, tokens, or PII in logs
+4. **Use debug for development**: Debug logs only show in `__DEV__` mode but create Sentry breadcrumbs
+5. **Set user context early**: Call `logger.setUser()` after authentication for better error tracking
+6. **Add breadcrumbs for user flows**: Help debug issues by tracking user navigation and actions
+
+### Sentry Integration
+
+All logs automatically integrate with Sentry:
+
+- **Errors/Fatal**: Sent as exceptions with full stack traces
+- **Warnings**: Sent as messages with 'warning' level
+- **Info/Debug**: Become breadcrumbs providing context for errors
+- **Context**: User info, tags, and custom context attached to all events
 
 ## Common Validation Tasks
 
@@ -219,6 +316,7 @@ After making changes, always:
 ## CI/CD Pipeline
 
 Azure Pipelines configuration (azure-pipelines.yml):
+
 - Runs on Node.js 20.x
 - Validates with expo-doctor
 - Runs TypeScript compilation
@@ -238,12 +336,13 @@ When testing changes:
 ## Performance Notes
 
 - npm install: ~40 seconds
-- TypeScript compilation: ~3 seconds  
+- TypeScript compilation: ~3 seconds
 - ESLint: ~3 seconds
 - Metro bundler startup: ~75 seconds (requires patience - NEVER CANCEL)
 - **iOS production build: 30-60+ minutes - NEVER CANCEL**
 
 Always use appropriate timeouts:
+
 - Build commands: 90+ minutes
 - Development server: 3+ minutes
 - Type/lint checks: 1 minute

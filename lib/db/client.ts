@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import * as SQLite from "expo-sqlite";
 
 let dbInstance: SQLite.SQLiteDatabase | null = null;
@@ -10,20 +11,27 @@ export async function getDb(): Promise<SQLite.SQLiteDatabase> {
   if (initPromise) return initPromise;
 
   const promise = (async () => {
-    const db = await SQLite.openDatabaseAsync(DB_NAME);
-
-    // supposedly these are good defaults
     try {
-      await db.execAsync("PRAGMA journal_mode = WAL;");
-    } catch {}
-    try {
-      await db.execAsync("PRAGMA foreign_keys = ON;");
-    } catch {}
+      const db = await SQLite.openDatabaseAsync(DB_NAME);
 
-    await runMigrations(db);
+      // supposedly these are good defaults
+      try {
+        await db.execAsync("PRAGMA journal_mode = WAL;");
+      } catch {}
+      try {
+        await db.execAsync("PRAGMA foreign_keys = ON;");
+      } catch {}
 
-    dbInstance = db;
-    return db;
+      await runMigrations(db);
+
+      dbInstance = db;
+      return db;
+    } catch (error) {
+      logger.error("Database initialization failed", error, {
+        dbName: DB_NAME,
+      });
+      throw error;
+    }
   })();
 
   initPromise = promise;
@@ -57,47 +65,60 @@ type Migration = (tx: Tx) => Promise<void>;
 const migrations: Migration[] = [
   // V1: initial schema
   async function migrateToV1(tx: Tx) {
-    // expenses_queue for unsynced expenses
-    await tx.execAsync(`
-      CREATE TABLE IF NOT EXISTS expenses_queue (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        projectId INTEGER NOT NULL,
-        rateId TEXT NOT NULL,
-        type TEXT NOT NULL,
-        description TEXT NOT NULL,
-        quantity REAL NOT NULL,
-        price REAL NOT NULL,
-        uniqueId TEXT NOT NULL UNIQUE,
-        status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending','synced','error')),
-        createdDate TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now')),
-        syncAttempts INTEGER NOT NULL DEFAULT 0,
-        lastSyncAttempt TEXT,
-        errorMessage TEXT
+    try {
+      // expenses_queue for unsynced expenses
+      await tx.execAsync(`
+        CREATE TABLE IF NOT EXISTS expenses_queue (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          projectId INTEGER NOT NULL,
+          rateId TEXT NOT NULL,
+          type TEXT NOT NULL,
+          description TEXT NOT NULL,
+          quantity REAL NOT NULL,
+          price REAL NOT NULL,
+          uniqueId TEXT NOT NULL UNIQUE,
+          status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending','synced','error')),
+          createdDate TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now')),
+          syncAttempts INTEGER NOT NULL DEFAULT 0,
+          lastSyncAttempt TEXT,
+          errorMessage TEXT
+        );
+      `);
+
+      await tx.execAsync(`
+        CREATE INDEX IF NOT EXISTS idx_expq_status ON expenses_queue(status);
+      `);
+
+      // Optional helpful index if you often query "latest pendings"
+      await tx.execAsync(`
+        CREATE INDEX IF NOT EXISTS idx_expq_status_created ON expenses_queue(status, createdDate);
+      `);
+    } catch (error) {
+      logger.error(
+        "Migration V1 failed: Could not create initial schema",
+        error
       );
-    `);
-
-    await tx.execAsync(`
-      CREATE INDEX IF NOT EXISTS idx_expq_status ON expenses_queue(status);
-    `);
-
-    // Optional helpful index if you often query "latest pendings"
-    await tx.execAsync(`
-      CREATE INDEX IF NOT EXISTS idx_expq_status_created ON expenses_queue(status, createdDate);
-    `);
+      throw error;
+    }
   },
 
   // V2: add activity column
   async function migrateToV2(tx: Tx) {
-    const cols =
-      (await tx.getAllAsync<{ name: string }>(
-        "PRAGMA table_info(expenses_queue)"
-      )) ?? [];
-    const hasActivity = cols.some((c) => c.name === "activity");
-    if (!hasActivity) {
-      await tx.execAsync(`
-        ALTER TABLE expenses_queue
-        ADD COLUMN activity TEXT NOT NULL DEFAULT '';
-      `);
+    try {
+      const cols =
+        (await tx.getAllAsync<{ name: string }>(
+          "PRAGMA table_info(expenses_queue)"
+        )) ?? [];
+      const hasActivity = cols.some((c) => c.name === "activity");
+      if (!hasActivity) {
+        await tx.execAsync(`
+          ALTER TABLE expenses_queue
+          ADD COLUMN activity TEXT NOT NULL DEFAULT '';
+        `);
+      }
+    } catch (error) {
+      logger.error("Migration V2 failed: Could not add activity column", error);
+      throw error;
     }
   },
 
@@ -124,12 +145,20 @@ async function runMigrations(db: SQLite.SQLiteDatabase): Promise<void> {
     const nextVersion = v + 1;
     console.log(`Running migration to V${nextVersion}`);
 
-    await db.withExclusiveTransactionAsync(async (tx) => {
-      await migrations[v](tx);
-      // Bump inside the same TX to record success atomically
-      await tx.execAsync(`PRAGMA user_version = ${nextVersion}`);
-    });
+    try {
+      await db.withExclusiveTransactionAsync(async (tx) => {
+        await migrations[v](tx);
+        // Bump inside the same TX to record success atomically
+        await tx.execAsync(`PRAGMA user_version = ${nextVersion}`);
+      });
 
-    console.log(`Migration to V${nextVersion} complete`);
+      console.log(`Migration to V${nextVersion} complete`);
+    } catch (error) {
+      logger.error(`Migration to V${nextVersion} failed`, error, {
+        currentVersion: v,
+        targetVersion: nextVersion,
+      });
+      throw error;
+    }
   }
 }

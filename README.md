@@ -20,6 +20,29 @@ We don't have any testing setup yet. There are some placeholders in the package.
 
 Eventually we can add following https://docs.expo.dev/develop/unit-testing/.
 
+## Logs and Errors
+
+We are using Sentry w/ the 'harvest-mobile' project. The `ios/sentry.properties` file is not checked into git, so you will need to set it up yourself. It looks like this but you'll need to bring your own auth token:
+
+```
+
+auth.token=<YOUR_AUTH_TOKEN>
+
+defaults.org=ucdavis
+defaults.project=harvest-mobile
+
+defaults.url=https://sentry.io/
+
+```
+
+You also need an `.env.local` if you want to log to Sentry in development mode. It should look like this:
+
+```
+SENTRY_AUTH_TOKEN=<YOUR_AUTH_TOKEN>
+```
+
+I'm not sure if you need the auth token in both places or just one. Guessing maybe just `.env.local` is enough but TBD.
+
 ## Deployment
 
 We use [Azure Pipelines](https://dev.azure.com/ucdavis/Harvest%20Mobile/_build) to build and deploy the app. The pipeline is defined in `azure-pipelines.yml`.

@@ -1,4 +1,5 @@
 import { getCurrentTeamAuthInfo, TeamAuthInfo } from "@/lib/auth";
+import { logger } from "@/lib/logger";
 
 /**
  * Ensures we have valid auth info, either from the provided parameter or local storage
@@ -44,9 +45,20 @@ export async function fetchFromApi<T>(
   });
 
   if (!res.ok) {
-    throw new Error(
+    const body = await res.text().catch(() => ""); // try to get body text, ignore errors
+
+    const err = new Error(
       `Failed to fetch ${endpoint}: ${res.status} ${res.statusText}`
     );
+
+    logger.error("API fetch error", err, {
+      status: res.status,
+      statusText: res.statusText,
+      url: res.url,
+      body,
+    });
+
+    throw err;
   }
 
   return (await res.json()) as T;
