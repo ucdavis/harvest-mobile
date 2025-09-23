@@ -76,10 +76,10 @@ export default function AddExpenseScreen() {
     insertExpensesMutation.mutate(expensesWithActivity, {
       onSuccess: () => {
         // TODO: some kind of success message 
-          Toast.show({
-            type: 'success',
-            text1: 'Your expenses have been submitted',
-          });
+        Toast.show({
+          type: 'success',
+          text1: 'Your expenses have been submitted',
+        });
         clearExpenses(); // clear local expenses
 
         // invalidate the recent projects query to refresh recent projects
