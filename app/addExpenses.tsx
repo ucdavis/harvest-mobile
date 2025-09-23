@@ -25,6 +25,9 @@ import {
 } from "@/services/queries/expenseQueue";
 import { useInsertExpenses } from "@/services/queries/expenses";
 
+import Toast from 'react-native-toast-message';
+
+
 const showMoreProjectInfoButton = false; // false for now since workers can't see project details
 
 export default function AddExpenseScreen() {
@@ -72,7 +75,11 @@ export default function AddExpenseScreen() {
     }));
     insertExpensesMutation.mutate(expensesWithActivity, {
       onSuccess: () => {
-        // TODO: some kind of success message
+        // TODO: some kind of success message 
+          Toast.show({
+            type: 'success',
+            text1: 'Your expenses have been submitted',
+          });
         clearExpenses(); // clear local expenses
 
         // invalidate the recent projects query to refresh recent projects
