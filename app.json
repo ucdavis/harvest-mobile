@@ -45,11 +45,17 @@
       "expo-secure-store",
       "expo-sqlite",
       [
-        "expo-camera",
+        "@sentry/react-native/expo",
         {
-          "cameraPermission": "Allow $(CAES Harvest) to access your camera"
+          "url": "https://sentry.io/",
+          "project": "harvest-mobile",
+          "organization": "ucdavis"
         }
-      ]
+      ],
+      "expo-camera",
+      {
+        "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera"
+      }
     ],
     "experiments": {
       "typedRoutes": true

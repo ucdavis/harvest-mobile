@@ -1,4 +1,16 @@
 import { getCurrentTeamAuthInfo, TeamAuthInfo } from "@/lib/auth";
+import { logger } from "@/lib/logger";
+
+let onUnauthorized: (() => void | Promise<void>) | null = null;
+export function registerOnUnauthorized(handler: () => void | Promise<void>) {
+  onUnauthorized = handler;
+}
+
+export function unRegisterOnUnauthorized(handler: () => void | Promise<void>) {
+  if (onUnauthorized === handler) {
+    onUnauthorized = null;
+  }
+}
 
 /**
  * Ensures we have valid auth info, either from the provided parameter or local storage
@@ -43,10 +55,25 @@ export async function fetchFromApi<T>(
     headers,
   });
 
-  if (!res.ok) {
-    throw new Error(
+    if (!res.ok) {
+    if (res.status === 401) {
+      await onUnauthorized?.()
+      alert("Session expired. Please log in again.");
+    }
+    const body = await res.text().catch(() => ""); // try to get body text, ignore errors
+
+    const err = new Error(
       `Failed to fetch ${endpoint}: ${res.status} ${res.statusText}`
     );
+
+    logger.error("API fetch error", err, {
+      status: res.status,
+      statusText: res.statusText,
+      url: res.url,
+      body,
+    });
+
+    throw err;
   }
 
   return (await res.json()) as T;

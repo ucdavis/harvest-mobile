@@ -10,6 +10,7 @@ export default function LogoutScreen() {
   const { logout, authInfo } = useAuth();
 
   const userQuery = useUserInfo(authInfo);
+
   const clearExpenseQueueMutation = useClearExpenseQueue();
 
   const onLogoutPress = async () => {
@@ -29,7 +30,9 @@ export default function LogoutScreen() {
   return (
     <View className="main">
       <View className="card">
-        <Text className="text-md uppercase font-bold text-harvest tracking-tight">User Details</Text>
+        <Text className="text-md uppercase font-bold text-harvest tracking-tight">
+          User Details
+        </Text>
         <Text className="text-lg font-semibold text-primary-font">
           Current User:
         </Text>
@@ -43,18 +46,12 @@ export default function LogoutScreen() {
           accessibilityRole="button"
           accessibilityLabel="Logout"
         >
-
-          <Text className="harvest-button-text">
-            Log out of Harvest
-          </Text>
+          <Text className="harvest-button-text">Log out of Harvest</Text>
           <ArrowRightOnRectangleIcon size={24} color="#fff" />
         </TouchableOpacity>
       </View>
 
-
-
       <ExpenseQueue />
-
     </View>
   );
 }

@@ -10,7 +10,27 @@ import { ExpenseProvider } from "@/components/context/ExpenseContext";
 import { QueryContext } from "@/components/context/QueryContext";
 import { useInitDb } from "@/hooks/useInitDb";
 
+import * as Sentry from "@sentry/react-native";
 import "../global.css";
+
+Sentry.init({
+  dsn: "https://fab598815739ee48f41e03c092212c08@o4507619154657280.ingest.us.sentry.io/4510064547332096",
+
+  // Adds more context data to events (IP address, cookies, user, etc.)
+  // For more information, visit: https://docs.sentry.io/platforms/react-native/data-management/data-collected/
+  sendDefaultPii: true,
+
+  // Enable Logs
+  enableLogs: true,
+
+  // Configure Session Replay
+  replaysSessionSampleRate: 0.1,
+  replaysOnErrorSampleRate: 1,
+  integrations: [Sentry.mobileReplayIntegration()],
+
+  // uncomment the line below to enable Spotlight (https://spotlightjs.com)
+  // spotlight: __DEV__,
+});
 
 function RootLayoutNav() {
   const theme = {
@@ -61,7 +81,7 @@ function RootLayoutNav() {
   );
 }
 
-export default function RootLayout() {
+export default Sentry.wrap(function RootLayout() {
   const { status } = useInitDb();
   const [loaded] = useFonts({
     ProximaNova: require("../assets/fonts/proximanova-regular.ttf"),
@@ -81,4 +101,4 @@ export default function RootLayout() {
       </AuthProvider>
     </QueryContext>
   );
-}
+});

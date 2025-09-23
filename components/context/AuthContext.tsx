@@ -4,6 +4,7 @@ import {
   setOrUpdateUserAuthInfo,
   TeamAuthInfo,
 } from "@/lib/auth";
+import { setUser } from "@/lib/logger";
 import React, {
   createContext,
   useCallback,
@@ -11,6 +12,7 @@ import React, {
   useEffect,
   useState,
 } from "react";
+import { registerOnUnauthorized, unRegisterOnUnauthorized } from "../../services/api";
 
 interface AuthContextType {
   isLoggedIn: boolean;
@@ -32,6 +34,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setAuthInfo(undefined);
       setIsLoading(false);
       setIsLoggedIn(false);
+      setUser(null); // clear user info from logger
     });
   }, []);
 
@@ -53,6 +56,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setIsLoading(false);
     });
   }, []);
+
+  useEffect(() => {
+  registerOnUnauthorized(logout);
+
+  return () => {
+    unRegisterOnUnauthorized(logout);
+  };
+}, [logout]);
 
   console.log("AuthProvider rendered, isLoggedIn:", isLoggedIn);
 
