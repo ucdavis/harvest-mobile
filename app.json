@@ -52,10 +52,7 @@
           "organization": "ucdavis"
         }
       ],
-      "expo-camera",
-      {
-        "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera"
-      }
+      ["expo-camera", { "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera" }]
     ],
     "experiments": {
       "typedRoutes": true
