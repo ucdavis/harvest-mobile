@@ -77,8 +77,8 @@ export default function AddExpenseScreen() {
       onSuccess: () => {
         // TODO: some kind of success message 
         Toast.show({
-          type: 'success',
-          text1: 'Your expenses have been submitted',
+          type: 'warning',
+          text1: 'Your expenses have been added to the queue.',
         });
         clearExpenses(); // clear local expenses
 
