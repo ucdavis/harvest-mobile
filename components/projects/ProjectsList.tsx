@@ -113,17 +113,16 @@ export function ProjectsList({
           value={searchTerm}
           onChangeText={setSearchTerm}
           returnKeyType="search"
-          // ↓ keep the height stable across placeholder/typed text
+
           multiline={false}
           numberOfLines={1}
           style={{
-            lineHeight: 20,   // match leading-6 (24)
-            height: 24,       // lock intrinsic height
+            lineHeight: 20,
+            height: 24,
             paddingTop: 0,
             paddingBottom: 0,
           }}
-        // optional: stop system text scaling from changing height
-        // allowFontScaling={false}
+
         />
         {searchTerm.length > 0 && (
           <TouchableOpacity
