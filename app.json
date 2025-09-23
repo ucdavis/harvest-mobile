@@ -43,7 +43,13 @@
         }
       ],
       "expo-secure-store",
-      "expo-sqlite"
+      "expo-sqlite",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow $(CAES Harvest) to access your camera"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

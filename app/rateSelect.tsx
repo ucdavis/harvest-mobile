@@ -32,7 +32,14 @@ export default function RateSelectScreen() {
           <Text className="text-base text-white">Cancel</Text>
         </TouchableOpacity>
         <Text className="text-lg font-semibold text-white">Select Rate</Text>
-        <View className="w-[60px]" />
+        <TouchableOpacity
+          onPress={() =>
+            router.push({ pathname: "/qrScan", params: { projectId: projectId || "" } })
+          }
+          className="py-2"
+        >
+          <Text className="text-base text-white">QR Scan</Text>
+        </TouchableOpacity>
       </View>
 
       {/* Rates List */}
