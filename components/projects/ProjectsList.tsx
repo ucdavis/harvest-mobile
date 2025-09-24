@@ -16,6 +16,7 @@ import {
 
 import { ProjectCard } from "@/components/ui/ProjectCard";
 import { Project } from "@/lib/project";
+import { XMarkIcon } from "react-native-heroicons/solid";
 
 type ProjectsListProps = {
   projects: Project[];
@@ -102,28 +103,43 @@ export function ProjectsList({
 
   return (
     <View className="flex-1">
-      {/* Search Bar */}
-      <View className="flex-row items-center p-4 bg-white border-b border-primary-border">
+
+      <View className="flex-row items-center p-4 bg-white border-b border-primary-border h-14">
         <MagnifyingGlassIcon size={20} color="#a0a0a0" />
         <TextInput
-          className="flex-1 text-lg mx-2 text-primary-font"
+          className="flex-1 mx-2 text-primary-font text-lg leading-6"
           placeholder="Search project IDs or PIs…"
           placeholderTextColor="#a0a0a0"
           value={searchTerm}
           onChangeText={setSearchTerm}
           returnKeyType="search"
+
+          multiline={false}
+          numberOfLines={1}
+          style={{
+            lineHeight: 20,
+            height: 24,
+            paddingTop: 0,
+            paddingBottom: 0,
+          }}
+
         />
         {searchTerm.length > 0 && (
-          <TouchableOpacity onPress={() => setSearchTerm("")} className="p-1">
-            <XCircleIcon size={24} color="#a0a0a0" />
+          <TouchableOpacity
+            className="p-1 mr-1"
+            accessibilityRole="button"
+            accessibilityLabel="Clear search"
+            onPress={() => setSearchTerm("")}
+          >
+            <XMarkIcon size={20} color="#a0a0a0" />
           </TouchableOpacity>
         )}
       </View>
 
       {/* Counter */}
       {searchTerm.length > 0 && (
-        <View className="items-center mb-2">
-          <Text className="text-sm text-neutral-500 dark:text-neutral-400">
+        <View className="items-center mt-2">
+          <Text className="text-sm text-primary-font/80">
             {filteredProjects.length} result
             {filteredProjects.length !== 1 ? "s" : ""} found
           </Text>
