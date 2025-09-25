@@ -113,6 +113,7 @@ export function usePendingExpenses() {
   return useQuery({
     queryKey: ["expenses", "pending"],
     queryFn: getPendingExpensesFromDb,
+    networkMode: "offlineFirst", 
     staleTime: 30 * 1000, // 30 seconds - shorter stale time for more responsive sync
     refetchOnWindowFocus: true, // Trigger sync when app becomes active
     refetchOnReconnect: true, // Trigger sync when network returns
