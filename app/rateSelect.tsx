@@ -27,16 +27,15 @@ export default function RateSelectScreen() {
   return (
     <View className="flex-1 bg-secondary-bg">
       {/* Header */}
-      <View className="modal-header p-5">
+      <View className="modal-header">
         <TouchableOpacity onPress={handleCancel}>
           <Text className="text-base text-white">Cancel</Text>
         </TouchableOpacity>
-        <Text className="text-lg font-semibold text-white">Select Rate</Text>
+        <Text className="text-xl font-semibold text-white">Select Rate</Text>
         <TouchableOpacity
           onPress={() =>
             router.push({ pathname: "/qrScan", params: { projectId: projectId || "" } })
           }
-          className="py-2"
         >
           <Text className="text-base text-white">QR Scan</Text>
         </TouchableOpacity>

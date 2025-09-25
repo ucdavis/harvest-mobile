@@ -11,7 +11,7 @@
 }
 
 .modal-header {
-    @apply flex-row items-center justify-between border-b border-primary-border bg-harvest px-4 py-3;
+    @apply flex-row items-center justify-between border-b border-primary-border bg-harvest/90 px-6 py-6;
 }
 
 .harvest-button-text {

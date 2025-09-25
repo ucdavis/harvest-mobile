@@ -170,10 +170,10 @@ export default function ExpenseDetailsScreen() {
           <View className="flex-1">
             {/* Header */}
             <View className="modal-header">
-              <TouchableOpacity className="py-2" onPress={handleCancel}>
+              <TouchableOpacity onPress={handleCancel}>
                 <Text className="text-base text-white">Cancel</Text>
               </TouchableOpacity>
-              <Text className="text-lg font-semibold text-white">
+              <Text className="text-xl font-semibold text-white">
                 Expense Details
               </Text>
               <View className="w-[60px]" />
