@@ -180,7 +180,7 @@ export default function AddExpenseScreen() {
             className="flex-row bg-harvest rounded-md mt-5 justify-between py-2 px-4"
             onPress={handleAddExpenses}
           >
-            <Text className="text-base text-white font-bold">Add expense</Text>
+            <Text className="text-base text-white font-bold pt-0.5">Add expense</Text>
             <ChevronRightIcon size={24} color="white" />
           </TouchableOpacity>
         </View>

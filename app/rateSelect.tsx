@@ -27,8 +27,8 @@ export default function RateSelectScreen() {
   return (
     <View className="flex-1 bg-secondary-bg">
       {/* Header */}
-      <View className="modal-header">
-        <TouchableOpacity onPress={handleCancel} className="py-2">
+      <View className="modal-header p-5">
+        <TouchableOpacity onPress={handleCancel}>
           <Text className="text-base text-white">Cancel</Text>
         </TouchableOpacity>
         <Text className="text-lg font-semibold text-white">Select Rate</Text>

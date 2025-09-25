@@ -61,6 +61,7 @@ function RootLayoutNav() {
             headerShown: true,
             title: "Add Expense",
             presentation: "card",
+            headerBackTitle: "Back",
           }}
         />
         <Stack.Screen
