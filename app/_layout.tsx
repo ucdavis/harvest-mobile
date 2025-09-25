@@ -13,8 +13,8 @@ import { useInitDb } from "@/hooks/useInitDb";
 import * as Sentry from "@sentry/react-native";
 import "../global.css";
 
-import { toastConfig } from '@/toast.config';
-import Toast from 'react-native-toast-message';
+import { toastConfig } from "@/toast.config";
+import Toast from "react-native-toast-message";
 
 Sentry.init({
   dsn: "https://fab598815739ee48f41e03c092212c08@o4507619154657280.ingest.us.sentry.io/4510064547332096",
@@ -71,6 +71,16 @@ function RootLayoutNav() {
           }}
         />
         <Stack.Screen
+          name="qrScan"
+          options={{
+            headerShown: true,
+            title: "Scan QR Code",
+            presentation: "modal",
+            headerStyle: { backgroundColor: "#266041" },
+            headerTintColor: "#fff",
+          }}
+        />
+        <Stack.Screen
           name="expenseDetails"
           options={{
             headerShown: false,
@@ -82,9 +92,9 @@ function RootLayoutNav() {
       <Toast
         config={toastConfig}
         position="top"
-        topOffset={60}         // adjust for your header / safe area
+        topOffset={60} // adjust for your header / safe area
         visibilityTime={2500}
-        keyboardOffset={24}    // iOS: avoid the keyboard
+        keyboardOffset={24} // iOS: avoid the keyboard
         autoHide
       />
       <StatusBar style="light" />
