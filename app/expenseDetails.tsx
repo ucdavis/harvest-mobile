@@ -2,7 +2,6 @@ import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import {
   Alert,
-  InputAccessoryView,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
@@ -11,7 +10,7 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
 
 import { ExclamationTriangleIcon } from "react-native-heroicons/solid";
@@ -285,19 +284,7 @@ export default function ExpenseDetailsScreen() {
           </View>
         </View>
       </Pressable>
-      {/* accessory bar for the keyboard */}
-      <InputAccessoryView nativeID={accessoryID}>
-        <View className="flex-row items-center gap-2 border-t border-neutral-300 bg-neutral-100 p-2">
-          <TouchableOpacity
-            onPress={Keyboard.dismiss}
-            className="rounded-lg bg-neutral-200 px-3 py-2"
-          >
-            <Text className="font-semibold">Done</Text>
-          </TouchableOpacity>
-          <View className="flex-1" />
-          {/* could put a submit button here */}
-        </View>
-      </InputAccessoryView>
+
     </KeyboardAvoidingView>
   );
 }
