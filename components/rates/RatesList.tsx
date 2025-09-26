@@ -1,5 +1,9 @@
+import { useAuth } from "@/components/context/AuthContext";
+import { useRecentRates } from "@/services/queries/rates";
 import { useQueryClient } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
+import { useUserInfo } from "@/services/queries/users";
+import { useEffect, useMemo, useState } from "react";
+import { setUser } from "@sentry/react-native";
 import {
   ActivityIndicator,
   FlatList,
@@ -41,6 +45,30 @@ export function RatesList({
 
   const [filtersOpen, setFiltersOpen] = useState(true);
   const [selectedType, setSelectedType] = useState<string | null>(null);
+  const { authInfo } = useAuth();
+  const [showRecent, setShowRecent] = useState(false);
+
+  const userQuery = useUserInfo(authInfo);
+  const { data: recentRates } = useRecentRates(authInfo);
+
+  const showRecentButton = recentRates && recentRates.length > 0;
+
+    useEffect(() => {
+        // whenever the user info changes, update sentry
+        if (userQuery?.data?.user) {
+          setUser({
+            id: userQuery.data.user.id,
+            email: userQuery.data.user.email,
+            team: userQuery.data.teamSlug,
+          });
+        }
+      }, [userQuery.data]);
+
+    useEffect(() => {
+    if (selectedType) {
+      setShowRecent(false);
+    }
+  }, [selectedType]);
 
 
   const uniqueTypes = useMemo(() => {
@@ -67,6 +95,13 @@ export function RatesList({
       return matchesSearch && matchesType;
     });
   }, [rates, searchTerm, selectedType]);
+
+  const ratesToShow = useMemo(() => {
+  if (showRecent && recentRates) {
+    return recentRates;
+  }
+  return filteredRates;
+}, [showRecent, recentRates, filteredRates]);
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -182,20 +217,40 @@ export function RatesList({
                 </TouchableOpacity>
               );
             })}
+            {showRecentButton && (
+          <TouchableOpacity
+            onPress={() => {
+              setSelectedType(null);
+              setShowRecent(true);
+            }}
+            className="mr-2 rounded-full border px-3 py-2"
+            style={{
+              borderColor: showRecent ? "#000000" : "#e5e7eb",
+              backgroundColor: showRecent ? "#f3f4f6" : "#ffffff",
+            }}
+          >
+            <View className="flex-row items-center">
+              <RateTypeIcon type="recent" size={14}/>
+              <Text className="ml-1 text-sm font-medium" >
+                Recent
+              </Text>
+            </View>
+          </TouchableOpacity>
+        )}
 
-            {selectedType && (
+            {(selectedType || showRecent) && (
               <TouchableOpacity
-                onPress={() => setSelectedType(null)}
+                onPress={() => {setSelectedType(null); setShowRecent(false);}}
                 className="mr-2 rounded-full border border-primary-border px-3 py-2"
                 accessibilityRole="button"
                 accessibilityLabel="Clear filter"
               >
                 <Text className="text-sm text-primary-font/80">Clear</Text>
-              </TouchableOpacity>
+</TouchableOpacity> 
             )}
           </View>
         </View>
-      )}
+      )}      
     </>
   );
 
@@ -238,21 +293,22 @@ export function RatesList({
       {SearchBar}
 
       {/* Counter */}
-      {(searchTerm.length > 0 || selectedType) && (
+      {(searchTerm.length > 0 || selectedType || showRecent) && (
         <View className="items-center mt-2">
           <Text className="text-sm text-primary-font/80">
-            {filteredRates.length} result
-            {filteredRates.length !== 1 ? "s" : ""} found
+            {ratesToShow.length} result
+            {ratesToShow.length !== 1 ? "s" : ""} found
             {selectedType ? ` • filtered by ${selectedType}` : ""}
+            {showRecent ? ` • filtered by recent` : ""}
           </Text>
         </View>
       )}
 
       {/* Rates List Content */}
-      {filteredRates.length > 0 ? (
+      {ratesToShow.length > 0 ? (
         <View className="px-4 flex-1">
           <FlatList
-            data={filteredRates}
+            data={ratesToShow}
             renderItem={renderRateItem}
             keyExtractor={(item) => item.id}
             contentContainerStyle={{ paddingTop: 8, paddingBottom: 88 }}
@@ -262,7 +318,7 @@ export function RatesList({
             }
           />
         </View>
-      ) : searchTerm.length > 0 || selectedType ? (
+      ) : searchTerm.length > 0 || selectedType || showRecent? (
         <View className="items-center justify-center py-16 px-5">
           <MagnifyingGlassIcon size={80} color="#a0a0a0" />
           <Text className="text-lg font-semibold mt-4 text-center text-primary-font/40">
