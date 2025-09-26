@@ -276,7 +276,7 @@ const allFilteredRates = useMemo(
 
   // Normal state
   return (
-    <View className="flex-1">
+    <View className="px-4 flex-1">
       {SearchBar}
 
       {/* Counter */}
