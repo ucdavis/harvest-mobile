@@ -14,6 +14,7 @@ import * as Sentry from "@sentry/react-native";
 import "../global.css";
 
 import { toastConfig } from '@/toast.config';
+import React from "react";
 import Toast from 'react-native-toast-message';
 
 Sentry.init({
@@ -61,7 +62,8 @@ function RootLayoutNav() {
             headerShown: true,
             title: "Add Expense",
             presentation: "card",
-            headerBackTitle: "Back",
+            headerBackButtonDisplayMode: "minimal",
+
           }}
         />
         <Stack.Screen

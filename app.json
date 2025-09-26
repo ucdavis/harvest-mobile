@@ -17,72 +17,68 @@
       },
       "supportsTablet": true,
       "bundleIdentifier": "com.ucdavis.harvest-mobile",
-      "runtimeVersion": "1.0.0",
-      "userInterfaceStyle": "light",
-      "ios": {
-        "userInterfaceStyle": "light"
-      }
-    },
-    "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
-      },
-      "edgeToEdgeEnabled": true,
-      "runtimeVersion": {
-        "policy": "appVersion"
-      },
-      "permissions": [
-        "android.permission.CAMERA",
-        "android.permission.RECORD_AUDIO"
-      ],
-      "package": "com.ucdavis.harvestmobile"
-    },
-    "web": {
-      "bundler": "metro",
-      "output": "static",
-      "favicon": "./assets/images/favicon.png"
-    },
-    "plugins": [
-      "expo-router",
-      [
-        "expo-splash-screen",
-        {
-          "image": "./assets/images/studentfarmer.png",
-          "imageWidth": 200,
-          "resizeMode": "contain",
-          "backgroundColor": "#F7F7F7"
-        }
-      ],
-      "expo-secure-store",
-      "expo-sqlite",
-      [
-        "@sentry/react-native/expo",
-        {
-          "url": "https://sentry.io/",
-          "project": "harvest-mobile",
-          "organization": "ucdavis"
-        }
-      ],
-      [
-        "expo-camera",
-        {
-          "cameraPermission": "Allow Harvest to access your camera"
-        }
-      ]
-    ],
-    "experiments": {
-      "typedRoutes": true
-    },
-    "extra": {
-      "router": {},
-      "eas": {
-        "projectId": "2b6afc00-a0f1-4df2-b0f0-37df66f002e0"
-      }
-    },
-    "owner": "ucdavis",
-    "updates": {
-      "url": "https://u.expo.dev/2b6afc00-a0f1-4df2-b0f0-37df66f002e0"
+      "runtimeVersion": "1.0.0"
     }
+  },
+  "android": {
+    "adaptiveIcon": {
+      "foregroundImage": "./assets/images/adaptive-icon.png",
+      "backgroundColor": "#ffffff"
+    },
+    "edgeToEdgeEnabled": true,
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "permissions": [
+      "android.permission.CAMERA",
+      "android.permission.RECORD_AUDIO"
+    ],
+    "package": "com.ucdavis.harvestmobile"
+  },
+  "web": {
+    "bundler": "metro",
+    "output": "static",
+    "favicon": "./assets/images/favicon.png"
+  },
+  "plugins": [
+    "expo-router",
+    [
+      "expo-splash-screen",
+      {
+        "image": "./assets/images/studentfarmer.png",
+        "imageWidth": 200,
+        "resizeMode": "contain",
+        "backgroundColor": "#F7F7F7"
+      }
+    ],
+    "expo-secure-store",
+    "expo-sqlite",
+    [
+      "@sentry/react-native/expo",
+      {
+        "url": "https://sentry.io/",
+        "project": "harvest-mobile",
+        "organization": "ucdavis"
+      }
+    ],
+    [
+      "expo-camera",
+      {
+        "cameraPermission": "Allow Harvest to access your camera"
+      }
+    ]
+  ],
+  "experiments": {
+    "typedRoutes": true
+  },
+  "extra": {
+    "router": {},
+    "eas": {
+      "projectId": "2b6afc00-a0f1-4df2-b0f0-37df66f002e0"
+    }
+  },
+  "owner": "ucdavis",
+  "updates": {
+    "url": "https://u.expo.dev/2b6afc00-a0f1-4df2-b0f0-37df66f002e0"
   }
 }
