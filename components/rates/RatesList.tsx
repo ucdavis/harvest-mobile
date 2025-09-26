@@ -53,7 +53,6 @@ export function RatesList({
 
   const recentRatesToShow = recentRates ?? [];
 
-
   useEffect(() => {
         // whenever the user info changes, update sentry
         if (userQuery?.data?.user) {
@@ -72,34 +71,33 @@ export function RatesList({
   }, [rates]);
 
 
-  const filteredRates = useMemo(() => {
-    if (!rates) return [];
-    const q = searchTerm.trim().toLowerCase();
+  function filterRates(rates: Rate[] | undefined, searchTerm: string, selectedType: string | null) {
+  if (!rates) return [];
+  const q = searchTerm.trim().toLowerCase();
+  return rates.filter((r) =>
+    (!q ||
+      String(r.description).toLowerCase().includes(q) ||
+      String(r.type).toLowerCase().includes(q) ||
+      String(r.unit).toLowerCase().includes(q) ||
+      String(r.price).toLowerCase().includes(q)) &&
+    (!selectedType || String(r.type) === selectedType)
+  );
+}
 
-    return rates.filter((r) => {
-      const matchesSearch =
-        !q ||
-        String(r.description).toLowerCase().includes(q) ||
-        String(r.type).toLowerCase().includes(q) ||
-        String(r.unit).toLowerCase().includes(q) ||
-        String(r.price).toLowerCase().includes(q);
+const filteredRecents = useMemo(
+  () => filterRates(recentRatesToShow, searchTerm, selectedType),
+  [recentRatesToShow, searchTerm, selectedType]
+);
 
-      const matchesType = !selectedType || String(r.type) === selectedType;
+const allFilteredRates = useMemo(
+  () => filterRates(rates, searchTerm, selectedType),
+  [rates, searchTerm, selectedType]
+);
 
-      return matchesSearch && matchesType;
-    });
-  }, [rates, searchTerm, selectedType]);
-
-  const showFiltered = searchTerm.length > 0 || selectedType;
-
-  const listData = showFiltered
-    ? filteredRates
-    : [
-        { header: "Recents" },
-        ...recentRatesToShow,
-        { header: "All" },
-        ...rates,
-      ];
+  const listData = [
+  ...(filteredRecents.length > 0 ? [{ header: "Recents" }, ...filteredRecents] : []),
+  ...(allFilteredRates.length > 0 ? [{ header: "All" }, ...allFilteredRates] : []),
+];
 
   const renderItem = ({ item }: { item: any }) => {
     if (item.header) {
@@ -282,18 +280,18 @@ export function RatesList({
       {SearchBar}
 
       {/* Counter */}
-      {showFiltered && (
+      {(searchTerm.length > 0 || selectedType) && (
         <View className="items-center mt-2">
           <Text className="text-sm text-primary-font/80">
-            {filteredRates.length} result
-            {filteredRates.length !== 1 ? "s" : ""} found
+            {allFilteredRates.length} result
+            {allFilteredRates.length !== 1 ? "s" : ""} found
             {selectedType ? ` • filtered by ${selectedType}` : ""}
           </Text>
         </View>
       )}
 
       {listData.length === 0 ? (
-      showFiltered ? (
+      (searchTerm.length > 0 || selectedType) ? (
         <View className="items-center justify-center py-16 px-5">
           <MagnifyingGlassIcon size={80} color="#a0a0a0" />
           <Text className="text-lg font-semibold mt-4 text-center text-primary-font/40">
@@ -329,7 +327,7 @@ export function RatesList({
           }
           return `unknown-${idx}`;
         }}
-        contentContainerStyle={{ paddingBottom: 88 }}
+        contentContainerStyle={{ paddingTop: 8, paddingBottom: 88 }}
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
