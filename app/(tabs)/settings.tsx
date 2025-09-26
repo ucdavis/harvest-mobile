@@ -33,10 +33,10 @@ export default function LogoutScreen() {
         <Text className="text-md uppercase font-bold text-harvest tracking-tight">
           User Details
         </Text>
-        <Text className="text-lg font-semibold text-primary-font">
+        <Text className="text-lg font-semibold text-primaryfont">
           Current User:
         </Text>
-        <Text className="text-lg text-primary-font">
+        <Text className="text-lg text-primaryfont">
           {userQuery.data?.user.email || "Loading User"} in team{" "}
           {userQuery.data?.teamSlug || "Unknown Team"}
         </Text>

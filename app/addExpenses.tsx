@@ -108,13 +108,13 @@ export default function AddExpenseScreen() {
         <View className="card">
           <View className="flex-row items-start justify-between">
             <View>
-              <Text className="text-md uppercase font-bold text-primary-font/40 tracking-tight mb-1">
+              <Text className="text-md uppercase font-bold text-primaryfont/40 tracking-tight mb-1">
                 {projectId}
               </Text>
               <Text className="text-xl font-bold text-harvest">
                 {projectName}
               </Text>
-              <Text className="text-md font-medium text-primary-font">PI: {piName}</Text>
+              <Text className="text-md font-medium text-primaryfont">PI: {piName}</Text>
             </View>
             {showMoreProjectInfoButton && (
               <TouchableOpacity onPress={handleProjectInfo}>
@@ -129,7 +129,7 @@ export default function AddExpenseScreen() {
             Activity
           </Text>
           <TextInput
-            className="border mt-5 border-primary-border rounded-md p-3 text-base min-h-[60px] bg-gray-50"
+            className="border mt-5 border-primaryborder rounded-md p-3 text-base min-h-[60px] bg-gray-50"
             placeholder="Add expense activity..."
             placeholderTextColor="#999"
             value={activity}
@@ -144,7 +144,7 @@ export default function AddExpenseScreen() {
             Expenses
           </Text>
           {expenses.length === 0 && (
-            <Text className="text-primary-font/80 mt-2">
+            <Text className="text-primaryfont/80 mt-2">
               No expenses added.
             </Text>
           )}
@@ -152,17 +152,17 @@ export default function AddExpenseScreen() {
           {expenses.map((item) => (
             <View
               key={item.uniqueId}
-              className="flex-row items-end justify-between py-3 border-b border-primary-border"
+              className="flex-row items-end justify-between py-3 border-b border-primaryborder"
             >
               <View className="flex-1">
                 <Text className="tertiary-label uppercase">{item.type}</Text>
-                <Text className="text-lg text-primary-font font-medium">
+                <Text className="text-lg text-primaryfont font-medium">
                   {item.rate?.description}
                 </Text>
               </View>
 
               <View className="flex-row items-center space-x-3">
-                <Text className="text-base text-primary-font/80 font-semibold">
+                <Text className="text-base text-primaryfont/80 font-semibold">
                   {item.quantity} {item.rate?.unit} @ ${item.price}
                 </Text>
 
@@ -187,7 +187,7 @@ export default function AddExpenseScreen() {
       </ScrollView>
 
       {/* Submit Button */}
-      <View className="p-4 mb-4 bg-white border-t border-primary-border">
+      <View className="p-4 mb-4 bg-white border-t border-primaryborder">
         <TouchableOpacity
           className={`harvest-button ${expenses.length === 0 ? "opacity-50" : ""}`}
           onPress={expenses.length > 0 ? handleSubmit : undefined}

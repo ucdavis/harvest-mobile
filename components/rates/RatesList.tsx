@@ -17,6 +17,7 @@ import {
 } from "react-native-heroicons/outline";
 
 import { RateTypeIcon, getRateTypeColor } from "@/components/ui/rateType";
+import { Colors } from "@/constants/Colors";
 import { Rate } from "@/lib/expense";
 import { XMarkIcon } from "react-native-heroicons/solid";
 
@@ -84,7 +85,7 @@ export function RatesList({
       <TouchableOpacity
         activeOpacity={0.7}
         onPress={() => handleRatePress(item)}
-        className="mb-3 rounded-xl border border-primary-border bg-white p-4"
+        className="mb-3 rounded-xl border border-primaryborder bg-white p-4"
       >
         <View className="relative flex-row items-center">
           <View
@@ -96,14 +97,14 @@ export function RatesList({
 
           <View className="flex-1">
             <Text className="tertiary-label uppercase">{item.type}</Text>
-            <Text className="text-lg font-semibold text-primary-font">
+            <Text className="text-lg font-semibold text-primaryfont">
               {item.description}
             </Text>
           </View>
 
           <View className="items-end">
             <Text className="tertiary-label text-right">{item.unit}</Text>
-            <Text className="text-lg font-semibold text-primary-font">
+            <Text className="text-lg font-semibold text-primaryfont">
               ${item.price}
             </Text>
           </View>
@@ -115,10 +116,10 @@ export function RatesList({
   // Shared Search Bar with Filters toggle
   const SearchBar = (
     <>
-      <View className="flex-row items-center px-4 h-14 bg-white border-b border-primary-border">
+      <View className="flex-row items-center px-4 h-14 bg-white border-b border-primaryborder">
         <MagnifyingGlassIcon size={20} color="#a0a0a0" />
         <TextInput
-          className="flex-1 text-lg leading-6 mx-2 text-primary-font"
+          className="flex-1 text-lg leading-6 mx-2 text-primaryfont"
           placeholder="Search rates, types, or units…"
           placeholderTextColor="#a0a0a0"
           value={searchTerm}
@@ -144,14 +145,14 @@ export function RatesList({
         >
           <AdjustmentsHorizontalIcon
             size={24}
-            color={filtersOpen || selectedType ? "#266041" : "#a0a0a0"}
+            color={filtersOpen || selectedType ? Colors.harvest : "#a0a0a0"}
           />
         </TouchableOpacity>
       </View>
 
       {/* Collapsible filter chips row */}
       {filtersOpen && (
-        <View className="bg-white border-b border-primary-border px-4 py-3">
+        <View className="bg-white border-b border-primaryborder px-4 py-3">
           <View className="flex-row flex-wrap">
             {uniqueTypes.map((t) => {
               const isActive = selectedType === t;
@@ -186,11 +187,11 @@ export function RatesList({
             {selectedType && (
               <TouchableOpacity
                 onPress={() => setSelectedType(null)}
-                className="mr-2 rounded-full border border-primary-border px-3 py-2"
+                className="mr-2 rounded-full border border-primaryborder px-3 py-2"
                 accessibilityRole="button"
                 accessibilityLabel="Clear filter"
               >
-                <Text className="text-sm text-primary-font/80">Clear</Text>
+                <Text className="text-sm text-primaryfont/80">Clear</Text>
               </TouchableOpacity>
             )}
           </View>
@@ -205,8 +206,8 @@ export function RatesList({
       <View className="flex-1">
         {SearchBar}
         <View className="flex-1 items-center justify-center">
-          <ActivityIndicator size="large" color="#266041" />
-          <Text className="mt-4 text-base text-primary-font/80">
+          <ActivityIndicator size="large" color={Colors.harvest} />
+          <Text className="mt-4 text-base text-primaryfont/80">
             Loading rates...
           </Text>
         </View>
@@ -219,7 +220,7 @@ export function RatesList({
     return (
       <View className="flex-1 items-center justify-center p-6">
         <ExclamationTriangleIcon size={48} color="#79242F" />
-        <Text className="mt-4 text-center text-base text-primary-font/80">
+        <Text className="mt-4 text-center text-base text-primaryfont/80">
           Failed to load rates
         </Text>
         <TouchableOpacity
@@ -240,7 +241,7 @@ export function RatesList({
       {/* Counter */}
       {(searchTerm.length > 0 || selectedType) && (
         <View className="items-center mt-2">
-          <Text className="text-sm text-primary-font/80">
+          <Text className="text-sm text-primaryfont/80">
             {filteredRates.length} result
             {filteredRates.length !== 1 ? "s" : ""} found
             {selectedType ? ` • filtered by ${selectedType}` : ""}
@@ -265,20 +266,20 @@ export function RatesList({
       ) : searchTerm.length > 0 || selectedType ? (
         <View className="items-center justify-center py-16 px-5">
           <MagnifyingGlassIcon size={80} color="#a0a0a0" />
-          <Text className="text-lg font-semibold mt-4 text-center text-primary-font/40">
+          <Text className="text-lg font-semibold mt-4 text-center text-primaryfont/40">
             No rates found
           </Text>
-          <Text className="text-sm mt-2 text-center text-primary-font/40">
+          <Text className="text-sm mt-2 text-center text-primaryfont/40">
             Try adjusting your search terms or filters
           </Text>
         </View>
       ) : (
         <View className="items-center justify-center py-16 px-5">
           <WrenchScrewdriverIcon size={80} color="#a0a0a0" />
-          <Text className="text-lg font-semibold mt-4 text-center text-primary-font/40">
+          <Text className="text-lg font-semibold mt-4 text-center text-primaryfont/40">
             No rates available
           </Text>
-          <Text className="text-sm mt-2 text-center text-primary-font/40">
+          <Text className="text-sm mt-2 text-center text-primaryfont/40">
             Contact your administrator
           </Text>
         </View>

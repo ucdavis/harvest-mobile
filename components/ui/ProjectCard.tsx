@@ -1,3 +1,4 @@
+import { Colors } from "@/constants/Colors";
 import { Text, TouchableOpacity, View } from "react-native";
 import { PencilSquareIcon } from "react-native-heroicons/outline";
 
@@ -20,7 +21,7 @@ export function ProjectCard({
 
   return (
     <CardWrapper
-      className="mb-4 rounded-md border border-primary-border bg-white overflow-hidden"
+      className="mb-4 rounded-md border border-primaryborder bg-white overflow-hidden"
       {...(onPress ? { onPress, activeOpacity: 0.7 } : {})}
     >
       {/* Header row */}
@@ -28,7 +29,7 @@ export function ProjectCard({
         <View className="flex-1 pr-3">
           {/* Show ID here */}
           {id ? (
-            <Text className="text-xs tracking-tight font-bold uppercase text-primary-font/40">
+            <Text className="text-xs tracking-tight font-bold uppercase text-primaryfont/40">
               {id}
             </Text>
           ) : null}
@@ -59,7 +60,7 @@ export function ProjectCard({
           onPress={onEdit}
           className="p-2 rounded-lg active:bg-harvest/15"
         >
-          <PencilSquareIcon size={28} color="#266041" />
+          <PencilSquareIcon size={28} color={Colors.harvest} />
         </TouchableOpacity>
       </View>
     </CardWrapper>

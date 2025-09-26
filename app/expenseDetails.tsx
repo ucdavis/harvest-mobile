@@ -157,12 +157,12 @@ export default function ExpenseDetailsScreen() {
 
   return (
     <KeyboardAvoidingView
-      className="flex-1 bg-secondary-bg"
+      className="flex-1 bg-secondarybg"
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       keyboardVerticalOffset={0}
     >
       {/* main view area, press outside to dismiss */}
-      <Pressable className="flex-1 bg-secondary-bg" onPress={Keyboard.dismiss}>
+      <Pressable className="flex-1 bg-secondarybg" onPress={Keyboard.dismiss}>
         <ScrollView
           contentContainerStyle={{ flexGrow: 1 }}
           keyboardShouldPersistTaps="handled"
@@ -195,7 +195,7 @@ export default function ExpenseDetailsScreen() {
                     <Text className="tertiary-label uppercase">
                       {rate.type}
                     </Text>
-                    <Text className="text-lg font-semibold text-primary-font">
+                    <Text className="text-lg font-semibold text-primaryfont">
                       {rate.description}
                     </Text>
                   </View>
@@ -203,7 +203,7 @@ export default function ExpenseDetailsScreen() {
                     <Text className="tertiary-label text-right">
                       {rate.unit}
                     </Text>
-                    <Text className="text-lg font-bold text-primary-font">
+                    <Text className="text-lg font-bold text-primaryfont">
                       ${rate.price}
                     </Text>
                   </View>
@@ -255,20 +255,20 @@ export default function ExpenseDetailsScreen() {
         {/* sticky bottom bar outside of the scroll view */}
         <View
           style={{ paddingBottom: (insets.bottom || 12) + 12 }}
-          className="border-t border-primary-border bg-white px-2 pt-1"
+          className="border-t border-primaryborder bg-white px-2 pt-1"
         >
           <View className="p-4 bg-white">
             <View className="flex-row items-center justify-between mb-5">
               <View>
-                <Text className="text-lg font-semibold text-primary-font -mb-1">
+                <Text className="text-lg font-semibold text-primaryfont -mb-1">
                   Total Cost
                 </Text>
-                <Text className="text-base font-semibold text-primary-font/40 text-start -mb-1">
+                <Text className="text-base font-semibold text-primaryfont/40 text-start -mb-1">
                   {quantity || "0"} {rate.unit} × ${rate.price}
                 </Text>
                 <Text
-                  className="text-lg font-extrabold"
-                  style={{ color: "#266041" }}
+                  className="text-lg font-extrabold text-harvest"
+
                 >
                   ${getTotalCost()}
                 </Text>

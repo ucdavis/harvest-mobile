@@ -25,7 +25,7 @@ export default function RateSelectScreen() {
   const handleCancel = () => router.back();
 
   return (
-    <View className="flex-1 bg-secondary-bg">
+    <View className="flex-1 bg-secondarybg">
       {/* Header */}
       <View className="modal-header">
         <TouchableOpacity onPress={handleCancel}>
