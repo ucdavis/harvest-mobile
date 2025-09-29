@@ -8,6 +8,8 @@ import {
   WrenchScrewdriverIcon,
 } from "react-native-heroicons/solid";
 
+import { Colors } from "@/constants/Colors";
+
 type RateType = "labor" | "equipment" | "other";
 
 type IconComp = React.ComponentType<{ size?: number; color?: string }>;
@@ -19,9 +21,9 @@ const ICONS: Record<RateType, IconComp> = {
 };
 
 const COLORS: Record<RateType, string> = {
-  labor: "#8A532F",
-  equipment: "#003A5D",
-  other: "#481268",
+  labor: Colors.rateLabor,
+  equipment: Colors.rateEquipment,
+  other: Colors.rateOther,
 };
 
 const DEFAULT_ICON = QuestionMarkCircleIcon;

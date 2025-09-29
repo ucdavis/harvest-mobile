@@ -14,7 +14,7 @@ module.exports = {
     extend: {
       colors: {
         harvest: Colors.harvest,
-        merlot: Colors.merlot,      // brand primary
+        merlot: Colors.merlot,
         secondarybg: Colors.secondarybg,
         primaryfont: Colors.primaryfont,
         primaryborder: Colors.primaryborder,

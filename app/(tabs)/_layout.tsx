@@ -11,16 +11,16 @@ export default function TabLayout() {
   const navigation = useNavigation();
   const segments = useSegments(); // gives you the current route segments
 
+  const titles: Record<string, string> = {
+    index: "Recent Projects",
+    projects: "All Projects",
+    settings: "Settings",
+  };
+
   useEffect(() => {
-    const active = segments[1]; // e.g. "home", "projects", "settings"
-    let title = "Harvest";
-    if (active === "index") title = "Recent Projects";
-    if (active === "projects") title = "All Projects";
-    if (active === "settings") title = "Settings";
-
-    navigation.setOptions({ title }); // update the stack header
+    const active = segments[1] ?? "";
+    navigation.setOptions({ title: titles[active] || "Harvest" });
   }, [segments, navigation]);
-
   return (
     <Tabs
       screenOptions={{

@@ -54,6 +54,7 @@ function RootLayoutNav() {
           headerStyle: { backgroundColor: Colors.harvest },
           headerTintColor: "#fff",
           headerTitleStyle: { color: "#fff" },
+          headerBackButtonDisplayMode: "minimal",
 
         }}
       >
@@ -64,14 +65,14 @@ function RootLayoutNav() {
           options={{
             title: "Add Expense",
             presentation: "card",
-            headerBackButtonDisplayMode: "minimal",
+
           }}
         />
         <Stack.Screen
           name="rateSelect"
           options={{
-            headerShown: false,
-            presentation: "modal",
+            title: "Select Rate",
+            presentation: "card",
           }}
         />
         <Stack.Screen
