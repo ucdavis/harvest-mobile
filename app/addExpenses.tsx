@@ -88,10 +88,10 @@ export default function AddExpenseScreen() {
         queryClient.isMutating({
           mutationKey: [MUTATION_KEY_SYNC_EXPENSES],
         }) === 0 && syncExpenseQueueMutation.mutate(); // trigger sync of expense queue
-        Toast.show({
-          type: 'warning',
-          text1: 'Your expenses have been added to the queue.',
-        });
+        // Toast.show({
+        //   type: 'warning',
+        //   text1: 'Your expenses have been added to the queue.',
+        // });
         router.back();
       },
       onError: (error) => {
