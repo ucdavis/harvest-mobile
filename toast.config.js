@@ -1,5 +1,6 @@
 
 import { BaseToast } from 'react-native-toast-message';
+import { Colors } from './constants/Colors';
 
 const base = {
   style: { borderRadius: 2, marginHorizontal: 14 },
@@ -13,7 +14,7 @@ export const toastConfig = {
     <BaseToast
       {...props}
       {...base}
-      style={[base.style, { borderLeftColor: '#0047BA', backgroundColor: '#E6ECF7' }]}
+      style={[base.style, { borderLeftColor: Colors.toastInfoBorder, backgroundColor: Colors.toastInfoBg }]}
     />
   ),
 
@@ -22,7 +23,7 @@ export const toastConfig = {
     <BaseToast
       {...props}
       {...base}
-      style={[base.style, { borderLeftColor: '#FFDC00', backgroundColor: '#FFFAE8' }]}
+      style={[base.style, { borderLeftColor: Colors.toastWarningBorder, backgroundColor: Colors.toastWarningBg }]}
     />
   ),
 
@@ -31,7 +32,7 @@ export const toastConfig = {
     <BaseToast
       {...props}
       {...base}
-      style={[base.style, { borderLeftColor: '#C10230', backgroundColor: '#F6E7EA' }]}
+      style={[base.style, { borderLeftColor: Colors.toastDangerBorder, backgroundColor: Colors.toastDangerBg }]}
 
     />
   ),

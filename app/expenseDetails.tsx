@@ -38,7 +38,7 @@ export default function ExpenseDetailsScreen() {
 
   // for positioning submit button
   const insets = useSafeAreaInsets();
-  const accessoryID = "form-accessory-id"; // Unique ID for the input accessory view
+
 
   const [quantity, setQuantity] = useState("");
   const [description, setDescription] = useState("");
@@ -224,7 +224,7 @@ export default function ExpenseDetailsScreen() {
                     placeholderTextColor="#999"
                     keyboardType="decimal-pad"
                     selectTextOnFocus
-                    inputAccessoryViewID={Platform.OS === "ios" ? accessoryID : undefined}
+
                   />
                 </View>
 

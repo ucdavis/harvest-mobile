@@ -15,4 +15,10 @@ export const Colors = {
   secondarybg: "#F7F7F7",
   primaryfont: "#1F1F1F",
   primaryborder: "#DFDFDF",
+  toastInfoBorder: '#0047BA',
+  toastInfoBg: '#E6ECF7',
+  toastWarningBorder: '#FFDC00',
+  toastWarningBg: '#FFFAE8',
+  toastDangerBorder: '#C10230',
+  toastDangerBg: '#F6E7EA',
 };
