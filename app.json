@@ -68,7 +68,10 @@
       ]
     ],
     "experiments": {
-      "typedRoutes": true
+      "typedRoutes": true,
+      "buildCacheProvider": {
+        "plugin": "expo-build-disk-cache"
+      }
     },
     "extra": {
       "router": {},
