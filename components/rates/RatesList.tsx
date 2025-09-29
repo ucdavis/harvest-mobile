@@ -53,17 +53,6 @@ export function RatesList({
 
   const recentRatesToShow = recentRates ?? [];
 
-  useEffect(() => {
-        // whenever the user info changes, update sentry
-        if (userQuery?.data?.user) {
-          setUser({
-            id: userQuery.data.user.id,
-            email: userQuery.data.user.email,
-            team: userQuery.data.teamSlug,
-          });
-        }
-      }, [userQuery.data]);
-
   const uniqueTypes = useMemo(() => {
     const set = new Set<string>();
     (rates ?? []).forEach((r) => set.add(String(r.type)));
