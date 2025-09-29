@@ -77,7 +77,8 @@ export default function AddExpenseScreen() {
       onSuccess: () => {
         // TODO: some kind of success message 
         clearExpenses(); // clear local expenses
-
+        
+        queryClient.invalidateQueries({ queryKey: ["rates", auth.authInfo?.team, "recent"] });
         // invalidate the recent projects query to refresh recent projects
         queryClient.invalidateQueries({
           queryKey: ["projects", auth.authInfo?.team, "recent"],

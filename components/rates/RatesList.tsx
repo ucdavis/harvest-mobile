@@ -1,5 +1,9 @@
+import { useAuth } from "@/components/context/AuthContext";
+import { useRecentRates } from "@/services/queries/rates";
 import { useQueryClient } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
+import { useUserInfo } from "@/services/queries/users";
+import { useEffect, useMemo, useState } from "react";
+import { setUser } from "@sentry/react-native";
 import {
   ActivityIndicator,
   FlatList,
@@ -42,7 +46,13 @@ export function RatesList({
 
   const [filtersOpen, setFiltersOpen] = useState(true);
   const [selectedType, setSelectedType] = useState<string | null>(null);
+  
+  const { authInfo } = useAuth();
 
+  const userQuery = useUserInfo(authInfo);
+  const { data: recentRates } = useRecentRates(authInfo);
+
+  const recentRatesToShow = recentRates ?? [];
 
   const uniqueTypes = useMemo(() => {
     const set = new Set<string>();
@@ -51,23 +61,44 @@ export function RatesList({
   }, [rates]);
 
 
-  const filteredRates = useMemo(() => {
-    if (!rates) return [];
-    const q = searchTerm.trim().toLowerCase();
+  function filterRates(rates: Rate[] | undefined, searchTerm: string, selectedType: string | null) {
+  if (!rates) return [];
+  const q = searchTerm.trim().toLowerCase();
+  return rates.filter((r) =>
+    (!q ||
+      String(r.description).toLowerCase().includes(q) ||
+      String(r.type).toLowerCase().includes(q) ||
+      String(r.unit).toLowerCase().includes(q) ||
+      String(r.price).toLowerCase().includes(q)) &&
+    (!selectedType || String(r.type) === selectedType)
+  );
+}
 
-    return rates.filter((r) => {
-      const matchesSearch =
-        !q ||
-        String(r.description).toLowerCase().includes(q) ||
-        String(r.type).toLowerCase().includes(q) ||
-        String(r.unit).toLowerCase().includes(q) ||
-        String(r.price).toLowerCase().includes(q);
+const filteredRecents = useMemo(
+  () => filterRates(recentRatesToShow, searchTerm, selectedType),
+  [recentRatesToShow, searchTerm, selectedType]
+);
 
-      const matchesType = !selectedType || String(r.type) === selectedType;
+const allFilteredRates = useMemo(
+  () => filterRates(rates, searchTerm, selectedType),
+  [rates, searchTerm, selectedType]
+);
 
-      return matchesSearch && matchesType;
-    });
-  }, [rates, searchTerm, selectedType]);
+  const listData = [
+  ...(filteredRecents.length > 0 ? [{ header: "Recents" }, ...filteredRecents] : []),
+  ...(allFilteredRates.length > 0 ? [{ header: "All" }, ...allFilteredRates] : []),
+];
+
+  const renderItem = ({ item }: { item: any }) => {
+    if (item.header) {
+      return (
+        <Text className="px-4 pt-4 pb-2 text-base font-semibold text-primary-font">
+          {item.header}
+        </Text>
+      );
+    }
+    return renderRateItem({ item });
+  };
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -235,35 +266,22 @@ export function RatesList({
 
   // Normal state
   return (
-    <View className="flex-1">
+    <View className="px-4 flex-1">
       {SearchBar}
 
       {/* Counter */}
       {(searchTerm.length > 0 || selectedType) && (
         <View className="items-center mt-2">
-          <Text className="text-sm text-primaryfont/80">
-            {filteredRates.length} result
-            {filteredRates.length !== 1 ? "s" : ""} found
+          <Text className="text-sm text-primary-font/80">
+            {allFilteredRates.length} result
+            {allFilteredRates.length !== 1 ? "s" : ""} found
             {selectedType ? ` • filtered by ${selectedType}` : ""}
           </Text>
         </View>
       )}
 
-      {/* Rates List Content */}
-      {filteredRates.length > 0 ? (
-        <View className="px-4 flex-1">
-          <FlatList
-            data={filteredRates}
-            renderItem={renderRateItem}
-            keyExtractor={(item) => item.id}
-            contentContainerStyle={{ paddingTop: 8, paddingBottom: 88 }}
-            showsVerticalScrollIndicator={false}
-            refreshControl={
-              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-            }
-          />
-        </View>
-      ) : searchTerm.length > 0 || selectedType ? (
+      {listData.length === 0 ? (
+      (searchTerm.length > 0 || selectedType) ? (
         <View className="items-center justify-center py-16 px-5">
           <MagnifyingGlassIcon size={80} color="#a0a0a0" />
           <Text className="text-lg font-semibold mt-4 text-center text-primaryfont/40">
@@ -283,7 +301,29 @@ export function RatesList({
             Contact your administrator
           </Text>
         </View>
-      )}
-    </View>
-  );
+      )
+    ) : (
+      <FlatList
+        data={listData}
+        renderItem={renderItem}
+        keyExtractor={(item, idx) => {
+          if ("header" in item && typeof item.header === "string") {
+            return `header-${item.header}-${idx}`;
+          }
+          if ("id" in item && typeof item.id !== "undefined") {
+            return recentRatesToShow.includes(item)
+              ? `recent-${item.id}`
+              : `all-${item.id}`;
+          }
+          return `unknown-${idx}`;
+        }}
+        contentContainerStyle={{ paddingTop: 8, paddingBottom: 88 }}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      />
+    )}
+  </View>
+);
 }
