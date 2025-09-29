@@ -83,7 +83,7 @@ export default function ExpenseQueue({ className }: ExpenseQueueProps) {
         </Text>
 
       </View>
-      <Text className="text-sm text-primary-font/80 mb-2">
+      <Text className="text-sm text-primaryfont/80 mb-2">
         Showing expense sync status
       </Text>
       {expenses.length > 0 && (
@@ -112,7 +112,7 @@ export default function ExpenseQueue({ className }: ExpenseQueueProps) {
       >
         {expenses.length === 0 ? (
           <View className="p-4">
-            <Text className="text-primary-font/40 text-center">
+            <Text className="text-primaryfont/40 text-center">
               No expenses in queue
             </Text>
           </View>
