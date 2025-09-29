@@ -5,7 +5,8 @@ import { Platform } from "react-native";
 import { useAuth } from "@/components/context/AuthContext";
 import { HapticTab } from "@/components/HapticTab";
 
-// ✅ Heroicons (solid set)
+
+import { Colors } from "@/constants/Colors";
 import {
   ClipboardDocumentListIcon,
   ClockIcon,
@@ -22,10 +23,10 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: "#266041",
+        tabBarActiveTintColor: Colors.harvest,
         tabBarInactiveTintColor: "#b7b7b7",
         headerShown: true,
-        headerStyle: { backgroundColor: "#266041" },
+        headerStyle: { backgroundColor: Colors.harvest },
         headerTintColor: "#fff",
         tabBarButton: HapticTab,
         tabBarStyle: Platform.select({

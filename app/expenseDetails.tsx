@@ -2,7 +2,6 @@ import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import {
   Alert,
-  InputAccessoryView,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
@@ -11,7 +10,7 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
 
 import { ExclamationTriangleIcon } from "react-native-heroicons/solid";
@@ -39,7 +38,7 @@ export default function ExpenseDetailsScreen() {
 
   // for positioning submit button
   const insets = useSafeAreaInsets();
-  const accessoryID = "form-accessory-id"; // Unique ID for the input accessory view
+
 
   const [quantity, setQuantity] = useState("");
   const [description, setDescription] = useState("");
@@ -158,12 +157,12 @@ export default function ExpenseDetailsScreen() {
 
   return (
     <KeyboardAvoidingView
-      className="flex-1 bg-secondary-bg"
+      className="flex-1 bg-secondarybg"
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       keyboardVerticalOffset={0}
     >
       {/* main view area, press outside to dismiss */}
-      <Pressable className="flex-1 bg-secondary-bg" onPress={Keyboard.dismiss}>
+      <Pressable className="flex-1 bg-secondarybg" onPress={Keyboard.dismiss}>
         <ScrollView
           contentContainerStyle={{ flexGrow: 1 }}
           keyboardShouldPersistTaps="handled"
@@ -171,10 +170,10 @@ export default function ExpenseDetailsScreen() {
           <View className="flex-1">
             {/* Header */}
             <View className="modal-header">
-              <TouchableOpacity className="py-2" onPress={handleCancel}>
+              <TouchableOpacity onPress={handleCancel}>
                 <Text className="text-base text-white">Cancel</Text>
               </TouchableOpacity>
-              <Text className="text-lg font-semibold text-white">
+              <Text className="text-xl font-semibold text-white">
                 Expense Details
               </Text>
               <View className="w-[60px]" />
@@ -196,7 +195,7 @@ export default function ExpenseDetailsScreen() {
                     <Text className="tertiary-label uppercase">
                       {rate.type}
                     </Text>
-                    <Text className="text-lg font-semibold text-primary-font">
+                    <Text className="text-lg font-semibold text-primaryfont">
                       {rate.description}
                     </Text>
                   </View>
@@ -204,7 +203,7 @@ export default function ExpenseDetailsScreen() {
                     <Text className="tertiary-label text-right">
                       {rate.unit}
                     </Text>
-                    <Text className="text-lg font-bold text-primary-font">
+                    <Text className="text-lg font-bold text-primaryfont">
                       ${rate.price}
                     </Text>
                   </View>
@@ -225,7 +224,7 @@ export default function ExpenseDetailsScreen() {
                     placeholderTextColor="#999"
                     keyboardType="decimal-pad"
                     selectTextOnFocus
-                    inputAccessoryViewID={Platform.OS === "ios" ? accessoryID : undefined}
+
                   />
                 </View>
 
@@ -256,20 +255,20 @@ export default function ExpenseDetailsScreen() {
         {/* sticky bottom bar outside of the scroll view */}
         <View
           style={{ paddingBottom: (insets.bottom || 12) + 12 }}
-          className="border-t border-primary-border bg-white px-2 pt-1"
+          className="border-t border-primaryborder bg-white px-2 pt-1"
         >
           <View className="p-4 bg-white">
             <View className="flex-row items-center justify-between mb-5">
               <View>
-                <Text className="text-lg font-semibold text-primary-font -mb-1">
+                <Text className="text-lg font-semibold text-primaryfont -mb-1">
                   Total Cost
                 </Text>
-                <Text className="text-base font-semibold text-primary-font/40 text-start -mb-1">
+                <Text className="text-base font-semibold text-primaryfont/40 text-start -mb-1">
                   {quantity || "0"} {rate.unit} × ${rate.price}
                 </Text>
                 <Text
-                  className="text-lg font-extrabold"
-                  style={{ color: "#266041" }}
+                  className="text-lg font-extrabold text-harvest"
+
                 >
                   ${getTotalCost()}
                 </Text>
@@ -285,19 +284,7 @@ export default function ExpenseDetailsScreen() {
           </View>
         </View>
       </Pressable>
-      {/* accessory bar for the keyboard */}
-      <InputAccessoryView nativeID={accessoryID}>
-        <View className="flex-row items-center gap-2 border-t border-neutral-300 bg-neutral-100 p-2">
-          <TouchableOpacity
-            onPress={Keyboard.dismiss}
-            className="rounded-lg bg-neutral-200 px-3 py-2"
-          >
-            <Text className="font-semibold">Done</Text>
-          </TouchableOpacity>
-          <View className="flex-1" />
-          {/* could put a submit button here */}
-        </View>
-      </InputAccessoryView>
+
     </KeyboardAvoidingView>
   );
 }

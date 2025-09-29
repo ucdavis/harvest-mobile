@@ -9,8 +9,8 @@ type TeamChooserProps = {
 export function TeamChooser({ onClose }: TeamChooserProps) {
   const { authInfo } = useAuth();
   return (
-    <View className="bg-white border-b border-primary-border px-6 py-2 flex flex-row items-center justify-between">
-      <Text className="text-primary-font/80 uppercase text-base font-bold">
+    <View className="bg-white border-b border-primaryborder px-6 py-2 flex flex-row items-center justify-between">
+      <Text className="text-primaryfont/80 uppercase text-base font-bold">
         Team: {authInfo?.team}
       </Text>
       {onClose && (

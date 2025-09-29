@@ -13,7 +13,9 @@ import { useInitDb } from "@/hooks/useInitDb";
 import * as Sentry from "@sentry/react-native";
 import "../global.css";
 
+import { Colors } from "@/constants/Colors";
 import { toastConfig } from '@/toast.config';
+import React from "react";
 import Toast from 'react-native-toast-message';
 
 Sentry.init({
@@ -40,7 +42,7 @@ function RootLayoutNav() {
     ...DefaultTheme,
     colors: {
       ...DefaultTheme.colors,
-      background: "#f7f7f7",
+      background: Colors.secondarybg,
     },
   };
 
@@ -49,7 +51,7 @@ function RootLayoutNav() {
       <Stack
         screenOptions={{
           headerShown: false,
-          headerStyle: { backgroundColor: "#266041" },
+          headerStyle: { backgroundColor: Colors.harvest },
           headerTintColor: "#fff",
         }}
       >
@@ -61,6 +63,8 @@ function RootLayoutNav() {
             headerShown: true,
             title: "Add Expense",
             presentation: "card",
+            headerBackButtonDisplayMode: "minimal",
+
           }}
         />
         <Stack.Screen

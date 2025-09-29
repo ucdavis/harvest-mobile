@@ -22,7 +22,7 @@ export function Collapsible({ children, title }: CollapsibleProps) {
         >
           <ChevronRightIcon size={18} color="#9BA1A6" />
         </View>
-        <Text className="text-base font-semibold text-primary-font">
+        <Text className="text-base font-semibold text-primaryfont">
           {title}
         </Text>
       </TouchableOpacity>
