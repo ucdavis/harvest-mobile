@@ -24,7 +24,7 @@ Using the simulator is fine for most things, but if you want to test the camera,
 2. Open Xcode and go to `Window > Devices and Simulators`.
 3. Device should show up in the list, you might need to click a few buttons on your phone to "trust" the computer.
 4. Follow instructions in Xcode to get your phone setup, I needed to go turn on developer mode on the phone.
-5. In XCode signin with the UCD Apple ID and select the UCD team for signing. I opened the ios/Harvest.xcodeproj file in Xcode to do this, then in the "Signing & Capabilities" tab I selected the UCD team. May not be necessary if you are already signed in.
+5. In XCode signin with the UCD Apple ID and select the UCD team for signing. I opened the ios/harvestmobile.xcodeproj file in Xcode to do this, then in the "Signing & Capabilities" tab I selected the UCD team. May not be necessary if you are already signed in.
 6. Run `npx expo run:ios --device` and choose your device from the list, it should install the app on your phone. You only need to do this when native code is changed (new depdendency, icons, etc). You should be able to do this wireless from the same WiFi, but USB always works as a fallback.
 
 ### Running the app on your phone
