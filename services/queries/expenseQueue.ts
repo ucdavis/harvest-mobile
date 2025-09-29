@@ -9,8 +9,6 @@ import { logger } from "@/lib/logger";
 import { useMutation } from "@tanstack/react-query";
 import { fetchFromApi } from "../api";
 
-import Toast from 'react-native-toast-message';
-
 async function insertExpensesToApi(
   expenses: QueuedExpense[]
 ): Promise<CreateExpenseResultsModel> {
@@ -187,12 +185,6 @@ async function syncAllPendingExpenses(): Promise<void> {
       successful: successCount,
       failed: failureCount,
     });
-     if (successCount > 0) {
-      Toast.show({
-        type: "success",
-        text1: "Expense(s) saved",
-      });
-    }
   } catch (error) {
     logger.error("Expense sync operation failed", error, {
       operation: "syncAllPendingExpenses",
@@ -225,10 +217,6 @@ export function useSyncExpenseQueue() {
     },
     onSuccess: () => {
       logger.info("Sync expense queue mutation succeeded");
-      // Toast.show({
-      //   type: 'success',
-      //   text1: 'Expense(s) saved.',
-      // });
     },
     onError: (error, variables, context) => {
       logger.error("Sync expense queue mutation failed", error, {
