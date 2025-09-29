@@ -50,21 +50,21 @@ function RootLayoutNav() {
     <ThemeProvider value={theme}>
       <Stack
         screenOptions={{
-          headerShown: false,
+          headerShown: true,
           headerStyle: { backgroundColor: Colors.harvest },
           headerTintColor: "#fff",
+          headerTitleStyle: { color: "#fff" },
+
         }}
       >
         <Stack.Screen name="login" />
-        <Stack.Screen name="(tabs)" options={{ title: "Harvest" }} />
+        <Stack.Screen name="(tabs)" />
         <Stack.Screen
           name="addExpenses"
           options={{
-            headerShown: true,
             title: "Add Expense",
             presentation: "card",
             headerBackButtonDisplayMode: "minimal",
-
           }}
         />
         <Stack.Screen

@@ -1,33 +1,32 @@
-import { Redirect, Tabs } from "expo-router";
-import React from "react";
-import { Platform } from "react-native";
-
-import { useAuth } from "@/components/context/AuthContext";
+// app/(tabs)/_layout.tsx
 import { HapticTab } from "@/components/HapticTab";
-
-
 import { Colors } from "@/constants/Colors";
-import {
-  ClipboardDocumentListIcon,
-  ClockIcon,
-  CogIcon
-} from "react-native-heroicons/solid";
+import { useNavigation } from "@react-navigation/native";
+import { Tabs, useSegments } from "expo-router";
+import { useEffect } from "react";
+import { Platform } from "react-native";
+import { ClipboardDocumentListIcon, ClockIcon, CogIcon } from "react-native-heroicons/solid";
 
 export default function TabLayout() {
-  const { isLoggedIn } = useAuth();
+  const navigation = useNavigation();
+  const segments = useSegments(); // gives you the current route segments
 
-  if (!isLoggedIn) {
-    return <Redirect href="/login" />;
-  }
+  useEffect(() => {
+    const active = segments[1]; // e.g. "home", "projects", "settings"
+    let title = "Harvest";
+    if (active === "index") title = "Recent Projects";
+    if (active === "projects") title = "All Projects";
+    if (active === "settings") title = "Settings";
+
+    navigation.setOptions({ title }); // update the stack header
+  }, [segments, navigation]);
 
   return (
     <Tabs
       screenOptions={{
+        headerShown: false, // tabs manage no headers
         tabBarActiveTintColor: Colors.harvest,
         tabBarInactiveTintColor: "#b7b7b7",
-        headerShown: true,
-        headerStyle: { backgroundColor: Colors.harvest },
-        headerTintColor: "#fff",
         tabBarButton: HapticTab,
         tabBarStyle: Platform.select({
           ios: { position: "absolute" },
