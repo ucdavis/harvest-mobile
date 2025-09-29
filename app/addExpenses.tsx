@@ -76,6 +76,10 @@ export default function AddExpenseScreen() {
     insertExpensesMutation.mutate(expensesWithActivity, {
       onSuccess: () => {
         // TODO: some kind of success message 
+        Toast.show({
+          type: 'success',
+          text1: 'Expense(s) saved.',
+        });
         clearExpenses(); // clear local expenses
         
         queryClient.invalidateQueries({ queryKey: ["rates", auth.authInfo?.team, "recent"] });
@@ -88,10 +92,6 @@ export default function AddExpenseScreen() {
         queryClient.isMutating({
           mutationKey: [MUTATION_KEY_SYNC_EXPENSES],
         }) === 0 && syncExpenseQueueMutation.mutate(); // trigger sync of expense queue
-        Toast.show({
-          type: 'warning',
-          text1: 'Your expenses have been added to the queue.',
-        });
         router.back();
       },
       onError: (error) => {
