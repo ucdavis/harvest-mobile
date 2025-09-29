@@ -22,11 +22,11 @@ import { getProjectLink } from "@/lib/project";
 import {
   MUTATION_KEY_SYNC_EXPENSES,
   useSyncExpenseQueue,
+  useExpenseQueueSyncToast
 } from "@/services/queries/expenseQueue";
 import { useInsertExpenses } from "@/services/queries/expenses";
 
 import Toast from 'react-native-toast-message';
-
 
 const showMoreProjectInfoButton = false; // false for now since workers can't see project details
 
@@ -43,6 +43,18 @@ export default function AddExpenseScreen() {
   const { expenses, removeExpense, clearExpenses } = useExpenses();
   const insertExpensesMutation = useInsertExpenses();
   const syncExpenseQueueMutation = useSyncExpenseQueue();
+
+  const { currentCount, prevCount} = useExpenseQueueSyncToast();
+
+  useEffect(() => {
+    if (prevCount > 0 && currentCount === 0) {
+      Toast.show({
+        type: "success",
+        text1: "Expense(s) saved",
+      });
+      router.back();
+    }
+  }, [currentCount, prevCount]);
 
   // Clear expenses on mount (when navigating to a new project)
   useEffect(() => {
@@ -76,6 +88,10 @@ export default function AddExpenseScreen() {
     insertExpensesMutation.mutate(expensesWithActivity, {
       onSuccess: () => {
         // TODO: some kind of success message 
+        Toast.show({
+              type: 'warning',
+              text1: 'Expense(s) Queued',
+            });
         clearExpenses(); // clear local expenses
 
         // invalidate the recent projects query to refresh recent projects
@@ -87,11 +103,6 @@ export default function AddExpenseScreen() {
         queryClient.isMutating({
           mutationKey: [MUTATION_KEY_SYNC_EXPENSES],
         }) === 0 && syncExpenseQueueMutation.mutate(); // trigger sync of expense queue
-        Toast.show({
-          type: 'warning',
-          text1: 'Your expenses have been added to the queue.',
-        });
-        router.back();
       },
       onError: (error) => {
         console.error("Failed to submit expenses:", error);

@@ -6,10 +6,9 @@ import {
   QueuedExpense,
 } from "@/lib/expense";
 import { logger } from "@/lib/logger";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { fetchFromApi } from "../api";
-
-import Toast from 'react-native-toast-message';
+import { useEffect, useRef} from "react";
 
 async function insertExpensesToApi(
   expenses: QueuedExpense[]
@@ -219,10 +218,6 @@ export function useSyncExpenseQueue() {
     },
     onSuccess: () => {
       logger.info("Sync expense queue mutation succeeded");
-      Toast.show({
-        type: 'success',
-        text1: 'Your expenses were successfully saved.',
-      });
     },
     onError: (error, variables, context) => {
       logger.error("Sync expense queue mutation failed", error, {
@@ -235,4 +230,23 @@ export function useSyncExpenseQueue() {
       queryClient.invalidateQueries({ queryKey: ["expenses", "pending"] });
     },
   });
+}
+
+export function useExpenseQueueSyncToast() {
+  const { data: pendingExpenses } = useQuery({
+    queryKey: ["expenses", "pending"],
+    queryFn: getPendingExpensesFromQueue,
+    refetchInterval: 200,
+  });
+
+  const prevCount = useRef<number>(pendingExpenses?.length ?? 0);
+
+  useEffect(() => {
+    prevCount.current = pendingExpenses?.length ?? 0;
+  }, [pendingExpenses]);
+
+  return {
+    currentCount: pendingExpenses?.length ?? 0,
+    prevCount: prevCount.current,
+  };
 }
