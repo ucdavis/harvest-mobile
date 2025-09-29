@@ -1,5 +1,12 @@
 /** @type {import('tailwindcss').Config} */
-const { Colors } = require("./constants/Colors");
+// Keep this file CJS-friendly; Node can't import TS here.
+const Colors = {
+  harvest: "#266041",
+  merlot: "#79242F",
+  secondarybg: "#F7F7F7",
+  primaryfont: "#1F1F1F",
+  primaryborder: "#DFDFDF",
+};
 module.exports = {
   content: ["./app/**/*.{js,jsx,ts,tsx}", "./components/**/*.{js,jsx,ts,tsx}"],
   presets: [require("nativewind/preset")],
