@@ -20,11 +20,14 @@ import { createExpenseWithUniqueId, Rate } from "@/lib/expense";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { getRateTypeColor, RateTypeIcon } from "@/components/ui/rateType";
+import { Colors } from "@/constants/Colors";
 
 export default function ExpenseDetailsScreen() {
-  const { rate: rateParam, projectId } = useLocalSearchParams<{
+  const { rate: rateParam, projectId, projectName, piName } = useLocalSearchParams<{
     rate: string;
     projectId: string;
+    projectName: string;
+    piName: string;
   }>();
 
   // Parse the rate from URL params
@@ -141,7 +144,7 @@ export default function ExpenseDetailsScreen() {
   if (!rate) {
     return (
       <View className="flex-1 items-center justify-center bg-[#f8f9fa] p-8">
-        <ExclamationTriangleIcon size={48} color="#EF4444" />
+        <ExclamationTriangleIcon size={48} color={Colors.merlot} />
         <Text className="mt-4 text-base text-neutral-600 text-center">
           Rate information is missing
         </Text>
@@ -161,14 +164,14 @@ export default function ExpenseDetailsScreen() {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       keyboardVerticalOffset={0}
     >
-      {/* main view area, press outside to dismiss */}
+
       <Pressable className="flex-1 bg-secondarybg" onPress={Keyboard.dismiss}>
         <ScrollView
           contentContainerStyle={{ flexGrow: 1 }}
           keyboardShouldPersistTaps="handled"
         >
           <View className="flex-1">
-            {/* Header */}
+
             <View className="modal-header">
               <TouchableOpacity onPress={handleCancel}>
                 <Text className="text-base text-white">Cancel</Text>
@@ -188,7 +191,7 @@ export default function ExpenseDetailsScreen() {
                     className="mr-3 h-8 w-8 items-center justify-center rounded-full"
                     style={{ backgroundColor: getRateTypeColor(rate.type) }}
                   >
-                    {/* ⬇️ shared icon; white on colored circle */}
+
                     <RateTypeIcon type={rate.type} colorOverride="white" size={16} />
                   </View>
                   <View className="flex-1">
@@ -253,6 +256,17 @@ export default function ExpenseDetailsScreen() {
           <View className="flex-1" />
         </ScrollView>
         {/* sticky bottom bar outside of the scroll view */}
+        <View>
+          <Text className="text-xl font-bold text-harvest">
+            {projectName}
+          </Text>
+          <Text className="text-md font-medium text-primaryfont">PI: {piName}</Text>
+        </View>
+        <View>
+          <Text className="text-md uppercase font-bold text-primaryfont/40 tracking-tight">
+            {projectId}
+          </Text>
+        </View>
         <View
           style={{ paddingBottom: (insets.bottom || 12) + 12 }}
           className="border-t border-primaryborder bg-white px-2 pt-1"

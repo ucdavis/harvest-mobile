@@ -68,7 +68,7 @@ function RootLayoutNav() {
         <Stack.Screen
           name="addExpenses"
           options={{
-            title: "Add Expense",
+            title: "New Activity",
             presentation: "card",
             headerBackVisible: true,
 

@@ -1,8 +1,9 @@
 // app/(tabs)/_layout.tsx
+import { useAuth } from "@/components/context/AuthContext";
 import { HapticTab } from "@/components/HapticTab";
 import { Colors } from "@/constants/Colors";
 import { useNavigation } from "@react-navigation/native";
-import { Tabs, useSegments } from "expo-router";
+import { Redirect, Tabs, useSegments } from "expo-router";
 import { useEffect } from "react";
 import { Platform } from "react-native";
 import { ClipboardDocumentListIcon, ClockIcon, CogIcon } from "react-native-heroicons/solid";
@@ -10,6 +11,11 @@ import { ClipboardDocumentListIcon, ClockIcon, CogIcon } from "react-native-hero
 export default function TabLayout() {
   const navigation = useNavigation();
   const segments = useSegments(); // gives you the current route segments
+  const { isLoggedIn } = useAuth();
+
+  if (!isLoggedIn) {
+    return <Redirect href="/login" />;
+  }
 
   const titles: Record<string, string> = {
     index: "Recent Projects",
