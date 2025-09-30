@@ -13,7 +13,7 @@ import {
   View
 } from "react-native";
 
-import { ExclamationTriangleIcon, UserIcon } from "react-native-heroicons/solid";
+import { ExclamationTriangleIcon } from "react-native-heroicons/solid";
 
 import { useExpenses } from "@/components/context/ExpenseContext";
 import { createExpenseWithUniqueId, Rate } from "@/lib/expense";
@@ -23,11 +23,11 @@ import { getRateTypeColor, RateTypeIcon } from "@/components/ui/rateType";
 import { Colors } from "@/constants/Colors";
 
 export default function ExpenseDetailsScreen() {
-  const { rate: rateParam, projectId, projectName, piName } = useLocalSearchParams<{
+  const { rate: rateParam, projectId, projectName } = useLocalSearchParams<{
     rate: string;
     projectId: string;
     projectName: string;
-    piName: string;
+
   }>();
 
   // Parse the rate from URL params
@@ -214,13 +214,13 @@ export default function ExpenseDetailsScreen() {
               </View>
               <View className="p-4">
                 {/* Quantity Input */}
-                <View className="mb-6">
+                <View className="mb-4">
                   <Text className="text-[12px] font-semibold text-neutral-500 tracking-tight mb-2">
                     Quantity ({rate.unit})
                   </Text>
                   <TextInput
                     ref={quantityInputRef}
-                    className="bg-white rounded-lg p-4 text-[18px] font-semibold border border-primaryborder text-center"
+                    className="bg-white rounded-lg p-2 text-[18px] font-semibold border border-primaryborder text-center"
                     value={quantity}
                     onChangeText={handleQuantityChange}
                     placeholder="0.00"
@@ -234,7 +234,7 @@ export default function ExpenseDetailsScreen() {
                 {/* Description Input */}
                 {showDescriptionInput && (
                   <View className="mb-6">
-                    <Text className="text-sm font-semibold text-primaryfont tracking-tight mb-2">
+                    <Text className="text-sm font-semibold text-primaryfont/60 tracking-tight mb-2">
                       Description (required for passthrough)
                     </Text>
                     <TextInput
@@ -257,17 +257,14 @@ export default function ExpenseDetailsScreen() {
         </ScrollView>
         {/* sticky bottom bar outside of the scroll view */}
         <View className="px-5 py-2 flex-row items-end justify-between">
-          <View>
-            <Text className="text-lg font-semibold text-harvest">
-              {projectName}
-            </Text>
-            <Text className="text-base font-medium text-primaryfont"><UserIcon size={12} color={Colors.primaryfont} /> {piName}</Text>
-          </View>
-          <View>
-            <Text className="text-sm uppercase font-bold text-primaryfont/40 tracking-tight">
-              # {projectId}
-            </Text>
-          </View>
+
+          <Text className="text-lg font-semibold text-harvest">
+            {projectName}
+          </Text>
+          <Text className="text-sm uppercase font-bold text-primaryfont/40 tracking-tight">
+            # {projectId}
+          </Text>
+
 
 
         </View>
@@ -275,32 +272,30 @@ export default function ExpenseDetailsScreen() {
           style={{ paddingBottom: (insets.bottom || 12) + 12 }}
           className="border-t border-primaryborder bg-white px-2 pt-1"
         >
-          <View className="p-4">
-            <View className="flex-row items-center justify-between mb-5">
-              <View>
-                <Text className="text-lg font-semibold text-primaryfont -mb-1">
-                  Total Cost
-                </Text>
-                <Text className="text-base font-semibold text-primaryfont/40 text-start -mb-1">
-                  {quantity || "0"} {rate.unit} × ${rate.price}
-                </Text>
-                <Text
-                  className="text-lg font-extrabold text-harvest"
 
-                >
-                  ${getTotalCost()}
-                </Text>
-              </View>
+          <View className="px-4 py-2 flex-row items-center justify-between mb-5">
+            <View>
 
-              <TouchableOpacity
-                className="harvest-button w-[55%]"
-                onPress={handleConfirm}
+              <Text className="text-base font-semibold text-primaryfont/40 text-start">
+                {quantity || "0"} {rate.unit} × ${rate.price}
+              </Text>
+              <Text
+                className="text-lg font-extrabold text-harvest"
+
               >
-                <Text className="harvest-button-text">Add Expense</Text>
-              </TouchableOpacity>
+                ${getTotalCost()}
+              </Text>
             </View>
+
+            <TouchableOpacity
+              className="harvest-button w-[55%]"
+              onPress={handleConfirm}
+            >
+              <Text className="harvest-button-text">Add Expense</Text>
+            </TouchableOpacity>
           </View>
         </View>
+
       </Pressable>
 
     </KeyboardAvoidingView>

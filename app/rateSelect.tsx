@@ -9,7 +9,7 @@ import { useRates } from "@/services/queries/rates";
 
 export default function RateSelectScreen() {
   const { authInfo } = useAuth();
-  const { projectId, projectName, piName } = useLocalSearchParams<{ projectId: string; projectName: string; piName: string }>();
+  const { projectId, projectName } = useLocalSearchParams<{ projectId: string; projectName: string; }>();
   const { data: rates, isLoading, error } = useRates(authInfo);
 
   const handleRateSelect = (rate: Rate) => {
@@ -19,7 +19,7 @@ export default function RateSelectScreen() {
         rate: JSON.stringify(rate),
         projectId: projectId || "",
         projectName,
-        piName,
+
       },
     });
   };
