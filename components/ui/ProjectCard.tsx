@@ -1,6 +1,6 @@
 import { Colors } from "@/constants/Colors";
 import { Text, TouchableOpacity, View } from "react-native";
-import { PencilSquareIcon } from "react-native-heroicons/outline";
+import { PlusCircleIcon, UserIcon } from "react-native-heroicons/solid";
 
 type ProjectCardProps = {
   id: number; // internal ID, just a number
@@ -30,7 +30,7 @@ export function ProjectCard({
 
           {id ? (
             <Text className="text-xs tracking-tight font-bold uppercase text-primaryfont/40">
-              {id}
+              # {id}
             </Text>
           ) : null}
 
@@ -49,7 +49,7 @@ export function ProjectCard({
               numberOfLines={1}
               ellipsizeMode="tail"
             >
-              PI: {piName}
+              <UserIcon size={12} color={Colors.primaryfont} /> {piName}
             </Text>
           ) : null}
         </View>
@@ -60,7 +60,7 @@ export function ProjectCard({
           onPress={onEdit}
           className="p-2 rounded-lg active:bg-harvest/15"
         >
-          <PencilSquareIcon size={28} color={Colors.harvest} />
+          <PlusCircleIcon size={28} color={Colors.harvest} />
         </TouchableOpacity>
       </View>
     </CardWrapper>

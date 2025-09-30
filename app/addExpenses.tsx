@@ -11,7 +11,8 @@ import {
 } from "react-native";
 import {
   InformationCircleIcon,
-  TrashIcon
+  TrashIcon,
+  UserIcon
 } from "react-native-heroicons/solid";
 
 import { useAuth } from "@/components/context/AuthContext";
@@ -50,7 +51,7 @@ export default function AddExpenseScreen() {
   }, [clearExpenses]); // Include clearExpenses in dependencies
 
   const handleAddExpenses = () => {
-    router.push({ pathname: "/rateSelect", params: { projectId } });
+    router.push({ pathname: "/rateSelect", params: { projectId, projectName, piName } });
   };
 
   const handleDeleteExpense = (uniqueId: string) => {
@@ -101,25 +102,25 @@ export default function AddExpenseScreen() {
 
   return (
     <View className="flex-1">
-      <View className="bg-white p-4 border-b border-primaryborder">
-        <View className="flex-row px-1 items-end justify-between">
-          <View>
-            <Text className="text-xl font-bold text-harvest">
-              {projectName}
-            </Text>
-            <Text className="text-md font-medium text-primaryfont">PI: {piName}</Text>
-          </View>
-          <View>
-            <Text className="text-md uppercase font-bold text-primaryfont/40 tracking-tight">
-              {projectId}
-            </Text>
-          </View>
-          {showMoreProjectInfoButton && (
-            <TouchableOpacity onPress={handleProjectInfo}>
-              <InformationCircleIcon size={24} color="#a0a0a0" />
-            </TouchableOpacity>
-          )}
+
+      <View className="bg-white px-5 py-4 border-b border-primaryborder flex-row items-end justify-between">
+        <View>
+          <Text className="text-xl font-semibold text-harvest">
+            {projectName}
+          </Text>
+          <Text className="text-md font-medium text-primaryfont"><UserIcon size={12} color={Colors.primaryfont} /> {piName}</Text>
         </View>
+        <View>
+          <Text className="text-sm uppercase font-bold text-primaryfont/40 tracking-tight">
+            # {projectId}
+          </Text>
+        </View>
+        {showMoreProjectInfoButton && (
+          <TouchableOpacity onPress={handleProjectInfo}>
+            <InformationCircleIcon size={24} color="#a0a0a0" />
+          </TouchableOpacity>
+        )}
+
       </View>
       <ScrollView
         className="flex-1 px-4 py-4"

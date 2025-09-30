@@ -13,7 +13,7 @@ import {
   View
 } from "react-native";
 
-import { ExclamationTriangleIcon } from "react-native-heroicons/solid";
+import { ExclamationTriangleIcon, UserIcon } from "react-native-heroicons/solid";
 
 import { useExpenses } from "@/components/context/ExpenseContext";
 import { createExpenseWithUniqueId, Rate } from "@/lib/expense";
@@ -220,7 +220,7 @@ export default function ExpenseDetailsScreen() {
                   </Text>
                   <TextInput
                     ref={quantityInputRef}
-                    className="bg-white rounded-lg p-4 text-[18px] font-semibold border border-neutral-200 text-center"
+                    className="bg-white rounded-lg p-4 text-[18px] font-semibold border border-primaryborder text-center"
                     value={quantity}
                     onChangeText={handleQuantityChange}
                     placeholder="0.00"
@@ -234,11 +234,11 @@ export default function ExpenseDetailsScreen() {
                 {/* Description Input */}
                 {showDescriptionInput && (
                   <View className="mb-6">
-                    <Text className="text-sm font-semibold text-neutral-500 tracking-tight mb-2">
+                    <Text className="text-sm font-semibold text-primaryfont tracking-tight mb-2">
                       Description (required for passthrough)
                     </Text>
                     <TextInput
-                      className="bg-white rounded-lg p-4 text-base border border-neutral-200 min-h-[80px]"
+                      className="bg-white rounded-lg p-4 text-base border border-primaryborder min-h-[80px]"
                       value={description}
                       onChangeText={setDescription}
                       placeholder="Enter description (required)"
@@ -256,22 +256,26 @@ export default function ExpenseDetailsScreen() {
           <View className="flex-1" />
         </ScrollView>
         {/* sticky bottom bar outside of the scroll view */}
-        <View>
-          <Text className="text-xl font-bold text-harvest">
-            {projectName}
-          </Text>
-          <Text className="text-md font-medium text-primaryfont">PI: {piName}</Text>
-        </View>
-        <View>
-          <Text className="text-md uppercase font-bold text-primaryfont/40 tracking-tight">
-            {projectId}
-          </Text>
+        <View className="px-5 py-2 flex-row items-end justify-between">
+          <View>
+            <Text className="text-lg font-semibold text-harvest">
+              {projectName}
+            </Text>
+            <Text className="text-base font-medium text-primaryfont"><UserIcon size={12} color={Colors.primaryfont} /> {piName}</Text>
+          </View>
+          <View>
+            <Text className="text-sm uppercase font-bold text-primaryfont/40 tracking-tight">
+              # {projectId}
+            </Text>
+          </View>
+
+
         </View>
         <View
           style={{ paddingBottom: (insets.bottom || 12) + 12 }}
           className="border-t border-primaryborder bg-white px-2 pt-1"
         >
-          <View className="p-4 bg-white">
+          <View className="p-4">
             <View className="flex-row items-center justify-between mb-5">
               <View>
                 <Text className="text-lg font-semibold text-primaryfont -mb-1">
