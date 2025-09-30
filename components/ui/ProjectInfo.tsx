@@ -1,28 +1,24 @@
-import { Colors } from "@/constants/Colors";
-import { Text, TouchableOpacity, View } from "react-native";
-import { PencilSquareIcon } from "react-native-heroicons/outline";
+import { Text, View } from "react-native";
 
 type ProjectCardProps = {
   id: number; // internal ID, just a number
   projectName: string;
   piName?: string; // PI name
-  onEdit?: () => void;
-  onPress?: () => void;
+
 };
 
-export function ProjectCard({
+export function ProjectInfo({
   id,
   projectName,
   piName,
-  onEdit,
-  onPress,
+
 }: ProjectCardProps) {
-  const CardWrapper = onPress ? TouchableOpacity : View;
+
 
   return (
-    <CardWrapper
+    <View
       className="mb-4 rounded-md border border-primaryborder bg-white overflow-hidden"
-      {...(onPress ? { onPress, activeOpacity: 0.7 } : {})}
+
     >
 
       <View className="px-4 py-2 flex-row items-center justify-between border-l-harvest border-l-8">
@@ -54,15 +50,8 @@ export function ProjectCard({
           ) : null}
         </View>
 
-        <TouchableOpacity
-          accessibilityRole="button"
-          accessibilityLabel="Edit project"
-          onPress={onEdit}
-          className="p-2 rounded-lg active:bg-harvest/15"
-        >
-          <PencilSquareIcon size={28} color={Colors.harvest} />
-        </TouchableOpacity>
+
       </View>
-    </CardWrapper>
+    </View>
   );
 }

@@ -54,18 +54,23 @@ function RootLayoutNav() {
         screenOptions={{
           headerShown: true,
           headerStyle: { backgroundColor: Colors.harvest },
-
+          headerBackVisible: false,
           headerTitleStyle: { color: "white" },
           headerBackButtonDisplayMode: "minimal",
         }}
       >
-        <Stack.Screen name="login" />
+        <Stack.Screen name="login" options={{
+          headerShown: false,
+
+        }} />
+        <Stack.Screen name="applink" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" />
         <Stack.Screen
           name="addExpenses"
           options={{
             title: "Add Expense",
             presentation: "card",
+            headerBackVisible: true,
 
           }}
         />
@@ -74,6 +79,7 @@ function RootLayoutNav() {
           options={() => ({
             title: "Select Rate",
             presentation: "card",
+            headerBackVisible: true,
             headerRight: () => (
               <HeaderButton
                 accessibilityLabel="More options"
@@ -82,7 +88,7 @@ function RootLayoutNav() {
                   router.push({ pathname: "/qrScan" })
                 }
               >
-                <QrCodeIcon size={22} />
+                <QrCodeIcon size={22} color={'#fff'} />
               </HeaderButton>
             ),
           })}
@@ -96,6 +102,7 @@ function RootLayoutNav() {
         />
         <Stack.Screen name="+not-found" />
       </Stack>
+
       <Toast
         config={toastConfig}
         position="top"

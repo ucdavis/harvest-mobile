@@ -101,28 +101,31 @@ export default function AddExpenseScreen() {
 
   return (
     <View className="flex-1">
+      <View className="bg-white p-4 mb-4 border-b-1 border-harvest">
+        <View className="flex-row items-start justify-between">
+          <View>
+            <Text className="text-xl font-bold text-harvest">
+              {projectName}
+            </Text>
+            <Text className="text-md font-medium text-primaryfont">{piName}</Text>
+          </View>
+          <View>
+            <Text className="text-md uppercase font-bold text-primaryfont/40 tracking-tight">
+              {projectId}
+            </Text>
+          </View>
+          {showMoreProjectInfoButton && (
+            <TouchableOpacity onPress={handleProjectInfo}>
+              <InformationCircleIcon size={24} color="#a0a0a0" />
+            </TouchableOpacity>
+          )}
+        </View>
+      </View>
       <ScrollView
         className="flex-1 px-4 py-4"
         showsVerticalScrollIndicator={false}
       >
-        <View className="card">
-          <View className="flex-row items-start justify-between">
-            <View>
-              <Text className="text-md uppercase font-bold text-primaryfont/40 tracking-tight mb-1">
-                {projectId}
-              </Text>
-              <Text className="text-xl font-bold text-harvest">
-                {projectName}
-              </Text>
-              <Text className="text-md font-medium text-primaryfont">PI: {piName}</Text>
-            </View>
-            {showMoreProjectInfoButton && (
-              <TouchableOpacity onPress={handleProjectInfo}>
-                <InformationCircleIcon size={24} color="#a0a0a0" />
-              </TouchableOpacity>
-            )}
-          </View>
-        </View>
+
 
         <View className="card">
           <Text className="text-md uppercase font-bold text-harvest tracking-tight">
