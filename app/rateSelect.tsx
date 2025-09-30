@@ -1,6 +1,6 @@
 import { router, useLocalSearchParams } from "expo-router";
 import React from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import { View } from "react-native";
 
 import { useAuth } from "@/components/context/AuthContext";
 import { RatesList } from "@/components/rates/RatesList";
@@ -26,8 +26,8 @@ export default function RateSelectScreen() {
 
   return (
     <View className="flex-1 bg-secondarybg">
-      {/* Header */}
-      <View className="modal-header">
+
+      {/* <View className="modal-header">
         <TouchableOpacity onPress={handleCancel}>
           <Text className="text-base text-white">Cancel</Text>
         </TouchableOpacity>
@@ -39,7 +39,7 @@ export default function RateSelectScreen() {
         >
           <Text className="text-base text-white">QR Scan</Text>
         </TouchableOpacity>
-      </View>
+      </View> */}
 
       {/* Rates List */}
       <RatesList

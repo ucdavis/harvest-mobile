@@ -1,6 +1,6 @@
 import { DefaultTheme, ThemeProvider } from "@react-navigation/native";
 import { useFonts } from "expo-font";
-import { Stack } from "expo-router";
+import { router, Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
 
@@ -15,7 +15,9 @@ import "../global.css";
 
 import { Colors } from "@/constants/Colors";
 import { toastConfig } from '@/toast.config';
+import { HeaderButton } from "@react-navigation/elements";
 import React from "react";
+import { QrCodeIcon } from "react-native-heroicons/solid";
 import Toast from 'react-native-toast-message';
 
 Sentry.init({
@@ -52,10 +54,9 @@ function RootLayoutNav() {
         screenOptions={{
           headerShown: true,
           headerStyle: { backgroundColor: Colors.harvest },
-          headerTintColor: "#fff",
-          headerTitleStyle: { color: "#fff" },
-          headerBackButtonDisplayMode: "minimal",
 
+          headerTitleStyle: { color: "white" },
+          headerBackButtonDisplayMode: "minimal",
         }}
       >
         <Stack.Screen name="login" />
@@ -70,10 +71,21 @@ function RootLayoutNav() {
         />
         <Stack.Screen
           name="rateSelect"
-          options={{
+          options={() => ({
             title: "Select Rate",
             presentation: "card",
-          }}
+            headerRight: () => (
+              <HeaderButton
+                accessibilityLabel="More options"
+
+                onPress={() =>
+                  router.push({ pathname: "/qrScan" })
+                }
+              >
+                <QrCodeIcon size={22} />
+              </HeaderButton>
+            ),
+          })}
         />
         <Stack.Screen
           name="expenseDetails"
