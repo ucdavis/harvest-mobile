@@ -74,5 +74,15 @@
     "outputDirectory": "./test-results",
     "outputName": "junit.xml"
   },
+  "expo": {
+    "doctor": {
+      "reactNativeDirectoryCheck": {
+        "exclude": [
+          "react-native-heroicons"
+        ],
+        "listUnknownPackages": false
+      }
+    }
+  },
   "private": true
 }

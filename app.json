@@ -8,15 +8,6 @@
     "scheme": "harvestmobile",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
-    "buildCacheProvider": {
-      "plugin": "expo-build-disk-cache"
-    },
-    "doctor": {
-      "reactNativeDirectoryCheck": {
-        "exclude": ["react-native-heroicons"],
-        "listUnknownPackages": false
-      }
-    },
     "ios": {
       "config": {
         "usesNonExemptEncryption": false
@@ -78,7 +69,10 @@
       ]
     ],
     "experiments": {
-      "typedRoutes": true
+      "typedRoutes": true,
+      "buildCacheProvider": {
+        "plugin": "expo-build-disk-cache"
+      }
     },
     "extra": {
       "router": {},
