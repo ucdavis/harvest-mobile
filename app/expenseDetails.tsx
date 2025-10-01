@@ -212,7 +212,7 @@ export default function ExpenseDetailsScreen() {
                   </View>
                 </View>
               </View>
-              <View className="p-4">
+              <View className="px-4 py-2">
                 {/* Quantity Input */}
                 <View className="mb-4">
                   <Text className="text-[12px] font-semibold text-neutral-500 tracking-tight mb-2">
@@ -257,16 +257,12 @@ export default function ExpenseDetailsScreen() {
         </ScrollView>
         {/* sticky bottom bar outside of the scroll view */}
         <View className="px-5 py-2 flex-row items-end justify-between">
-
           <Text className="text-lg font-semibold text-harvest">
             {projectName}
           </Text>
           <Text className="text-sm uppercase font-bold text-primaryfont/40 tracking-tight">
             # {projectId}
           </Text>
-
-
-
         </View>
         <View
           style={{ paddingBottom: (insets.bottom || 12) + 12 }}
