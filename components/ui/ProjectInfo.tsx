@@ -1,28 +1,24 @@
-import { Colors } from "@/constants/Colors";
-import { Text, TouchableOpacity, View } from "react-native";
-import { PlusCircleIcon, UserIcon } from "react-native-heroicons/solid";
+import { Text, View } from "react-native";
 
 type ProjectCardProps = {
   id: number; // internal ID, just a number
   projectName: string;
   piName?: string; // PI name
-  onEdit?: () => void;
-  onPress?: () => void;
+
 };
 
-export function ProjectCard({
+export function ProjectInfo({
   id,
   projectName,
   piName,
-  onEdit,
-  onPress,
+
 }: ProjectCardProps) {
-  const CardWrapper = onPress ? TouchableOpacity : View;
+
 
   return (
-    <CardWrapper
+    <View
       className="mb-4 rounded-md border border-primaryborder bg-white overflow-hidden"
-      {...(onPress ? { onPress, activeOpacity: 0.7 } : {})}
+
     >
 
       <View className="px-4 py-2 flex-row items-center justify-between border-l-harvest border-l-8">
@@ -30,7 +26,7 @@ export function ProjectCard({
 
           {id ? (
             <Text className="text-xs tracking-tight font-bold uppercase text-primaryfont/40">
-              # {id}
+              {id}
             </Text>
           ) : null}
 
@@ -49,20 +45,13 @@ export function ProjectCard({
               numberOfLines={1}
               ellipsizeMode="tail"
             >
-              <UserIcon size={12} color={Colors.primaryfont} /> {piName}
+              PI: {piName}
             </Text>
           ) : null}
         </View>
 
-        <TouchableOpacity
-          accessibilityRole="button"
-          accessibilityLabel="Edit project"
-          onPress={onEdit}
-          className="p-2 rounded-lg active:bg-harvest/15"
-        >
-          <PlusCircleIcon size={28} color={Colors.harvest} />
-        </TouchableOpacity>
+
       </View>
-    </CardWrapper>
+    </View>
   );
 }

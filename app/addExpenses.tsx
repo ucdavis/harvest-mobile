@@ -1,3 +1,4 @@
+import { Colors } from "@/constants/Colors";
 import { router, useLocalSearchParams } from "expo-router";
 import { openBrowserAsync } from "expo-web-browser";
 import { useEffect, useState } from "react";
@@ -8,11 +9,10 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-
 import {
-  ChevronRightIcon,
   InformationCircleIcon,
   TrashIcon,
+  UserIcon
 } from "react-native-heroicons/solid";
 
 import { useAuth } from "@/components/context/AuthContext";
@@ -25,6 +25,7 @@ import {
 } from "@/services/queries/expenseQueue";
 import { useInsertExpenses } from "@/services/queries/expenses";
 
+import { SquaresPlusIcon } from "react-native-heroicons/outline";
 import Toast from 'react-native-toast-message';
 
 
@@ -50,7 +51,7 @@ export default function AddExpenseScreen() {
   }, [clearExpenses]); // Include clearExpenses in dependencies
 
   const handleAddExpenses = () => {
-    router.push({ pathname: "/rateSelect", params: { projectId } });
+    router.push({ pathname: "/rateSelect", params: { projectId, projectName, piName } });
   };
 
   const handleDeleteExpense = (uniqueId: string) => {
@@ -102,32 +103,35 @@ export default function AddExpenseScreen() {
 
   return (
     <View className="flex-1">
+
+      <View className="bg-white px-5 py-4 border-b border-primaryborder flex-row items-end justify-between">
+        <View>
+          <Text className="text-xl font-semibold text-harvest">
+            {projectName}
+          </Text>
+          <Text className="text-md font-medium text-primaryfont"><UserIcon size={12} color={Colors.primaryfont} /> {piName}</Text>
+        </View>
+        <View>
+          <Text className="text-sm uppercase font-bold text-primaryfont/40 tracking-tight">
+            # {projectId}
+          </Text>
+        </View>
+        {showMoreProjectInfoButton && (
+          <TouchableOpacity onPress={handleProjectInfo}>
+            <InformationCircleIcon size={24} color="#a0a0a0" />
+          </TouchableOpacity>
+        )}
+
+      </View>
       <ScrollView
         className="flex-1 px-4 py-4"
         showsVerticalScrollIndicator={false}
       >
-        <View className="card">
-          <View className="flex-row items-start justify-between">
-            <View>
-              <Text className="text-md uppercase font-bold text-primaryfont/40 tracking-tight mb-1">
-                {projectId}
-              </Text>
-              <Text className="text-xl font-bold text-harvest">
-                {projectName}
-              </Text>
-              <Text className="text-md font-medium text-primaryfont">PI: {piName}</Text>
-            </View>
-            {showMoreProjectInfoButton && (
-              <TouchableOpacity onPress={handleProjectInfo}>
-                <InformationCircleIcon size={24} color="#a0a0a0" />
-              </TouchableOpacity>
-            )}
-          </View>
-        </View>
+
 
         <View className="card">
           <Text className="text-md uppercase font-bold text-harvest tracking-tight">
-            Activity
+            Notes
           </Text>
           <TextInput
             className="border mt-5 border-primaryborder rounded-md p-3 text-base min-h-[60px] bg-gray-50"
@@ -171,7 +175,7 @@ export default function AddExpenseScreen() {
                   className="ml-3"
                   onPress={() => handleDeleteExpense(item.uniqueId)}
                 >
-                  <TrashIcon size={16} color="#79242F" />
+                  <TrashIcon size={16} color={Colors.merlot} />
                 </TouchableOpacity>
               </View>
             </View>
@@ -182,13 +186,13 @@ export default function AddExpenseScreen() {
             onPress={handleAddExpenses}
           >
             <Text className="text-base text-white font-bold pt-0.5">Add expense</Text>
-            <ChevronRightIcon size={24} color="white" />
+            <SquaresPlusIcon size={24} color="white" />
           </TouchableOpacity>
         </View>
       </ScrollView>
 
       {/* Submit Button */}
-      <View className="p-4 mb-4 bg-white border-t border-primaryborder">
+      <View className="p-4 pb-10 bg-white border-t border-primaryborder">
         <TouchableOpacity
           className={`harvest-button ${expenses.length === 0 ? "opacity-50" : ""}`}
           onPress={expenses.length > 0 ? handleSubmit : undefined}

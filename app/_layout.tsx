@@ -1,6 +1,6 @@
 import { DefaultTheme, ThemeProvider } from "@react-navigation/native";
 import { useFonts } from "expo-font";
-import { Stack } from "expo-router";
+import { router, Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
 
@@ -15,7 +15,9 @@ import "../global.css";
 
 import { Colors } from "@/constants/Colors";
 import { toastConfig } from '@/toast.config';
+import { HeaderButton } from "@react-navigation/elements";
 import React from "react";
+import { QrCodeIcon } from "react-native-heroicons/solid";
 import Toast from 'react-native-toast-message';
 
 Sentry.init({
@@ -50,29 +52,46 @@ function RootLayoutNav() {
     <ThemeProvider value={theme}>
       <Stack
         screenOptions={{
-          headerShown: false,
+          headerShown: true,
           headerStyle: { backgroundColor: Colors.harvest },
-          headerTintColor: "#fff",
+          headerBackVisible: false,
+          headerTitleStyle: { color: "white" },
+          headerBackButtonDisplayMode: "minimal",
         }}
       >
-        <Stack.Screen name="login" />
-        <Stack.Screen name="(tabs)" options={{ title: "Harvest" }} />
+        <Stack.Screen name="login" options={{
+          headerShown: false,
+
+        }} />
+        <Stack.Screen name="applink" options={{ headerShown: false }} />
+        <Stack.Screen name="(tabs)" />
         <Stack.Screen
           name="addExpenses"
           options={{
-            headerShown: true,
-            title: "Add Expense",
+            title: "New Activity",
             presentation: "card",
-            headerBackButtonDisplayMode: "minimal",
+            headerBackVisible: true,
 
           }}
         />
         <Stack.Screen
           name="rateSelect"
-          options={{
-            headerShown: false,
-            presentation: "modal",
-          }}
+          options={() => ({
+            title: "Select Rate",
+            presentation: "card",
+            headerBackVisible: true,
+            headerRight: () => (
+              <HeaderButton
+                accessibilityLabel="More options"
+
+                onPress={() =>
+                  router.push({ pathname: "/qrScan" })
+                }
+              >
+                <QrCodeIcon size={22} color={'#fff'} />
+              </HeaderButton>
+            ),
+          })}
         />
         <Stack.Screen
           name="expenseDetails"
@@ -83,6 +102,7 @@ function RootLayoutNav() {
         />
         <Stack.Screen name="+not-found" />
       </Stack>
+
       <Toast
         config={toastConfig}
         position="top"

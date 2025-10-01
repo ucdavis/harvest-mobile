@@ -1,6 +1,6 @@
 import { router, useLocalSearchParams } from "expo-router";
 import React from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import { View } from "react-native";
 
 import { useAuth } from "@/components/context/AuthContext";
 import { RatesList } from "@/components/rates/RatesList";
@@ -9,7 +9,7 @@ import { useRates } from "@/services/queries/rates";
 
 export default function RateSelectScreen() {
   const { authInfo } = useAuth();
-  const { projectId } = useLocalSearchParams<{ projectId: string }>();
+  const { projectId, projectName } = useLocalSearchParams<{ projectId: string; projectName: string; }>();
   const { data: rates, isLoading, error } = useRates(authInfo);
 
   const handleRateSelect = (rate: Rate) => {
@@ -18,6 +18,8 @@ export default function RateSelectScreen() {
       params: {
         rate: JSON.stringify(rate),
         projectId: projectId || "",
+        projectName,
+
       },
     });
   };
@@ -26,8 +28,8 @@ export default function RateSelectScreen() {
 
   return (
     <View className="flex-1 bg-secondarybg">
-      {/* Header */}
-      <View className="modal-header">
+
+      {/* <View className="modal-header">
         <TouchableOpacity onPress={handleCancel}>
           <Text className="text-base text-white">Cancel</Text>
         </TouchableOpacity>
@@ -39,7 +41,7 @@ export default function RateSelectScreen() {
         >
           <Text className="text-base text-white">QR Scan</Text>
         </TouchableOpacity>
-      </View>
+      </View> */}
 
       {/* Rates List */}
       <RatesList

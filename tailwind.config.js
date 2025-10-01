@@ -6,6 +6,9 @@ const Colors = {
   secondarybg: "#F7F7F7",
   primaryfont: "#1F1F1F",
   primaryborder: "#DFDFDF",
+  rateLabor: "#8A532F",
+  rateEquipment: "#003A5D",
+  rateOther: "#481268",
 };
 module.exports = {
   content: ["./app/**/*.{js,jsx,ts,tsx}", "./components/**/*.{js,jsx,ts,tsx}"],
@@ -14,11 +17,14 @@ module.exports = {
     extend: {
       colors: {
         harvest: Colors.harvest,
-        merlot: Colors.merlot,      // brand primary
+        merlot: Colors.merlot,
         secondarybg: Colors.secondarybg,
         primaryfont: Colors.primaryfont,
         primaryborder: Colors.primaryborder,
         danger: Colors.merlot,
+        rateLabor: Colors.rateLabor,
+        rateEquipment: Colors.rateEquipment,
+        rateOther: Colors.rateOther,
       },
       textColor: {
         DEFAULT: Colors.primaryfont,
