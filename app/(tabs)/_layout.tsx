@@ -24,9 +24,17 @@ export default function TabLayout() {
   };
 
   useEffect(() => {
+    if (!isLoggedIn) {
+      return;
+    }
     const active = segments[1] ?? "";
     navigation.setOptions({ title: titles[active] || "Harvest" });
-  }, [segments, navigation]);
+  }, [isLoggedIn, segments, navigation]);
+
+  if (!isLoggedIn) {
+    return <Redirect href="/login" />;
+  }
+
   return (
     <Tabs
       screenOptions={{
