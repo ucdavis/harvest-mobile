@@ -127,6 +127,18 @@ async function getPendingExpensesFromQueue(): Promise<QueuedExpense[]> {
 }
 
 /**
+ * Helper function for backoff logic
+ */
+function shouldAttemptSync(syncAttempts: number, lastSyncAttempt: string | null | undefined): boolean {
+  if (syncAttempts >= 5) return false;
+  if (!lastSyncAttempt) return true;
+  const now = Date.now();
+  const last = new Date(lastSyncAttempt).getTime();
+  const minWait = Math.min(60 * 1000 * Math.pow(2, syncAttempts - 1), 60 * 60 * 1000); // 1, 2, 4, 8, 16 minutes
+  return now - last >= minWait;
+}
+
+/**
  * Main sync function that processes all pending expenses
  */
 async function syncAllPendingExpenses(): Promise<void> {
@@ -137,15 +149,35 @@ async function syncAllPendingExpenses(): Promise<void> {
       return;
     }
 
-    const results = await insertExpensesToApi(pendingExpenses);
+    // Remove expenses maxed out on sync attempts
+    for (const expense of pendingExpenses) {
+      if (expense.syncAttempts >= 5) {
+        if (typeof expense.id === "number") {
+          logger.error("Expense permanently failed after 5 attempts, removing", { expenseId: expense.id });
+          await removeExpenseFromQueue(expense.id);
+        } else {
+          logger.error("Expense missing id, cannot remove from queue", { expense });
+        }
+      }
+    }
+
+    // Determine which expenses are eligible for sync based on backoff logic
+    const syncableExpenses = pendingExpenses.filter(
+      (e) => e.syncAttempts < 5 && shouldAttemptSync(e.syncAttempts, e.lastSyncAttempt)
+    );
+    if (syncableExpenses.length === 0) {
+      return;
+    }
+
+    const results = await insertExpensesToApi(syncableExpenses);
 
     let processedCount = 0;
     let successCount = 0;
     let failureCount = 0;
 
-    // Process results
     for (const res of results.results) {
-      const expense = pendingExpenses.find((e) => e.uniqueId === res.uniqueId);
+      // prevent checking for pending expenses not eligible for sync yet due to backoff
+      const expense = syncableExpenses.find((e) => e.uniqueId === res.uniqueId);
       if (!expense || !expense.id) {
         logger.warn("Could not find expense for sync result", {
           uniqueId: res.uniqueId,
@@ -166,9 +198,10 @@ async function syncAllPendingExpenses(): Promise<void> {
       } else {
         await updateExpenseStatus(
           expense.id,
-          "pending", // TODO: determine if we want to mark as failed or keep as pending, or should we always just remove?
+          "pending",
           JSON.stringify(res.errors) || "Unknown error"
         );
+        logger.info("Updated syncAttempts for expense", { expenseId: expense.id });
         failureCount++;
         logger.warn("Expense sync failed", {
           expenseId: expense.id,
