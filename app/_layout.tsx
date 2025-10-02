@@ -57,6 +57,7 @@ function RootLayoutNav() {
           headerBackVisible: false,
           headerTitleStyle: { color: "white" },
           headerBackButtonDisplayMode: "minimal",
+          headerTintColor: "white",
         }}
       >
         <Stack.Screen
@@ -93,7 +94,7 @@ function RootLayoutNav() {
                   })
                 }
               >
-                <QrCodeIcon size={22} color={"#fff"} />
+                <QrCodeIcon size={22} />
               </HeaderButton>
             ),
           })}
