@@ -116,7 +116,9 @@ export default function App() {
       // or https://<host>/<team>/rate/details/<rate_id>
 
       const pathSegments = url.pathname.split("/").filter(Boolean);
-      const expectedType = pathSegments.find((segment) => segment === context);
+      const expectedType = pathSegments.find(
+        (segment) => segment.toLowerCase() === context.toLowerCase()
+      );
 
       if (!expectedType) {
         Alert.alert(
@@ -134,7 +136,7 @@ export default function App() {
 
       // now make sure team in the URL matches the current team
       const teamInUrl = pathSegments[0];
-      if (teamInUrl !== authInfo?.team) {
+      if (teamInUrl.toLowerCase() !== authInfo?.team?.toLowerCase()) {
         Alert.alert(
           "Wrong Team",
           `This QR code belongs to team "${teamInUrl}" but you're currently working with team "${authInfo?.team}". Please scan a QR code for your current team.`,
