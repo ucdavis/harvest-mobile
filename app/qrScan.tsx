@@ -10,6 +10,7 @@ import { CameraIcon, ShieldCheckIcon } from "react-native-heroicons/outline";
 
 import { useAuth } from "@/components/context/AuthContext";
 import { useExpenses } from "@/components/context/ExpenseContext";
+import { Colors } from "@/constants/Colors";
 
 type QRScanContext = "rate" | "project";
 
@@ -35,7 +36,7 @@ export default function App() {
           {/* Header Section */}
           <View className="items-center mb-8">
             <View className="bg-harvest/10 p-4 rounded-full mb-4">
-              <CameraIcon size={64} color="#266041" />
+              <CameraIcon size={64} color={Colors.harvest} />
             </View>
             <Text className="text-2xl font-bold text-primaryfont text-center mb-2">
               Camera Access Required
