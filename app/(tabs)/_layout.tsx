@@ -1,75 +1,49 @@
+// app/(tabs)/_layout.tsx
 import { useAuth } from "@/components/context/AuthContext";
-import { HapticTab } from "@/components/HapticTab";
 import { Colors } from "@/constants/Colors";
-import { useNavigation } from "@react-navigation/native";
-import { Redirect, Tabs, useSegments } from "expo-router";
-import { useEffect } from "react";
-import { Platform } from "react-native";
-import {
-  ClipboardDocumentListIcon,
-  ClockIcon,
-  CogIcon,
-} from "react-native-heroicons/solid";
+import { Redirect, Slot } from "expo-router";
+import { Icon, Label, NativeTabs } from "expo-router/unstable-native-tabs";
 
 export default function TabLayout() {
-  const navigation = useNavigation();
-  const segments = useSegments(); // gives you the current route segments
   const { isLoggedIn } = useAuth();
-
-  useEffect(() => {
-    if (!isLoggedIn) {
-      return;
-    }
-
-    const titles: Record<string, string> = {
-      index: "Recent Projects",
-      projects: "All Projects",
-      settings: "Settings",
-    };
-    const active = segments[1] ?? "";
-    navigation.setOptions({ title: titles[active] || "Harvest" });
-  }, [isLoggedIn, segments, navigation]);
 
   if (!isLoggedIn) {
     return <Redirect href="/login" />;
   }
 
   return (
-    <Tabs
-      screenOptions={{
-        headerShown: false, // tabs manage no headers
-        tabBarActiveTintColor: Colors.harvest,
-        tabBarInactiveTintColor: "#b7b7b7",
-        tabBarButton: HapticTab,
-        tabBarStyle: Platform.select({
-          ios: { position: "absolute" },
-          default: {},
-        }),
-      }}
+    <NativeTabs
+
+      labelStyle={{ color: Colors.primaryfont }}
     >
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: "Recent Projects",
-          tabBarIcon: ({ color }) => <ClockIcon size={28} color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="projects"
-        options={{
-          title: "All Projects",
-          tabBarIcon: ({ color }) => (
-            <ClipboardDocumentListIcon size={28} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="settings"
-        options={{
-          title: "Settings",
-          tabBarIcon: ({ color }) => <CogIcon size={28} color={color} />,
-        }}
-      />
-    </Tabs>
+      {/* Dashboard */}
+      <NativeTabs.Trigger name="index">
+        <Icon
+          sf={{ default: "house", selected: "house.fill" }}
+          selectedColor={Colors.harvest}
+        />
+        <Label selectedStyle={{ color: Colors.harvest }}>Dashboard</Label>
+      </NativeTabs.Trigger>
+
+      {/* All Projects */}
+      <NativeTabs.Trigger name="projects">
+        <Icon
+          sf={{
+            default: "list.bullet.rectangle",
+            selected: "list.bullet.rectangle.fill",
+          }}
+          selectedColor={Colors.harvest}
+        />
+        <Label selectedStyle={{ color: Colors.harvest }}>All Projects</Label>
+      </NativeTabs.Trigger>
+
+      {/* Settings */}
+      <NativeTabs.Trigger name="settings">
+        <Icon sf={{ default: "gearshape", selected: "gearshape.fill" }} selectedColor={Colors.harvest} />
+        <Label selectedStyle={{ color: Colors.harvest }}>Settings</Label>
+      </NativeTabs.Trigger>
+
+      <Slot />
+    </NativeTabs>
   );
 }

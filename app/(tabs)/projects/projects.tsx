@@ -23,14 +23,15 @@ export default function AllProjectsScreen() {
   };
 
   return (
+
     <View className="flex-1">
-      {/* <TeamChooser /> */}
       <ProjectsList
         projects={projectQuery.data || []}
         queryKey={["projects", authInfo?.team]}
         onProjectPress={handleProjectPress}
         isLoading={projectQuery.isLoading}
       />
-    </View>
+    </View >
+
   );
 }

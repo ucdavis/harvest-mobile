@@ -37,9 +37,8 @@ export default function RecentProjectsScreen() {
   };
 
   return (
-    <View className="flex-1">
-      {/* <TeamChooser /> */}
 
+    <View className="flex-1">
       <ProjectsList
         projects={recentProjects || []}
         queryKey={["projects", authInfo?.team, "recent"]}
@@ -47,5 +46,8 @@ export default function RecentProjectsScreen() {
         isLoading={isLoadingProjects}
       />
     </View>
+
   );
+
+
 }

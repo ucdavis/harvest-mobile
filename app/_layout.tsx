@@ -64,7 +64,7 @@ function RootLayoutNav() {
 
         }} />
         <Stack.Screen name="applink" options={{ headerShown: false }} />
-        <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen
           name="addExpenses"
           options={{
