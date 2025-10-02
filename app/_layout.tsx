@@ -77,14 +77,23 @@ function RootLayoutNav() {
         />
         <Stack.Screen
           name="rateSelect"
-          options={() => ({
+          options={({ route }) => ({
             title: "Select Rate",
             presentation: "card",
             headerBackVisible: true,
             headerRight: () => (
               <HeaderButton
                 accessibilityLabel="More options"
-                onPress={() => router.push({ pathname: "/qrScan" })}
+                onPress={() =>
+                  router.push({
+                    pathname: "/qrScan",
+                    params: {
+                      context: "rate",
+                      projectId: (route.params as any)?.projectId || "",
+                      projectName: (route.params as any)?.projectName || "",
+                    },
+                  })
+                } // pass context to know what we are scanning for
               >
                 <QrCodeIcon size={22} color={"#fff"} />
               </HeaderButton>
