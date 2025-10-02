@@ -1,6 +1,6 @@
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useCallback, useEffect } from "react";
-import { View } from "react-native";
+import { Alert, View } from "react-native";
 
 import { useAuth } from "@/components/context/AuthContext";
 import { useExpenses } from "@/components/context/ExpenseContext";
@@ -42,8 +42,15 @@ export default function RateSelectScreen() {
         setScannedRateId(null);
         handleRateSelect(scannedRate);
       } else {
-        console.warn(
-          `Scanned rate ID ${scannedRateId} not found in available rates`
+        Alert.alert(
+          "Rate Not Found",
+          `The scanned rate (ID: ${scannedRateId}) is not valid. Please scan a valid rate QR code or select a rate from the list.`,
+          [
+            {
+              text: "OK",
+              onPress: () => setScannedRateId(null),
+            },
+          ]
         );
         // Clear the invalid scanned rate ID
         setScannedRateId(null);
@@ -53,20 +60,6 @@ export default function RateSelectScreen() {
 
   return (
     <View className="flex-1 bg-secondarybg">
-      {/* <View className="modal-header">
-        <TouchableOpacity onPress={handleCancel}>
-          <Text className="text-base text-white">Cancel</Text>
-        </TouchableOpacity>
-        <Text className="text-xl font-semibold text-white">Select Rate</Text>
-        <TouchableOpacity
-          onPress={() =>
-            router.push({ pathname: "/qrScan", params: { projectId: projectId || "" } })
-          }
-        >
-          <Text className="text-base text-white">QR Scan</Text>
-        </TouchableOpacity>
-      </View> */}
-
       {/* Rates List */}
       <RatesList
         rates={rates || []}

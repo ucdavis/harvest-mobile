@@ -5,7 +5,7 @@ import {
 } from "expo-camera";
 import { router, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import { Alert, Text, TouchableOpacity, View } from "react-native";
 import { CameraIcon, ShieldCheckIcon } from "react-native-heroicons/outline";
 
 import { useAuth } from "@/components/context/AuthContext";
@@ -119,18 +119,32 @@ export default function App() {
       const expectedType = pathSegments.find((segment) => segment === context);
 
       if (!expectedType) {
-        console.warn(`Expected QR code for ${context} but got different type`);
-        setIsScanning(true); // Allow scanning again
+        Alert.alert(
+          "Wrong QR Code Type",
+          `This QR code is not for ${context === "rate" ? "a rate" : "a project"}. Please scan a ${context} QR code.`,
+          [
+            {
+              text: "Try Again",
+              onPress: () => setIsScanning(true),
+            },
+          ]
+        );
         return;
       }
 
       // now make sure team in the URL matches the current team
       const teamInUrl = pathSegments[0];
       if (teamInUrl !== authInfo?.team) {
-        console.warn(
-          `Scanned QR code for team ${teamInUrl} but current team is ${authInfo?.team}`
+        Alert.alert(
+          "Wrong Team",
+          `This QR code belongs to team "${teamInUrl}" but you're currently working with team "${authInfo?.team}". Please scan a QR code for your current team.`,
+          [
+            {
+              text: "Try Again",
+              onPress: () => setIsScanning(true),
+            },
+          ]
         );
-        setIsScanning(true); // Allow scanning again
         return;
       }
 
