@@ -166,9 +166,14 @@ export default function App() {
         onBarcodeScanned={onBarCodeScanned}
         barcodeScannerSettings={{ barcodeTypes: ["qr"] }}
       />
-      <View className="absolute bottom-16 flex-row bg-transparent w-full px-16">
-        <TouchableOpacity className="flex-1 items-center" onPress={onFakeScan}>
-          <Text className="text-2xl font-bold text-white">Fake Scan</Text>
+      <View className="absolute bottom-16 flex-row w-full px-8">
+        <TouchableOpacity
+          className="flex-1 bg-harvest/90 py-4 px-6 rounded-xl items-center border border-white/20"
+          onPress={onFakeScan}
+        >
+          <Text className="text-xl font-bold text-white">
+            🔍 Fake Scan (Testing)
+          </Text>
         </TouchableOpacity>
       </View>
     </View>
