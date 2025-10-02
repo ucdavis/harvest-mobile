@@ -14,6 +14,8 @@ interface ExpenseContextType {
   clearExpenses: () => void;
   scannedRateId: string | null;
   setScannedRateId: (rateId: string | null) => void;
+  scannedProjectId: string | null;
+  setScannedProjectId: (projectId: string | null) => void;
 }
 
 const ExpenseContext = createContext<ExpenseContextType | undefined>(undefined);
@@ -21,6 +23,7 @@ const ExpenseContext = createContext<ExpenseContextType | undefined>(undefined);
 export function ExpenseProvider({ children }: { children: ReactNode }) {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [scannedRateId, setScannedRateId] = useState<string | null>(null);
+  const [scannedProjectId, setScannedProjectId] = useState<string | null>(null);
 
   const addExpense = useCallback((expense: Expense) => {
     setExpenses((prev) => [...prev, expense]);
@@ -43,6 +46,8 @@ export function ExpenseProvider({ children }: { children: ReactNode }) {
         clearExpenses,
         scannedRateId,
         setScannedRateId,
+        scannedProjectId,
+        setScannedProjectId,
       }}
     >
       {children}

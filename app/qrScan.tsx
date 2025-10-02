@@ -15,7 +15,7 @@ type QRScanContext = "rate" | "project";
 
 export default function App() {
   const { authInfo } = useAuth();
-  const { setScannedRateId } = useExpenses();
+  const { setScannedRateId, setScannedProjectId } = useExpenses();
   const [isScanning, setIsScanning] = useState(true);
   const [permission, requestPermission] = useCameraPermissions();
   const { context } = useLocalSearchParams<{
@@ -150,18 +150,15 @@ export default function App() {
 
       console.log(`Valid ${context} QR code scanned`);
 
+      // we're going to extract the ids and use our expense context to store them and then dismiss this QR scan screen
       if (context === "rate") {
-        // Process rate QR code
         const rateId = pathSegments[pathSegments.length - 1];
-
-        // Store the scanned rate ID in context and navigate back
         setScannedRateId(rateId);
         router.back();
       } else if (context === "project") {
         const scannedProjectId = pathSegments[pathSegments.length - 1];
-        // Process project QR code
-        // TODO: Handle project QR code scanning
-        console.log(`Scanned project ID: ${scannedProjectId}`);
+        setScannedProjectId(scannedProjectId);
+        router.back();
       }
 
       // url is
