@@ -1,34 +1,18 @@
 import { useAuth } from "@/components/context/AuthContext";
 import { HapticTab } from "@/components/HapticTab";
 import { Colors } from "@/constants/Colors";
-import { useNavigation } from "@react-navigation/native";
-import { Redirect, Tabs, useSegments } from "expo-router";
-import { useEffect } from "react";
+import { HeaderButton } from "@react-navigation/elements";
+import { Redirect, router, Tabs } from "expo-router";
 import { Platform } from "react-native";
 import {
   ClipboardDocumentListIcon,
   ClockIcon,
   CogIcon,
+  QrCodeIcon,
 } from "react-native-heroicons/solid";
 
 export default function TabLayout() {
-  const navigation = useNavigation();
-  const segments = useSegments(); // gives you the current route segments
   const { isLoggedIn } = useAuth();
-
-  useEffect(() => {
-    if (!isLoggedIn) {
-      return;
-    }
-
-    const titles: Record<string, string> = {
-      index: "Recent Projects",
-      projects: "All Projects",
-      settings: "Settings",
-    };
-    const active = segments[1] ?? "";
-    navigation.setOptions({ title: titles[active] || "Harvest" });
-  }, [isLoggedIn, segments, navigation]);
 
   if (!isLoggedIn) {
     return <Redirect href="/login" />;
@@ -37,7 +21,10 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        headerShown: false, // tabs manage no headers
+        headerShown: true,
+        headerStyle: { backgroundColor: Colors.harvest },
+        headerTitleStyle: { color: "white" },
+        headerBackButtonDisplayMode: "minimal",
         tabBarActiveTintColor: Colors.harvest,
         tabBarInactiveTintColor: "#b7b7b7",
         tabBarButton: HapticTab,
@@ -52,6 +39,7 @@ export default function TabLayout() {
         options={{
           title: "Recent Projects",
           tabBarIcon: ({ color }) => <ClockIcon size={28} color={color} />,
+          headerRight: () => <ProjectQrScan />,
         }}
       />
       <Tabs.Screen
@@ -61,6 +49,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => (
             <ClipboardDocumentListIcon size={28} color={color} />
           ),
+          headerRight: () => <ProjectQrScan />,
         }}
       />
       <Tabs.Screen
@@ -73,3 +62,19 @@ export default function TabLayout() {
     </Tabs>
   );
 }
+
+const ProjectQrScan = () => (
+  <HeaderButton
+    accessibilityLabel="QR Scan"
+    onPress={() =>
+      router.push({
+        pathname: "/qrScan",
+        params: {
+          context: "project",
+        },
+      })
+    }
+  >
+    <QrCodeIcon size={22} color={"#fff"} />
+  </HeaderButton>
+);

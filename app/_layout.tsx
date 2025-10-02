@@ -66,7 +66,7 @@ function RootLayoutNav() {
           }}
         />
         <Stack.Screen name="applink" options={{ headerShown: false }} />
-        <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen
           name="addExpenses"
           options={{
@@ -83,7 +83,7 @@ function RootLayoutNav() {
             headerBackVisible: true,
             headerRight: () => (
               <HeaderButton
-                accessibilityLabel="More options"
+                accessibilityLabel="QR Scan"
                 onPress={() =>
                   router.push({
                     pathname: "/qrScan",
@@ -91,7 +91,7 @@ function RootLayoutNav() {
                       context: "rate",
                     },
                   })
-                } // pass context to know what we are scanning for
+                }
               >
                 <QrCodeIcon size={22} color={"#fff"} />
               </HeaderButton>
