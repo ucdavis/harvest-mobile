@@ -10,7 +10,6 @@ export default function AllProjectsScreen() {
   const projectQuery = useProjects(authInfo);
 
   const { handleProjectPress } = useScannedProjectHandler({
-    projects: projectQuery.data || [],
     isEnabled: true,
   });
 

@@ -13,9 +13,7 @@ export default function RecentProjectsScreen() {
     useRecentProjects(authInfo);
   const userQuery = useUserInfo(authInfo);
 
-  // Set up scanned project handling for recent projects
   const { handleProjectPress } = useScannedProjectHandler({
-    projects: recentProjects || [],
     isEnabled: true,
   });
 
