@@ -102,8 +102,6 @@ export default function App() {
   };
 
   const onBarCodeScanned = (result: BarcodeScanningResult) => {
-    console.log("QR Code scanned:", result);
-
     if (!isScanning) return; // prevent multiple scans
     setIsScanning(false);
 
@@ -150,8 +148,6 @@ export default function App() {
         return;
       }
 
-      console.log(`Valid ${context} QR code scanned`);
-
       // we're going to extract the ids and use our expense context to store them and then dismiss this QR scan screen
       if (context === "rate") {
         const rateId = pathSegments[pathSegments.length - 1];
@@ -162,10 +158,19 @@ export default function App() {
         setScannedProjectId(scannedProjectId);
         router.back();
       }
-
-      // url is
-    } catch (error) {
-      console.error("Error processing scanned data:", error);
+    } catch {
+      // something went wrong, probably an invalid URL, so let's let them scan again after showing an error
+      setIsScanning(true);
+      Alert.alert(
+        "Invalid QR Code",
+        "The scanned QR code is not valid. Please try again.",
+        [
+          {
+            text: "OK",
+            onPress: () => setIsScanning(true),
+          },
+        ]
+      );
     }
   };
 
