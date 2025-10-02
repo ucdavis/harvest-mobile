@@ -3,16 +3,17 @@ import React, { useCallback, useEffect } from "react";
 import { View } from "react-native";
 
 import { useAuth } from "@/components/context/AuthContext";
+import { useExpenses } from "@/components/context/ExpenseContext";
 import { RatesList } from "@/components/rates/RatesList";
 import { Rate } from "@/lib/expense";
 import { useRates } from "@/services/queries/rates";
 
 export default function RateSelectScreen() {
   const { authInfo } = useAuth();
-  const { projectId, projectName, scannedRateId } = useLocalSearchParams<{
+  const { scannedRateId, setScannedRateId } = useExpenses();
+  const { projectId, projectName } = useLocalSearchParams<{
     projectId: string;
     projectName: string;
-    scannedRateId?: string;
   }>();
   const { data: rates, isLoading, error } = useRates(authInfo);
 
@@ -37,14 +38,18 @@ export default function RateSelectScreen() {
         (rate) => rate.id.toString() === scannedRateId
       );
       if (scannedRate) {
+        // Clear the scanned rate ID to prevent re-triggering
+        setScannedRateId(null);
         handleRateSelect(scannedRate);
       } else {
         console.warn(
           `Scanned rate ID ${scannedRateId} not found in available rates`
         );
+        // Clear the invalid scanned rate ID
+        setScannedRateId(null);
       }
     }
-  }, [scannedRateId, rates, handleRateSelect]);
+  }, [scannedRateId, rates, handleRateSelect, setScannedRateId]);
 
   return (
     <View className="flex-1 bg-secondarybg">

@@ -77,7 +77,7 @@ function RootLayoutNav() {
         />
         <Stack.Screen
           name="rateSelect"
-          options={({ route }) => ({
+          options={() => ({
             title: "Select Rate",
             presentation: "card",
             headerBackVisible: true,
@@ -89,8 +89,6 @@ function RootLayoutNav() {
                     pathname: "/qrScan",
                     params: {
                       context: "rate",
-                      projectId: (route.params as any)?.projectId || "",
-                      projectName: (route.params as any)?.projectName || "",
                     },
                   })
                 } // pass context to know what we are scanning for
