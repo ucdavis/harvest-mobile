@@ -57,6 +57,7 @@ function RootLayoutNav() {
           headerBackVisible: false,
           headerTitleStyle: { color: "white" },
           headerBackButtonDisplayMode: "minimal",
+          headerTintColor: "white",
         }}
       >
         <Stack.Screen name="login" options={{
