@@ -18,8 +18,8 @@ export default function TabLayout() {
       // Label colors (unselected)
       labelStyle={{ color: Colors.primaryfont }}
       // Icon tint (unselected)
-      iconColor={Colors.discreet}
-      tintColor={Colors.discreet}
+      iconColor={Colors.primaryfont}
+      tintColor={Colors.primaryfont}
     >
 
       <NativeTabs.Trigger name="index">
