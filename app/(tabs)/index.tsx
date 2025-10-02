@@ -1,10 +1,9 @@
 import { useAuth } from "@/components/context/AuthContext";
 import { ProjectsList } from "@/components/projects/ProjectsList";
-import { Project } from "@/lib/project";
+import { useScannedProjectHandler } from "@/hooks/useScannedProjectHandler";
 import { useRecentProjects } from "@/services/queries/projects";
 import { useUserInfo } from "@/services/queries/users";
 import { setUser } from "@sentry/react-native";
-import { router } from "expo-router";
 import { useEffect } from "react";
 import { View } from "react-native";
 
@@ -13,6 +12,10 @@ export default function RecentProjectsScreen() {
   const { data: recentProjects, isLoading: isLoadingProjects } =
     useRecentProjects(authInfo);
   const userQuery = useUserInfo(authInfo);
+
+  const { handleProjectPress } = useScannedProjectHandler({
+    isEnabled: true,
+  });
 
   useEffect(() => {
     // whenever the user info changes, update sentry
@@ -24,17 +27,6 @@ export default function RecentProjectsScreen() {
       });
     }
   }, [userQuery.data]);
-
-  const handleProjectPress = (project: Project) => {
-    router.push({
-      pathname: "/addExpenses",
-      params: {
-        projectId: project.id,
-        projectName: project.name,
-        piName: project.piName,
-      },
-    });
-  };
 
   return (
     <View className="flex-1">

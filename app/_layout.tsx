@@ -14,11 +14,11 @@ import * as Sentry from "@sentry/react-native";
 import "../global.css";
 
 import { Colors } from "@/constants/Colors";
-import { toastConfig } from '@/toast.config';
+import { toastConfig } from "@/toast.config";
 import { HeaderButton } from "@react-navigation/elements";
 import React from "react";
 import { QrCodeIcon } from "react-native-heroicons/solid";
-import Toast from 'react-native-toast-message';
+import Toast from "react-native-toast-message";
 
 Sentry.init({
   dsn: "https://fab598815739ee48f41e03c092212c08@o4507619154657280.ingest.us.sentry.io/4510064547332096",
@@ -59,19 +59,20 @@ function RootLayoutNav() {
           headerBackButtonDisplayMode: "minimal",
         }}
       >
-        <Stack.Screen name="login" options={{
-          headerShown: false,
-
-        }} />
+        <Stack.Screen
+          name="login"
+          options={{
+            headerShown: false,
+          }}
+        />
         <Stack.Screen name="applink" options={{ headerShown: false }} />
-        <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen
           name="addExpenses"
           options={{
             title: "New Activity",
             presentation: "card",
             headerBackVisible: true,
-
           }}
         />
         <Stack.Screen
@@ -82,16 +83,28 @@ function RootLayoutNav() {
             headerBackVisible: true,
             headerRight: () => (
               <HeaderButton
-                accessibilityLabel="More options"
-
+                accessibilityLabel="QR Scan"
                 onPress={() =>
-                  router.push({ pathname: "/qrScan" })
+                  router.push({
+                    pathname: "/qrScan",
+                    params: {
+                      context: "rate",
+                    },
+                  })
                 }
               >
-                <QrCodeIcon size={22} color={'#fff'} />
+                <QrCodeIcon size={22} color={"#fff"} />
               </HeaderButton>
             ),
           })}
+        />
+        <Stack.Screen
+          name="qrScan"
+          options={{
+            title: "Scan QR Code",
+            presentation: "card",
+            headerBackVisible: true,
+          }}
         />
         <Stack.Screen
           name="expenseDetails"
@@ -106,9 +119,9 @@ function RootLayoutNav() {
       <Toast
         config={toastConfig}
         position="top"
-        topOffset={60}         // adjust for your header / safe area
+        topOffset={60} // adjust for your header / safe area
         visibilityTime={2500}
-        keyboardOffset={24}    // iOS: avoid the keyboard
+        keyboardOffset={24} // iOS: avoid the keyboard
         autoHide
       />
       <StatusBar style="light" />
