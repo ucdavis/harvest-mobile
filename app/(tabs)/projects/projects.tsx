@@ -1,26 +1,17 @@
-import { useRouter } from "expo-router";
 import { View } from "react-native";
 
 import { useAuth } from "@/components/context/AuthContext";
 import { ProjectsList } from "@/components/projects/ProjectsList";
-import { Project } from "@/lib/project";
+import { useScannedProjectHandler } from "@/hooks/useScannedProjectHandler";
 import { useProjects } from "@/services/queries/projects";
 
 export default function AllProjectsScreen() {
   const { authInfo } = useAuth();
   const projectQuery = useProjects(authInfo);
-  const router = useRouter();
 
-  const handleProjectPress = (project: Project) => {
-    router.push({
-      pathname: "/addExpenses",
-      params: {
-        projectId: project.id,
-        projectName: project.name,
-        piName: project.piName,
-      },
-    });
-  };
+  const { handleProjectPress } = useScannedProjectHandler({
+    isEnabled: true,
+  });
 
   return (
 
