@@ -94,7 +94,7 @@ function RootLayoutNav() {
                   })
                 }
               >
-                <QrCodeIcon size={22} />
+                <QrCodeIcon size={22} color={"#fff"} />
               </HeaderButton>
             ),
           })}
