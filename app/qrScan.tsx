@@ -149,7 +149,6 @@ export default function App() {
       }
 
       console.log(`Valid ${context} QR code scanned`);
-      // TODO: Process the scanned data based on context
 
       if (context === "rate") {
         // Process rate QR code
