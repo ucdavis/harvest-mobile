@@ -5,6 +5,7 @@ export const Colors = {
   secondarybg: "#F7F7F7",
   primaryfont: "#1F1F1F",
   primaryborder: "#DFDFDF",
+  discreet: "#a0a0a0",
   primary: '#266041',
 
   //color scheme

@@ -1,15 +1,8 @@
+// app/(tabs)/_layout.tsx
 import { useAuth } from "@/components/context/AuthContext";
-import { HapticTab } from "@/components/HapticTab";
 import { Colors } from "@/constants/Colors";
-import { HeaderButton } from "@react-navigation/elements";
-import { Redirect, router, Tabs } from "expo-router";
-import { Platform } from "react-native";
-import {
-  ClipboardDocumentListIcon,
-  ClockIcon,
-  CogIcon,
-  QrCodeIcon,
-} from "react-native-heroicons/solid";
+import { Redirect, Slot } from "expo-router";
+import { Icon, Label, NativeTabs } from "expo-router/unstable-native-tabs";
 
 export default function TabLayout() {
   const { isLoggedIn } = useAuth();
@@ -18,63 +11,48 @@ export default function TabLayout() {
     return <Redirect href="/login" />;
   }
 
+
+
   return (
-    <Tabs
-      screenOptions={{
-        headerShown: true,
-        headerStyle: { backgroundColor: Colors.harvest },
-        headerTitleStyle: { color: "white" },
-        headerBackButtonDisplayMode: "minimal",
-        tabBarActiveTintColor: Colors.harvest,
-        tabBarInactiveTintColor: "#b7b7b7",
-        tabBarButton: HapticTab,
-        tabBarStyle: Platform.select({
-          ios: { position: "absolute" },
-          default: {},
-        }),
-      }}
+    <NativeTabs
+      // Label colors (unselected)
+      labelStyle={{ color: Colors.primaryfont }}
+      // Icon tint (unselected)
+      iconColor={Colors.primaryfont}
+      tintColor={Colors.primaryfont}
     >
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: "Recent Projects",
-          tabBarIcon: ({ color }) => <ClockIcon size={28} color={color} />,
-          headerRight: () => <ProjectQrScan />,
-        }}
-      />
-      <Tabs.Screen
-        name="projects"
-        options={{
-          title: "All Projects",
-          tabBarIcon: ({ color }) => (
-            <ClipboardDocumentListIcon size={28} color={color} />
-          ),
-          headerRight: () => <ProjectQrScan />,
-        }}
-      />
-      <Tabs.Screen
-        name="settings"
-        options={{
-          title: "Settings",
-          tabBarIcon: ({ color }) => <CogIcon size={28} color={color} />,
-        }}
-      />
-    </Tabs>
+
+      <NativeTabs.Trigger name="index">
+        <Icon
+          sf={{ default: "house", selected: "house.fill" }}
+          selectedColor={Colors.harvest}
+        />
+        <Label selectedStyle={{ color: Colors.harvest }}>Dashboard</Label>
+      </NativeTabs.Trigger>
+
+
+      <NativeTabs.Trigger name="projects">
+        <Icon
+          sf={{
+            default: "list.bullet.rectangle",
+            selected: "list.bullet.rectangle.fill",
+          }}
+          selectedColor={Colors.harvest}
+        />
+        <Label selectedStyle={{ color: Colors.harvest }}>All Projects</Label>
+      </NativeTabs.Trigger>
+
+
+      <NativeTabs.Trigger name="settings">
+        <Icon
+          sf={{ default: "gearshape", selected: "gearshape.fill" }}
+          selectedColor={Colors.harvest}
+        />
+        <Label selectedStyle={{ color: Colors.harvest }}>Settings</Label>
+      </NativeTabs.Trigger>
+
+      {/* active route content */}
+      <Slot />
+    </NativeTabs>
   );
 }
-
-const ProjectQrScan = () => (
-  <HeaderButton
-    accessibilityLabel="QR Scan"
-    onPress={() =>
-      router.push({
-        pathname: "/qrScan",
-        params: {
-          context: "project",
-        },
-      })
-    }
-  >
-    <QrCodeIcon size={22} color={"#fff"} />
-  </HeaderButton>
-);

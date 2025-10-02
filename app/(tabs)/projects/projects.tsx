@@ -14,6 +14,7 @@ export default function AllProjectsScreen() {
   });
 
   return (
+
     <View className="flex-1">
       <ProjectsList
         projects={projectQuery.data || []}
@@ -21,6 +22,7 @@ export default function AllProjectsScreen() {
         onProjectPress={handleProjectPress}
         isLoading={projectQuery.isLoading}
       />
-    </View>
+    </View >
+
   );
 }
