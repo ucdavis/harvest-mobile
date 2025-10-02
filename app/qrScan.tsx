@@ -168,12 +168,13 @@ export default function App() {
   };
 
   return (
-    <View className="flex-1 justify-center">
+    <View className="flex-1 justify-center bg-black">
       <CameraView
-        className="flex-1"
-        facing={"front"}
+        style={{ flex: 1 }}
+        facing="back"
         onBarcodeScanned={onBarCodeScanned}
         barcodeScannerSettings={{ barcodeTypes: ["qr"] }}
+        animateShutter={false}
       />
       <View className="absolute bottom-16 w-full px-4">
         <View className="bg-black/70 p-4 rounded-xl">
