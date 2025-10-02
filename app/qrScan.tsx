@@ -74,32 +74,31 @@ export default function App() {
     );
   }
 
-  const onFakeScan = () => {
-    // Simulate scanning a QR code for testing purposes
-    if (context === "rate") {
-      const fakeRateId = "32";
+  const onFakeScan = (testType: "rate32" | "project66" | "rate999") => {
+    // Simulate scanning different QR codes for testing purposes
+    let fakeData: string;
 
-      onBarCodeScanned({
-        data: `https://example.com/caes/rate/details/${fakeRateId}`,
-        type: "QR",
-        cornerPoints: [],
-        bounds: {
-          origin: { x: 0, y: 0 },
-          size: { width: 100, height: 100 },
-        },
-      });
-    } else if (context === "project") {
-      const fakeProjectId = "66";
-      onBarCodeScanned({
-        data: `https://example.com/caes/project/details/${fakeProjectId}`,
-        type: "QR",
-        cornerPoints: [],
-        bounds: {
-          origin: { x: 0, y: 0 },
-          size: { width: 100, height: 100 },
-        },
-      });
+    switch (testType) {
+      case "rate32":
+        fakeData = `https://example.com/caes/rate/details/32`;
+        break;
+      case "project66":
+        fakeData = `https://example.com/caes/project/details/66`;
+        break;
+      case "rate999":
+        fakeData = `https://example.com/caes/rate/details/999`;
+        break;
     }
+
+    onBarCodeScanned({
+      data: fakeData,
+      type: "QR",
+      cornerPoints: [],
+      bounds: {
+        origin: { x: 0, y: 0 },
+        size: { width: 100, height: 100 },
+      },
+    });
   };
 
   const onBarCodeScanned = (result: BarcodeScanningResult) => {
@@ -166,15 +165,40 @@ export default function App() {
         onBarcodeScanned={onBarCodeScanned}
         barcodeScannerSettings={{ barcodeTypes: ["qr"] }}
       />
-      <View className="absolute bottom-16 flex-row w-full px-8">
-        <TouchableOpacity
-          className="flex-1 bg-harvest/90 py-4 px-6 rounded-xl items-center border border-white/20"
-          onPress={onFakeScan}
-        >
-          <Text className="text-xl font-bold text-white">
-            🔍 Fake Scan (Testing)
+      <View className="absolute bottom-16 w-full px-4">
+        <View className="bg-black/70 p-4 rounded-xl">
+          <Text className="text-white text-center font-bold mb-3">
+            Testing Buttons
           </Text>
-        </TouchableOpacity>
+          <View className="space-y-2">
+            <TouchableOpacity
+              className="bg-harvest/90 py-3 px-4 rounded-lg items-center border border-white/20"
+              onPress={() => onFakeScan("rate32")}
+            >
+              <Text className="text-white font-semibold">
+                🔍 Rate Scan (ID: 32)
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              className="bg-blue-600/90 py-3 px-4 rounded-lg items-center border border-white/20"
+              onPress={() => onFakeScan("project66")}
+            >
+              <Text className="text-white font-semibold">
+                🏗️ Project Scan (ID: 66)
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              className="bg-red-600/90 py-3 px-4 rounded-lg items-center border border-white/20"
+              onPress={() => onFakeScan("rate999")}
+            >
+              <Text className="text-white font-semibold">
+                ❌ Rate Scan (Bad ID: 999)
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
       </View>
     </View>
   );
