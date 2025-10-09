@@ -1,4 +1,4 @@
-import { router, useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams, useSegments } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import {
   Alert,
@@ -21,13 +21,14 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { getRateTypeColor, RateTypeIcon } from "@/components/ui/rateType";
 import { Colors } from "@/constants/Colors";
+import { usePathname } from "expo-router";
 
 export default function ExpenseDetailsScreen() {
-  const { rate: rateParam, projectId, projectName } = useLocalSearchParams<{
+  const { rate: rateParam, projectId, projectName, piName } = useLocalSearchParams<{
     rate: string;
     projectId: string;
     projectName: string;
-
+    piName: string;
   }>();
 
   // Parse the rate from URL params
@@ -75,7 +76,11 @@ export default function ExpenseDetailsScreen() {
     setQuantity(numericValue);
   };
   const quantityInputRef = useRef<TextInput>(null);
+const pathname = usePathname();
 
+useEffect(() => {
+  console.log("📍 Current page:", pathname);
+}, [pathname]);
   // Focus on quantity input when component mounts
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -91,6 +96,8 @@ export default function ExpenseDetailsScreen() {
   const handleCancel = () => {
     router.back();
   };
+
+  const segments = useSegments();
 
   const handleConfirm = () => {
     const numericQuantity = parseFloat(quantity);
@@ -131,10 +138,25 @@ export default function ExpenseDetailsScreen() {
     // Add expense to context
     addExpense(newExpense);
 
-    // Navigate back to addExpenses
+    if (segments.length > 2) {
+
     router.dismiss(); // dismiss expenseDetails modal
     router.dismiss(); // dismiss rateSelect modal
-  };
+  } else {
+    // You're in Dashboard → ExpenseDetails
+    router.replace({
+    pathname: "/addExpenses",
+    params: {
+      projectId,
+      projectName,
+      piName,
+   
+    },
+  });
+  }
+
+
+};
 
   const getTotalCost = () => {
     const numericQuantity = parseFloat(quantity) || 0;

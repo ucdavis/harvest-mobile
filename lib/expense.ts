@@ -33,6 +33,12 @@ export type QueuedExpense = Expense & {
   errorMessage?: string; // error message if sync failed
 };
 
+export type ExpenseCardInfo = Expense & {
+  projectName: string;
+  rateName: string;
+  piName: string;
+};
+
 export function getExpenseUniqueId(): string {
   // Generate a UUID v4 using expo-crypto
   return Crypto.randomUUID();
@@ -116,3 +122,4 @@ export interface CreateExpenseResultsModel {
   results: CreateExpenseResultItem[];
   summary: CreateExpenseSummaryModel;
 }
+
