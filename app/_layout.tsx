@@ -6,6 +6,7 @@ import "react-native-reanimated";
 
 import { AutoSyncManager } from "@/components/AutoSyncManager";
 import { AuthProvider } from "@/components/context/AuthContext";
+import { AuthGuard } from "@/components/context/AuthGuard";
 import { ExpenseProvider } from "@/components/context/ExpenseContext";
 import { QueryContext } from "@/components/context/QueryContext";
 import { useInitDb } from "@/hooks/useInitDb";
@@ -50,6 +51,7 @@ function RootLayoutNav() {
 
   return (
     <ThemeProvider value={theme}>
+      <AuthGuard>
       <Stack
         screenOptions={{
           headerShown: true,
@@ -115,6 +117,7 @@ function RootLayoutNav() {
         />
         <Stack.Screen name="+not-found" />
       </Stack>
+      </AuthGuard>
 
       <Toast
         config={toastConfig}
