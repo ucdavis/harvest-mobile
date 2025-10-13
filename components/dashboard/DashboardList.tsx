@@ -79,16 +79,19 @@ export function DashboardList() {
       id: String(expense.rateId),
       description: expense.rateName,
       type: expense.type,
+      price: expense.price, 
+      unit: expense.unit,
     })
   );
 
-  router.push({
-    pathname: "/expenseDetails",
+  router.push({ 
+    pathname: "/addExpenses",
     params: {
-      rate: JSON.stringify(expense.rate),
       projectId: String(expense.projectId),
       projectName: expense.projectName,
       piName: expense.piName,
+      rate,
+      from: "dashboard"
     },
   });
 };

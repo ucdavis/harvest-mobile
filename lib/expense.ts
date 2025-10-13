@@ -37,6 +37,8 @@ export type ExpenseCardInfo = Expense & {
   projectName: string;
   rateName: string;
   piName: string;
+  price: number;
+  unit: string;
 };
 
 export function getExpenseUniqueId(): string {

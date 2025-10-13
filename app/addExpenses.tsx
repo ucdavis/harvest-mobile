@@ -38,6 +38,38 @@ export default function AddExpenseScreen() {
     piName: string;
   }>();
 
+  const { rate, from } = useLocalSearchParams<{
+    projectId: string;
+    projectName: string;
+    piName: string;
+    rate?: string;
+    from?: string;
+  }>();
+
+  const [isRedirecting, setIsRedirecting] = useState(false);
+
+  useEffect(() => {
+    if (from === "dashboard" && rate) {
+      setIsRedirecting(true);
+
+      const timer = setTimeout(() => {
+        router.push({
+          pathname: "/expenseDetails",
+          params: {
+            rate,
+            projectId,
+            projectName,
+            piName,
+            from: "dashboard",
+          },
+        });
+      }, 10);
+
+      return () => clearTimeout(timer);
+    }
+  }, [from, rate, projectId, projectName, piName]);
+
+
   const auth = useAuth();
   const [activity, setActivity] = useState("");
 
@@ -82,7 +114,7 @@ export default function AddExpenseScreen() {
           text1: 'Expense(s) saved.',
         });
         clearExpenses(); // clear local expenses
-        
+
         queryClient.invalidateQueries({ queryKey: ["rates", auth.authInfo?.team, "recent"] });
         // invalidate the recent projects query to refresh recent projects
         queryClient.invalidateQueries({
@@ -93,7 +125,7 @@ export default function AddExpenseScreen() {
         queryClient.isMutating({
           mutationKey: [MUTATION_KEY_SYNC_EXPENSES],
         }) === 0 && syncExpenseQueueMutation.mutate(); // trigger sync of expense queue
-        router.back();
+        router.back(); 
       },
       onError: (error) => {
         console.error("Failed to submit expenses:", error);
@@ -102,8 +134,11 @@ export default function AddExpenseScreen() {
   };
 
   return (
-    <View className="flex-1">
 
+    <View className="flex-1">
+      {isRedirecting && (
+        <View className="absolute inset-0 bg-white opacity-75 z-50" />
+      )}
       <View className="bg-white px-5 py-4 border-b border-primaryborder flex-row items-end justify-between">
         <View>
           <Text className="text-xl font-semibold text-harvest">

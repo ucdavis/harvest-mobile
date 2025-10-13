@@ -3,20 +3,12 @@ import { useMemo, useState } from "react";
 import {
   FlatList,
   RefreshControl,
-  Text,
-  TextInput,
-  TouchableOpacity,
   View,
 } from "react-native";
-import {
-  FolderPlusIcon,
-  MagnifyingGlassIcon,
-  XCircleIcon,
-} from "react-native-heroicons/outline";
+
 
 import { ExpenseCard } from "@/components/ui/ExpenseCard";
-import { Expense, ExpenseCardInfo } from "@/lib/expense";
-import { XMarkIcon } from "react-native-heroicons/solid";
+import { ExpenseCardInfo } from "@/lib/expense";
 
 
 type ExpensesListProps = {
@@ -31,11 +23,9 @@ export function ExpensesList({
   expenses,
   queryKey,
   onExpensePress,
-  isLoading = false,
 }: ExpensesListProps) {
   const queryClient = useQueryClient();
   const [refreshing, setRefreshing] = useState(false);
-  const [searchTerm, setSearchTerm] = useState(""); 
 
   const onRefresh = async () => {
     setRefreshing(true);

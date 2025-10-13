@@ -24,11 +24,12 @@ import { Colors } from "@/constants/Colors";
 import { usePathname } from "expo-router";
 
 export default function ExpenseDetailsScreen() {
-  const { rate: rateParam, projectId, projectName, piName } = useLocalSearchParams<{
+  const { rate: rateParam, projectId, projectName, piName, from } = useLocalSearchParams<{
     rate: string;
     projectId: string;
     projectName: string;
     piName: string;
+    from: string;
   }>();
 
   // Parse the rate from URL params
@@ -76,28 +77,20 @@ export default function ExpenseDetailsScreen() {
     setQuantity(numericValue);
   };
   const quantityInputRef = useRef<TextInput>(null);
-const pathname = usePathname();
 
 useEffect(() => {
-  console.log("📍 Current page:", pathname);
-}, [pathname]);
-  // Focus on quantity input when component mounts
-  useEffect(() => {
     const timer = setTimeout(() => {
       quantityInputRef.current?.focus();
     }, 100); // Small delay to ensure the component is fully mounted
 
     return () => clearTimeout(timer);
   }, []);
-
   // rate needs to be other and passthrough, but all passthrough rates are other so just check that
   const showDescriptionInput = rate?.isPassthrough || false;
 
   const handleCancel = () => {
     router.back();
   };
-
-  const segments = useSegments();
 
   const handleConfirm = () => {
     const numericQuantity = parseFloat(quantity);
@@ -138,24 +131,21 @@ useEffect(() => {
     // Add expense to context
     addExpense(newExpense);
 
-    if (segments.length > 2) {
-
+    if (from !== "dashboard") {
     router.dismiss(); // dismiss expenseDetails modal
     router.dismiss(); // dismiss rateSelect modal
   } else {
     // You're in Dashboard → ExpenseDetails
-    router.replace({
+    router.dismiss();
+    router.push({
     pathname: "/addExpenses",
     params: {
       projectId,
       projectName,
       piName,
-   
     },
   });
   }
-
-
 };
 
   const getTotalCost = () => {
