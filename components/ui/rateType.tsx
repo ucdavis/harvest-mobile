@@ -50,6 +50,7 @@ export const RateTypeIcon = memo(({ type, size = 20, colorOverride }: RateTypeIc
   const color = colorOverride ?? getRateTypeColor(type);
   return <Icon size={size} color={color} />;
 });
+RateTypeIcon.displayName = "RateTypeIcon";
 
 type RateTypeBadgeProps = {
   type: string;
@@ -73,3 +74,4 @@ export const RateTypeBadge = memo(
     );
   }
 );
+RateTypeBadge.displayName = "RateTypeBadge";
