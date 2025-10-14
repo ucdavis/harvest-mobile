@@ -73,7 +73,10 @@
     "experiments": {
       "typedRoutes": true,
       "buildCacheProvider": {
-        "plugin": "expo-build-disk-cache"
+        "plugin": "expo-build-disk-cache",
+        "options": {
+          "cacheDir": "node_modules/.expo-build-disk-cache"
+        }
       }
     },
     "extra": {
