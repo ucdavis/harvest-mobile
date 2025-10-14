@@ -183,6 +183,7 @@ export default function App() {
         barcodeScannerSettings={{ barcodeTypes: ["qr"] }}
         animateShutter={false}
       />
+      {__DEV__ && (
       <View className="absolute bottom-16 w-full px-4">
         <View className="bg-black/70 p-4 rounded-xl">
           <Text className="text-white text-center font-bold mb-3">
@@ -218,6 +219,7 @@ export default function App() {
           </View>
         </View>
       </View>
+      )}
     </View>
   );
 }
