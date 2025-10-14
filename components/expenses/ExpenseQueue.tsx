@@ -13,6 +13,8 @@ import {
   View,
 } from "react-native";
 import { ChevronRightIcon } from "react-native-heroicons/solid";
+import { useSyncExpenseQueue } from "@/services/queries/expenseQueue";
+
 
 interface ExpenseQueueProps {
   className?: string;
@@ -22,6 +24,7 @@ export default function ExpenseQueue({ className }: ExpenseQueueProps) {
   const { data: expenses = [], isRefetching, refetch } = usePendingExpenses();
 
   const clearExpenseQueueMutation = useClearExpenseQueue();
+  const syncExpenseQueueMutation = useSyncExpenseQueue();
 
   const getStatusColor = (status: QueuedExpense["status"]) => {
     switch (status) {
@@ -49,6 +52,10 @@ export default function ExpenseQueue({ className }: ExpenseQueueProps) {
   const handleRefresh = () => {
     refetch();
   };
+
+  const handleSyncQueue = () => {
+  syncExpenseQueueMutation.mutate();
+};
 
   const handleClearQueue = () => {
     if (expenses.length === 0) return;
@@ -88,20 +95,18 @@ export default function ExpenseQueue({ className }: ExpenseQueueProps) {
       </Text>
       {expenses.length > 0 && (
         <TouchableOpacity
-          onPress={handleClearQueue}
+          onPress={handleSyncQueue}
           className="flex-row bg-merlot rounded-md mt-5 justify-between py-2 px-4"
-          disabled={clearExpenseQueueMutation.isPending}
+          disabled={syncExpenseQueueMutation.isPending}
         >
           <Text className="text-white text-sm font-medium">
-            {clearExpenseQueueMutation.isPending
-              ? "Clearing..."
-              : "Clear All"}
+            {syncExpenseQueueMutation.isPending
+              ? "Syncing..."
+              : "Sync Queue"}
           </Text>
           <ChevronRightIcon size={16} color="white" />
         </TouchableOpacity>
       )}
-
-
 
 
       <ScrollView
@@ -214,7 +219,22 @@ export default function ExpenseQueue({ className }: ExpenseQueueProps) {
             </View>
           ))
         )}
+        {expenses.length > 0 && (
+        <TouchableOpacity
+          onPress={handleClearQueue}
+          className="flex-row bg-merlot rounded-md mt-5 justify-between py-2 px-4"
+          disabled={clearExpenseQueueMutation.isPending}
+        >
+          <Text className="text-white text-sm font-medium">
+            {clearExpenseQueueMutation.isPending
+              ? "Clearing..."
+              : "Clear All"}
+          </Text>
+          <ChevronRightIcon size={16} color="white" />
+        </TouchableOpacity>
+      )}
       </ScrollView>
     </View>
   );
 }
+
