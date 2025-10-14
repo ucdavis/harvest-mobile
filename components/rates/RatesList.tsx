@@ -48,8 +48,7 @@ export function RatesList({
   const { authInfo } = useAuth();
 
   const { data: recentRates } = useRecentRates(authInfo);
-
-  const recentRatesToShow = recentRates ?? [];
+  const recentRatesToShow = useMemo(() => recentRates ?? [], [recentRates]);
 
   const uniqueTypes = useMemo(() => {
     const set = new Set<string>();
