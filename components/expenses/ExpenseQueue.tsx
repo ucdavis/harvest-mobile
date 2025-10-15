@@ -54,17 +54,14 @@ export default function ExpenseQueue({ className }: ExpenseQueueProps) {
   };
 
   const handleSyncQueue = () => {
-  const isSyncing =
-    queryClient.isMutating({
-      mutationKey: [MUTATION_KEY_SYNC_EXPENSES],
-    }) > 0;
+    const isSyncing =
+      queryClient.isMutating({
+        mutationKey: [MUTATION_KEY_SYNC_EXPENSES],
+      }) > 0; 
 
-  if (isSyncing) {
-    console.log("Sync already in progress");
-    return;
-  }
-
-  syncExpenseQueueMutation.mutate();
+    if (!isSyncing) {
+      syncExpenseQueueMutation.mutate();
+    }
 };
 
   const handleClearQueue = () => {
