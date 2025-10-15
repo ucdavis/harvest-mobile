@@ -13,8 +13,8 @@ import {
   View,
 } from "react-native";
 import { ChevronRightIcon } from "react-native-heroicons/solid";
-import { useSyncExpenseQueue } from "@/services/queries/expenseQueue";
-
+import { useSyncExpenseQueue, MUTATION_KEY_SYNC_EXPENSES } from "@/services/queries/expenseQueue";
+import { queryClient } from "@/components/context/queryClient";
 
 interface ExpenseQueueProps {
   className?: string;
@@ -54,6 +54,16 @@ export default function ExpenseQueue({ className }: ExpenseQueueProps) {
   };
 
   const handleSyncQueue = () => {
+  const isSyncing =
+    queryClient.isMutating({
+      mutationKey: [MUTATION_KEY_SYNC_EXPENSES],
+    }) > 0;
+
+  if (isSyncing) {
+    console.log("Sync already in progress");
+    return;
+  }
+
   syncExpenseQueueMutation.mutate();
 };
 
@@ -84,30 +94,28 @@ export default function ExpenseQueue({ className }: ExpenseQueueProps) {
       className={`card ${className || ""}`}
     >
 
-      <View className="flex-row justify-between items-center mb-1">
-        <Text className="text-md uppercase font-bold text-harvest tracking-tight">
-          Expense Queue ({expenses.length})
-        </Text>
+     <View className="flex-row justify-between items-center mb-1">
+  <Text className="text-md uppercase font-bold text-harvest tracking-tight">
+    Expense Queue ({expenses.length})
+  </Text>
 
-      </View>
-      <Text className="text-sm text-primaryfont/80 mb-2">
-        Showing expense sync status
+  {expenses.length > 0 && (
+    <TouchableOpacity
+      onPress={handleSyncQueue}
+      className="flex-row bg-yellow-500 rounded-md mt-5 py-2 px-4 items-center"
+      disabled={syncExpenseQueueMutation.isPending}
+    >
+      <Text className="text-white text-sm font-medium">
+        {syncExpenseQueueMutation.isPending ? "Syncing..." : "Sync Queue"}
       </Text>
-      {expenses.length > 0 && (
-        <TouchableOpacity
-          onPress={handleSyncQueue}
-          className="flex-row bg-merlot rounded-md mt-5 justify-between py-2 px-4"
-          disabled={syncExpenseQueueMutation.isPending}
-        >
-          <Text className="text-white text-sm font-medium">
-            {syncExpenseQueueMutation.isPending
-              ? "Syncing..."
-              : "Sync Queue"}
-          </Text>
-          <ChevronRightIcon size={16} color="white" />
-        </TouchableOpacity>
-      )}
+      <ChevronRightIcon size={16} color="white" />
+    </TouchableOpacity>
+  )}
+</View>
 
+<Text className="text-sm text-primaryfont/80 mb-2">
+  Showing expense sync status
+</Text>
 
       <ScrollView
         className="max-h-96"
@@ -237,4 +245,5 @@ export default function ExpenseQueue({ className }: ExpenseQueueProps) {
     </View>
   );
 }
+
 
