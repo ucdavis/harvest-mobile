@@ -1,7 +1,7 @@
 import { useAuth } from "@/components/context/AuthContext";
 import { Redirect } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
-import { Image, StatusBar, Text, TouchableOpacity, View } from "react-native";
+import { Image, Text, TouchableOpacity, View } from "react-native";
 
 WebBrowser.maybeCompleteAuthSession(); // needed to close the auth popup
 
@@ -22,7 +22,8 @@ export default function LoginScreen() {
 
   return (
     <View className="flex-1 p-4">
-      <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
+
+
       <View className="flex-1 items-center justify-center">
         <Image
           source={require("../assets/images/studentfarmer.png")}
