@@ -1,6 +1,7 @@
 import { Colors } from "@/constants/Colors";
 import { Text, TouchableOpacity, View } from "react-native";
-import { PlusCircleIcon, UserIcon } from "react-native-heroicons/solid";
+import { PlusCircleIcon } from "react-native-heroicons/outline";
+import { UserIcon } from "react-native-heroicons/solid";
 
 type ProjectCardProps = {
   id: number; // internal ID, just a number
@@ -25,7 +26,7 @@ export function ProjectCard({
       {...(onPress ? { onPress, activeOpacity: 0.7 } : {})}
     >
 
-      <View className="px-4 py-2 flex-row items-center justify-between border-l-harvest border-l-8">
+      <View className="px-4 py-2 flex-row items-center justify-between">
         <View className="flex-1 pr-3">
 
           {id ? (
