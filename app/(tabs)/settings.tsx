@@ -1,14 +1,21 @@
 import { useAuth } from "@/components/context/AuthContext";
 import ExpenseQueue from "@/components/expenses/ExpenseQueue";
 import { useUserInfo } from "@/services/queries/users";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import { ArrowRightOnRectangleIcon } from "react-native-heroicons/outline";
-import { useCallback, useRef, useState } from "react";
 
 export default function LogoutScreen() {
   const { logout, authInfo } = useAuth();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const isLoggingOutRef = useRef(false);
+  const isMountedRef = useRef(true);
+
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   const userQuery = useUserInfo(authInfo);
 
@@ -24,7 +31,10 @@ export default function LogoutScreen() {
       await logout();
     } finally {
       isLoggingOutRef.current = false;
-      setIsLoggingOut(false);
+      if (isMountedRef.current) {
+        // don't want to set state if unmounted
+        setIsLoggingOut(false);
+      }
     }
   }, [logout]);
 
