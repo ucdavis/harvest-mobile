@@ -1,7 +1,6 @@
 import { DefaultTheme, ThemeProvider } from "@react-navigation/native";
 import { useFonts } from "expo-font";
-import { router, Stack } from "expo-router";
-import { StatusBar } from "expo-status-bar";
+import { Stack } from "expo-router";
 import "react-native-reanimated";
 
 import { AutoSyncManager } from "@/components/AutoSyncManager";
@@ -14,11 +13,10 @@ import { useInitDb } from "@/hooks/useInitDb";
 import * as Sentry from "@sentry/react-native";
 import "../global.css";
 
+import { QrScanButton } from "@/components/ui/QrScanButton";
 import { Colors } from "@/constants/Colors";
 import { toastConfig } from "@/toast.config";
-import { HeaderButton } from "@react-navigation/elements";
 import React from "react";
-import { QrCodeIcon } from "react-native-heroicons/solid";
 import Toast from "react-native-toast-message";
 
 Sentry.init({
@@ -52,71 +50,59 @@ function RootLayoutNav() {
   return (
     <ThemeProvider value={theme}>
       <AuthGuard>
-      <Stack
-        screenOptions={{
-          headerShown: true,
-          headerStyle: { backgroundColor: Colors.harvest },
-          headerBackVisible: false,
-          headerTitleStyle: { color: "white" },
-          headerBackButtonDisplayMode: "minimal",
-        }}
-      >
-        <Stack.Screen
-          name="login"
-          options={{
-            headerShown: false,
+        <Stack
+          screenOptions={{
+            headerShown: true,
+            headerStyle: { backgroundColor: Colors.harvest },
+            headerBackVisible: false,
+            headerTitleStyle: { color: "white" },
+            headerBackButtonDisplayMode: "minimal",
+            headerTintColor: "white",
           }}
-        />
-        <Stack.Screen name="applink" options={{ headerShown: false }} />
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen
-          name="addExpenses"
-          options={{
-            title: "New Activity",
-            presentation: "card",
-            headerBackVisible: true,
-          }}
-        />
-        <Stack.Screen
-          name="rateSelect"
-          options={() => ({
-            title: "Select Rate",
-            presentation: "card",
-            headerBackVisible: true,
-            headerRight: () => (
-              <HeaderButton
-                accessibilityLabel="QR Scan"
-                onPress={() =>
-                  router.push({
-                    pathname: "/qrScan",
-                    params: {
-                      context: "rate",
-                    },
-                  })
-                }
-              >
-                <QrCodeIcon size={22} color={"#fff"} />
-              </HeaderButton>
-            ),
-          })}
-        />
-        <Stack.Screen
-          name="qrScan"
-          options={{
-            title: "Scan QR Code",
-            presentation: "card",
-            headerBackVisible: true,
-          }}
-        />
-        <Stack.Screen
-          name="expenseDetails"
-          options={{
-            headerShown: false,
-            presentation: "modal",
-          }}
-        />
-        <Stack.Screen name="+not-found" />
-      </Stack>
+        >
+          <Stack.Screen
+            name="login"
+            options={{
+              headerShown: false,
+
+            }}
+          />
+          <Stack.Screen name="applink" options={{ headerShown: false }} />
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen
+            name="addExpenses"
+            options={{
+              title: "New Activity",
+              presentation: "card",
+              headerBackVisible: true,
+            }}
+          />
+          <Stack.Screen
+            name="rateSelect"
+            options={() => ({
+              title: "Select Rate",
+              presentation: "card",
+              headerBackVisible: true,
+              headerRight: () => <QrScanButton />,
+            })}
+          />
+          <Stack.Screen
+            name="qrScan"
+            options={{
+              title: "Scan QR Code",
+              presentation: "card",
+              headerBackVisible: true,
+            }}
+          />
+          <Stack.Screen
+            name="expenseDetails"
+            options={{
+              headerShown: false,
+              presentation: "modal",
+            }}
+          />
+          <Stack.Screen name="+not-found" />
+        </Stack>
       </AuthGuard>
 
       <Toast
@@ -127,7 +113,7 @@ function RootLayoutNav() {
         keyboardOffset={24} // iOS: avoid the keyboard
         autoHide
       />
-      <StatusBar style="light" />
+
     </ThemeProvider>
   );
 }

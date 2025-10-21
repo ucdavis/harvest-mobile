@@ -1,14 +1,13 @@
 import { useAuth } from "@/components/context/AuthContext";
 import { HapticTab } from "@/components/HapticTab";
+import { QrScanButton } from "@/components/ui/QrScanButton";
 import { Colors } from "@/constants/Colors";
-import { HeaderButton } from "@react-navigation/elements";
-import { Redirect, router, Tabs } from "expo-router";
+import { Redirect, Tabs } from "expo-router";
 import { Platform } from "react-native";
 import {
   ClipboardDocumentListIcon,
   ClockIcon,
-  CogIcon,
-  QrCodeIcon,
+  CogIcon
 } from "react-native-heroicons/solid";
 
 export default function TabLayout() {
@@ -39,7 +38,7 @@ export default function TabLayout() {
         options={{
           title: "Recent Projects",
           tabBarIcon: ({ color }) => <ClockIcon size={28} color={color} />,
-          headerRight: () => <ProjectQrScan />,
+          headerRight: () => <QrScanButton />,
         }}
       />
       <Tabs.Screen
@@ -49,7 +48,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => (
             <ClipboardDocumentListIcon size={28} color={color} />
           ),
-          headerRight: () => <ProjectQrScan />,
+          headerRight: () => <QrScanButton />,
         }}
       />
       <Tabs.Screen
@@ -63,18 +62,4 @@ export default function TabLayout() {
   );
 }
 
-const ProjectQrScan = () => (
-  <HeaderButton
-    accessibilityLabel="QR Scan"
-    onPress={() =>
-      router.push({
-        pathname: "/qrScan",
-        params: {
-          context: "project",
-        },
-      })
-    }
-  >
-    <QrCodeIcon size={22} color={"#fff"} />
-  </HeaderButton>
-);
+

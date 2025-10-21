@@ -273,7 +273,7 @@ export function RatesList({
 
   // Normal state
   return (
-    <View className="px-4 flex-1">
+    <View className="flex-1">
       {SearchBar}
 
       {/* Counter */}
@@ -324,7 +324,7 @@ export function RatesList({
             }
             return `unknown-${idx}`;
           }}
-          contentContainerStyle={{ paddingTop: 8, paddingBottom: 88 }}
+          contentContainerStyle={{ paddingTop: 8, paddingBottom: 88, paddingHorizontal: 16, }}
           showsVerticalScrollIndicator={false}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
