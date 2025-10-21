@@ -105,7 +105,7 @@ export function ProjectsList({
   return (
     <View className="flex-1">
 
-      <View className="flex-row items-center p-4 bg-white border-b border-primaryborder h-14">
+      <View className="flex-row items-center p-4 bg-white border-b border-primaryborder h-14 mb-2">
         <MagnifyingGlassIcon size={20} color={Colors.icon} />
         <TextInput
           className="flex-1 mx-2 text-primaryfont text-lg leading-6"
