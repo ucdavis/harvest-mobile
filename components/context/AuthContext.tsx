@@ -45,23 +45,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
-  const login = useCallback(async (authInfo: TeamAuthInfo) => {
-    setIsLoading(true);
+  const login = useCallback(
+    async (authInfo: TeamAuthInfo) => {
+      setIsLoading(true);
 
-    try {
-      await clearExpenseQueueMutation.mutateAsync();
-    } catch (error) {
-      console.error("Failed to clear expense queue:", error);
-    } finally {
-      queryClient.clear(); // Clear all cached queries from memory
-      await reactQueryPersister.removeClient(); // Clear persisted cache from storage
-    }
+      try {
+        await clearExpenseQueueMutation.mutateAsync();
+      } catch {
+        // Ignore errors
+      } finally {
+        queryClient.clear(); // Clear all cached queries from memory
+        await reactQueryPersister.removeClient(); // Clear persisted cache from storage
+      }
 
-    await setOrUpdateUserAuthInfo(authInfo);
-    setAuthInfo(authInfo);
-    setIsLoggedIn(true);
-    setIsLoading(false);
-  }, []);
+      await setOrUpdateUserAuthInfo(authInfo);
+      setAuthInfo(authInfo);
+      setIsLoggedIn(true);
+      setIsLoading(false);
+    },
+    [clearExpenseQueueMutation]
+  );
 
   // load current auth info on launch
   useEffect(() => {
