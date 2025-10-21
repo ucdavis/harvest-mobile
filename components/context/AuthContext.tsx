@@ -16,7 +16,7 @@ import {
   registerOnUnauthorized,
   unRegisterOnUnauthorized,
 } from "../../services/api";
-import { queryClient } from "./queryClient";
+import { queryClient, reactQueryPersister } from "./queryClient";
 
 interface AuthContextType {
   isLoggedIn: boolean;
@@ -39,15 +39,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setIsLoading(false);
       setIsLoggedIn(false);
       setUser(null); // clear user info from logger
-      // Invalidate userinfo query to clear cached user data
-      queryClient.invalidateQueries({
-        queryKey: ["userinfo"],
-      });
     });
   }, []);
 
   const login = useCallback(async (authInfo: TeamAuthInfo) => {
     setIsLoading(true);
+
+    // Clear all cached queries in case user is changing
+    queryClient.clear(); // Clear all cached queries from memory
+    await reactQueryPersister.removeClient(); // Clear persisted cache from storage
+
     await setOrUpdateUserAuthInfo(authInfo);
     setAuthInfo(authInfo);
     setIsLoggedIn(true);

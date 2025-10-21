@@ -1,5 +1,8 @@
 import { useAuth } from "@/components/context/AuthContext";
-import { queryClient } from "@/components/context/queryClient";
+import {
+  queryClient,
+  reactQueryPersister,
+} from "@/components/context/queryClient";
 import ExpenseQueue from "@/components/expenses/ExpenseQueue";
 import { useClearExpenseQueue } from "@/services/queries/expenses";
 import { useUserInfo } from "@/services/queries/users";
@@ -22,7 +25,8 @@ export default function LogoutScreen() {
     } catch (error) {
       console.error("Failed to clear expense queue:", error);
     } finally {
-      queryClient.clear(); // Clear all cached queries
+      queryClient.clear(); // Clear all cached queries from memory
+      await reactQueryPersister.removeClient(); // Clear persisted cache from storage
       logout();
     }
   };
