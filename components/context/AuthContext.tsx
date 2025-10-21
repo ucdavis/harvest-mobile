@@ -12,7 +12,11 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import { registerOnUnauthorized, unRegisterOnUnauthorized } from "../../services/api";
+import {
+  registerOnUnauthorized,
+  unRegisterOnUnauthorized,
+} from "../../services/api";
+import { queryClient } from "./queryClient";
 
 interface AuthContextType {
   isLoggedIn: boolean;
@@ -35,6 +39,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setIsLoading(false);
       setIsLoggedIn(false);
       setUser(null); // clear user info from logger
+      // Invalidate userinfo query to clear cached user data
+      queryClient.invalidateQueries({
+        queryKey: ["userinfo"],
+      });
     });
   }, []);
 
@@ -58,12 +66,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-  registerOnUnauthorized(logout);
+    registerOnUnauthorized(logout);
 
-  return () => {
-    unRegisterOnUnauthorized(logout);
-  };
-}, [logout]);
+    return () => {
+      unRegisterOnUnauthorized(logout);
+    };
+  }, [logout]);
 
   console.log("AuthProvider rendered, isLoggedIn:", isLoggedIn);
 
