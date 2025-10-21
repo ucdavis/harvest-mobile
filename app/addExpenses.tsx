@@ -25,7 +25,7 @@ import {
 } from "@/services/queries/expenseQueue";
 import { useInsertExpenses } from "@/services/queries/expenses";
 
-import { SquaresPlusIcon } from "react-native-heroicons/outline";
+import { DocumentPlusIcon } from "react-native-heroicons/outline";
 import Toast from 'react-native-toast-message';
 
 
@@ -82,7 +82,7 @@ export default function AddExpenseScreen() {
           text1: 'Expense(s) saved.',
         });
         clearExpenses(); // clear local expenses
-        
+
         queryClient.invalidateQueries({ queryKey: ["rates", auth.authInfo?.team, "recent"] });
         // invalidate the recent projects query to refresh recent projects
         queryClient.invalidateQueries({
@@ -186,7 +186,7 @@ export default function AddExpenseScreen() {
             onPress={handleAddExpenses}
           >
             <Text className="text-base text-white font-bold pt-0.5">Add expense</Text>
-            <SquaresPlusIcon size={24} color="white" />
+            <DocumentPlusIcon size={24} color="white" />
           </TouchableOpacity>
         </View>
       </ScrollView>
