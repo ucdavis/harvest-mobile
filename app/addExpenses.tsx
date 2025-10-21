@@ -118,7 +118,7 @@ export default function AddExpenseScreen() {
         </View>
         {showMoreProjectInfoButton && (
           <TouchableOpacity onPress={handleProjectInfo}>
-            <InformationCircleIcon size={24} color="#a0a0a0" />
+            <InformationCircleIcon size={24} color={Colors.icon} />
           </TouchableOpacity>
         )}
 

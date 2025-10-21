@@ -9,6 +9,7 @@ const Colors = {
   rateLabor: "#8A532F",
   rateEquipment: "#003A5D",
   rateOther: "#481268",
+  icon: "#a0a0a0",
 };
 module.exports = {
   content: ["./app/**/*.{js,jsx,ts,tsx}", "./components/**/*.{js,jsx,ts,tsx}"],
@@ -25,6 +26,7 @@ module.exports = {
         rateLabor: Colors.rateLabor,
         rateEquipment: Colors.rateEquipment,
         rateOther: Colors.rateOther,
+        icon: Colors.icon,
       },
       textColor: {
         DEFAULT: Colors.primaryfont,

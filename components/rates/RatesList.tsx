@@ -156,11 +156,11 @@ export function RatesList({
   const SearchBar = (
     <>
       <View className="flex-row items-center px-4 h-14 bg-white border-b border-primaryborder">
-        <MagnifyingGlassIcon size={20} color="#a0a0a0" />
+        <MagnifyingGlassIcon size={20} color={Colors.icon} />
         <TextInput
           className="flex-1 text-lg leading-6 mx-2 text-primaryfont"
           placeholder="Search rates, types, or units…"
-          placeholderTextColor="#a0a0a0"
+          placeholderTextColor={Colors.icon}
           value={searchTerm}
           onChangeText={setSearchTerm}
           returnKeyType="search"
@@ -172,7 +172,7 @@ export function RatesList({
             accessibilityRole="button"
             accessibilityLabel="Clear search"
           >
-            <XMarkIcon size={20} color="#a0a0a0" />
+            <XMarkIcon size={20} color={Colors.icon} />
           </TouchableOpacity>
         )}
         <TouchableOpacity
@@ -183,7 +183,7 @@ export function RatesList({
         >
           <AdjustmentsHorizontalIcon
             size={24}
-            color={filtersOpen || selectedType ? Colors.harvest : "#a0a0a0"}
+            color={filtersOpen || selectedType ? Colors.harvest : Colors.icon}
           />
         </TouchableOpacity>
       </View>
@@ -209,7 +209,7 @@ export function RatesList({
                     <RateTypeIcon
                       type={t as any}
                       size={14}
-                      colorOverride={isActive ? String(tint) : "#a0a0a0"}
+                      colorOverride={isActive ? String(tint) : Colors.icon}
                     />
                     <Text
                       className="ml-1 text-sm font-medium"
@@ -290,7 +290,7 @@ export function RatesList({
       {listData.length === 0 ? (
         searchTerm.length > 0 || selectedType ? (
           <View className="items-center justify-center py-16 px-5">
-            <MagnifyingGlassIcon size={80} color="#a0a0a0" />
+            <MagnifyingGlassIcon size={80} color={Colors.icon} />
             <Text className="text-lg font-semibold mt-4 text-center text-primaryfont/40">
               No rates found
             </Text>
@@ -300,7 +300,7 @@ export function RatesList({
           </View>
         ) : (
           <View className="items-center justify-center py-16 px-5">
-            <WrenchScrewdriverIcon size={80} color="#a0a0a0" />
+            <WrenchScrewdriverIcon size={80} color={Colors.icon} />
             <Text className="text-lg font-semibold mt-4 text-center text-primaryfont/40">
               No rates available
             </Text>
