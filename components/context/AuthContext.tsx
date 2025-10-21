@@ -5,6 +5,7 @@ import {
   TeamAuthInfo,
 } from "@/lib/auth";
 import { setUser } from "@/lib/logger";
+import { useClearExpenseQueue } from "@/services/queries/expenses";
 import React, {
   createContext,
   useCallback,
@@ -33,6 +34,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const [authInfo, setAuthInfo] = useState<TeamAuthInfo | undefined>();
 
+  const clearExpenseQueueMutation = useClearExpenseQueue();
+
   const logout = useCallback(() => {
     removeCurrentTeamAuthInfo().then(() => {
       setAuthInfo(undefined);
@@ -45,9 +48,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const login = useCallback(async (authInfo: TeamAuthInfo) => {
     setIsLoading(true);
 
-    // Clear all cached queries in case user is changing
-    queryClient.clear(); // Clear all cached queries from memory
-    await reactQueryPersister.removeClient(); // Clear persisted cache from storage
+    try {
+      await clearExpenseQueueMutation.mutateAsync();
+    } catch (error) {
+      console.error("Failed to clear expense queue:", error);
+    } finally {
+      queryClient.clear(); // Clear all cached queries from memory
+      await reactQueryPersister.removeClient(); // Clear persisted cache from storage
+    }
 
     await setOrUpdateUserAuthInfo(authInfo);
     setAuthInfo(authInfo);
