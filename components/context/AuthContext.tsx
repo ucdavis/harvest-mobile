@@ -37,13 +37,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const clearExpenseQueueMutation = useClearExpenseQueue();
 
   const logout = useCallback(() => {
-    removeCurrentTeamAuthInfo().then(() => {
+    removeCurrentTeamAuthInfo().then(async () => {
       setAuthInfo(undefined);
       setIsLoading(false);
       setIsLoggedIn(false);
       setUser(null); // clear user info from logger
+
+      try {
+        await clearExpenseQueueMutation.mutateAsync();
+      } catch {
+        // Ignore errors
+      } finally {
+        queryClient.clear(); // Clear all cached queries from memory
+        await reactQueryPersister.removeClient(); // Clear persisted cache from storage
+      }
     });
-  }, []);
+  }, [clearExpenseQueueMutation]);
 
   const login = useCallback(
     async (authInfo: TeamAuthInfo) => {
