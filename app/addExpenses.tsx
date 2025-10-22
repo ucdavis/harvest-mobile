@@ -25,6 +25,7 @@ import {
 } from "@/services/queries/expenseQueue";
 import { useInsertExpenses } from "@/services/queries/expenses";
 
+import { getRateTypeColor, RateTypeIcon } from "@/components/ui/rateType";
 import { DocumentPlusIcon } from "react-native-heroicons/outline";
 import Toast from 'react-native-toast-message';
 
@@ -57,6 +58,7 @@ export default function AddExpenseScreen() {
   const handleDeleteExpense = (uniqueId: string) => {
     removeExpense(uniqueId);
   };
+
 
   const handleProjectInfo = async () => {
     const url = getProjectLink(projectId, auth.authInfo!);
@@ -150,36 +152,49 @@ export default function AddExpenseScreen() {
           </Text>
           {expenses.length === 0 && (
             <Text className="text-primaryfont/80 mt-2">
-              No expenses added.
+              No expenses entered yet.
             </Text>
           )}
 
-          {expenses.map((item) => (
-            <View
-              key={item.uniqueId}
-              className="flex-row items-end justify-between py-3 border-b border-primaryborder"
-            >
-              <View className="flex-1">
-                <Text className="tertiary-label uppercase">{item.type}</Text>
-                <Text className="text-lg text-primaryfont font-medium">
-                  {item.rate?.description}
-                </Text>
-              </View>
+          {expenses.map((item) => {
+            const bg = getRateTypeColor(item.type);
 
-              <View className="flex-row items-center space-x-3">
-                <Text className="text-base text-primaryfont/80 font-semibold">
-                  {item.quantity} {item.rate?.unit} @ ${item.price}
-                </Text>
+            return (
+              <View
+                key={item.uniqueId}
+                className="flex-row items-end justify-between items-center py-3"
+              >
+                <View className="flex-row items-center flex-1">
+                  <View
+                    className="mr-3 h-8 w-8 items-center justify-center rounded-full"
+                    style={{ backgroundColor: bg }}
+                  >
+                    <RateTypeIcon
+                      type={item.type as any}
+                      size={16}
+                      colorOverride="white"
+                    />
+                  </View>
+
+                  <View className="flex-1">
+                    <Text className="text-lg text-primaryfont font-medium">
+                      {item.rate?.description}
+                    </Text>
+                    <Text className="text-base text-primaryfont/70 font-semibold">
+                      {item.quantity} {item.rate?.unit} @ ${item.price}
+                    </Text>
+                  </View>
+                </View>
 
                 <TouchableOpacity
                   className="ml-3"
                   onPress={() => handleDeleteExpense(item.uniqueId)}
                 >
-                  <TrashIcon size={16} color={Colors.merlot} />
+                  <TrashIcon size={20} color={Colors.merlot} />
                 </TouchableOpacity>
               </View>
-            </View>
-          ))}
+            );
+          })}
 
           <TouchableOpacity
             className="flex-row bg-harvest rounded-md mt-5 justify-between py-2 px-4"
