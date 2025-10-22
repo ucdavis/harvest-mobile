@@ -1,4 +1,3 @@
-// note, lowercase to match route, must be exactly `harvestmobile://applink`
 import { useAuth } from "@/components/context/AuthContext";
 import { isLinkCodeCompleted, markLinkCodeCompleted } from "@/lib/auth";
 import { router, useLocalSearchParams } from "expo-router";
@@ -18,7 +17,6 @@ type LinkSuccess = {
 };
 
 function normalizeBaseUrl(input: string) {
-  // Ensure http/https, drop trailing slash, strip hash
   const u = new URL(input);
   if (!/^https?:$/.test(u.protocol)) {
     throw new Error("baseUrl must be http(s)");
@@ -33,13 +31,12 @@ export default function AppLinkScreen() {
     code?: string;
     baseUrl?: string;
   }>();
-  const { login } = useAuth(); // use auth context so we can notify it of login
+  const { login } = useAuth();
   const [status, setStatus] = useState("Authenticating…");
   const [hasFailed, setHasFailed] = useState(false);
-  const didRun = useRef(false); // avoid double-run in StrictMode
+  const didRun = useRef(false);
 
   useEffect(() => {
-    // Close the browser that was opened for authentication
     WebBrowser.dismissBrowser();
 
     const controller = new AbortController();
@@ -54,11 +51,10 @@ export default function AppLinkScreen() {
         if (!code || !baseUrl) {
           setStatus("Missing code or baseUrl.");
           setHasFailed(true);
-          didRun.current = false; // Reset on failure to allow retry
+          didRun.current = false;
           return;
         }
 
-        // Check if this specific code has already been processed
         const codeStr = String(code);
         const alreadyCompleted = await isLinkCodeCompleted(codeStr);
 
@@ -68,13 +64,10 @@ export default function AppLinkScreen() {
           return;
         }
 
-        // Normalize/sanitize
         const normalizedBase = normalizeBaseUrl(String(baseUrl));
-
-        // Hit POST {baseUrl}/api/getapi/{code}
         setStatus("Linking your device…");
 
-        timeoutId = setTimeout(() => controller.abort(), 12000); // 12s timeout
+        timeoutId = setTimeout(() => controller.abort(), 12000);
 
         const res = await fetch(
           `${normalizedBase}/api/getapi/${encodeURIComponent(codeStr)}`,
@@ -89,9 +82,7 @@ export default function AppLinkScreen() {
 
         if (!res.ok) {
           const text = await res.text().catch(() => "");
-          throw new Error(
-            `Link failed (${res.status}). ${text?.slice(0, 200)}`
-          );
+          throw new Error(`Link failed (${res.status}). ${text?.slice(0, 200)}`);
         }
 
         const data = (await res.json()) as LinkSuccess;
@@ -101,58 +92,43 @@ export default function AppLinkScreen() {
           throw new Error("Response missing apiKey or team.");
         }
 
-        // Persist securely under auth-{team}
         await login({
           token: String(apiKey),
           team: String(team),
           apiBaseUrl: normalizedBase,
         });
 
-        // Mark this code as completed to prevent re-processing
         await markLinkCodeCompleted(codeStr);
 
         setStatus("Linked successfully. Redirecting…");
-
-        router.replace("/"); // nav to home, which is the index tab
+        router.replace("/");
       } catch (err: any) {
         if (unmounted) return;
         setStatus("Authentication failed.");
         setHasFailed(true);
-        didRun.current = false; // Reset on failure to allow retry
+        didRun.current = false;
         Alert.alert("Authentication failed", err?.message ?? "Unknown error");
       }
     })();
 
     return () => {
       unmounted = true;
-      controller.abort(); // abort if unmounted
+      controller.abort();
       if (timeoutId) clearTimeout(timeoutId);
     };
   }, [code, baseUrl, login]);
 
   return (
-    <View
-      style={{
-        flex: 1,
-        alignItems: "center",
-        justifyContent: "center",
-        padding: 24,
-      }}
-    >
+    <View className="flex-1 items-center justify-center p-6">
       <ActivityIndicator />
-      <Text style={{ marginTop: 16 }}>{status}</Text>
+      <Text className="mt-4 text-base text-primaryfont/80">{status}</Text>
+
       {hasFailed && (
         <TouchableOpacity
-          style={{
-            marginTop: 24,
-            paddingVertical: 12,
-            paddingHorizontal: 24,
-            backgroundColor: "#007AFF",
-            borderRadius: 8,
-          }}
+          className="mt-6 py-3 px-6 bg-harvest rounded-lg"
           onPress={() => router.replace("/")}
         >
-          <Text style={{ color: "white", fontWeight: "600" }}>Go Back</Text>
+          <Text className="text-white font-semibold">Go Back</Text>
         </TouchableOpacity>
       )}
     </View>
