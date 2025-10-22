@@ -6,6 +6,7 @@ export const Colors = {
   primaryfont: "#1F1F1F",
   primaryborder: "#DFDFDF",
   primary: '#266041',
+  icon: '#a0a0a0',
 
   //color scheme
   harvest: "#266041",

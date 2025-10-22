@@ -27,7 +27,7 @@ const COLORS: Record<RateType, string> = {
 };
 
 const DEFAULT_ICON = QuestionMarkCircleIcon;
-const DEFAULT_COLOR = "#d7d7d7";
+const DEFAULT_COLOR = Colors.icon;
 
 export function getRateTypeColor(type: string) {
   const key = (type ?? "").toLowerCase() as RateType;

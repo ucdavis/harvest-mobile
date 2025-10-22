@@ -30,7 +30,7 @@ export function ProjectCard({
         <View className="flex-1 pr-3">
 
           {id ? (
-            <Text className="text-xs tracking-tight font-bold uppercase text-primaryfont/40">
+            <Text className="text-xs tracking-tight font-bold uppercase text-primaryfont/70">
               # {id}
             </Text>
           ) : null}

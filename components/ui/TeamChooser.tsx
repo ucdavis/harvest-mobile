@@ -1,3 +1,4 @@
+import { Colors } from "@/constants/Colors";
 import { Text, TouchableOpacity, View } from "react-native";
 import { ChevronUpDownIcon } from "react-native-heroicons/solid";
 import { useAuth } from "../context/AuthContext";
@@ -15,7 +16,7 @@ export function TeamChooser({ onClose }: TeamChooserProps) {
       </Text>
       {onClose && (
         <TouchableOpacity onPress={onClose} className="p-1">
-          <ChevronUpDownIcon size={24} color="#a0a0a0" />
+          <ChevronUpDownIcon size={24} color={Colors.icon} />
         </TouchableOpacity>
       )}
     </View>

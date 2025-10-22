@@ -1,3 +1,4 @@
+import { Colors } from "@/constants/Colors";
 import { PropsWithChildren, useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import { ChevronRightIcon } from "react-native-heroicons/outline";
@@ -20,7 +21,7 @@ export function Collapsible({ children, title }: CollapsibleProps) {
           className="mr-1"
           style={{ transform: [{ rotate: isOpen ? "90deg" : "0deg" }] }}
         >
-          <ChevronRightIcon size={18} color="#9BA1A6" />
+          <ChevronRightIcon size={18} color={Colors.icon} />
         </View>
         <Text className="text-base font-semibold text-primaryfont">
           {title}

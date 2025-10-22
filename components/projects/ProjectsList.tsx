@@ -15,6 +15,7 @@ import {
 } from "react-native-heroicons/outline";
 
 import { ProjectCard } from "@/components/ui/ProjectCard";
+import { Colors } from "@/constants/Colors";
 import { Project } from "@/lib/project";
 import { XMarkIcon } from "react-native-heroicons/solid";
 
@@ -78,23 +79,23 @@ export function ProjectsList({
       <View className="flex-1">
         {/* Search Bar */}
         <View className="flex-row items-center p-4 bg-white border-b border-primaryborder">
-          <MagnifyingGlassIcon size={20} color="#a0a0a0" />
+          <MagnifyingGlassIcon size={20} color={Colors.icon} />
           <TextInput
             className="flex-1 text-lg mx-2 text-primaryfont"
             placeholder="Search project IDs or PIs…"
-            placeholderTextColor="#a0a0a0"
+            placeholderTextColor={Colors.icon}
             value={searchTerm}
             onChangeText={setSearchTerm}
             returnKeyType="search"
           />
           {searchTerm.length > 0 && (
             <TouchableOpacity onPress={() => setSearchTerm("")} className="p-1">
-              <XCircleIcon size={24} color="#a0a0a0" />
+              <XCircleIcon size={24} color={Colors.icon} />
             </TouchableOpacity>
           )}
         </View>
 
-        <Text className="text-base text-neutral-700 dark:text-neutral-200 p-4">
+        <Text className="text-base text-primaryfont/70 p-4">
           Loading projects...
         </Text>
       </View>
@@ -104,12 +105,12 @@ export function ProjectsList({
   return (
     <View className="flex-1">
 
-      <View className="flex-row items-center p-4 bg-white border-b border-primaryborder h-14">
-        <MagnifyingGlassIcon size={20} color="#a0a0a0" />
+      <View className="flex-row items-center p-4 bg-white border-b border-primaryborder h-14 mb-2">
+        <MagnifyingGlassIcon size={20} color={Colors.icon} />
         <TextInput
           className="flex-1 mx-2 text-primaryfont text-lg leading-6"
           placeholder="Search project IDs or PIs…"
-          placeholderTextColor="#a0a0a0"
+          placeholderTextColor={Colors.icon}
           value={searchTerm}
           onChangeText={setSearchTerm}
           returnKeyType="search"
@@ -131,7 +132,7 @@ export function ProjectsList({
             accessibilityLabel="Clear search"
             onPress={() => setSearchTerm("")}
           >
-            <XMarkIcon size={20} color="#a0a0a0" />
+            <XMarkIcon size={20} color={Colors.icon} />
           </TouchableOpacity>
         )}
       </View>
@@ -162,7 +163,7 @@ export function ProjectsList({
         </View>
       ) : searchTerm.length > 0 ? (
         <View className="items-center justify-center py-16 px-5">
-          <MagnifyingGlassIcon size={80} color="#808080" />
+          <MagnifyingGlassIcon size={80} color={Colors.icon} />
           <Text className="text-lg font-semibold mt-4 text-center text-harvest">
             No projects found
           </Text>
@@ -172,7 +173,7 @@ export function ProjectsList({
         </View>
       ) : (
         <View className="items-center justify-center py-16 px-5">
-          <FolderPlusIcon size={80} color="#808080" />
+          <FolderPlusIcon size={80} color={Colors.icon} />
           <Text className="text-lg font-semibold mt-4 text-center text-primaryfont">
             No projects yet
           </Text>

@@ -260,7 +260,7 @@ export default function ExpenseDetailsScreen() {
           <Text className="text-lg font-semibold text-harvest">
             {projectName}
           </Text>
-          <Text className="text-sm uppercase font-bold text-primaryfont/40 tracking-tight">
+          <Text className="text-sm uppercase font-bold text-primaryfont/70 tracking-tight">
             # {projectId}
           </Text>
         </View>
