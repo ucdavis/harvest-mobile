@@ -5,6 +5,7 @@ import {
   TeamAuthInfo,
 } from "@/lib/auth";
 import { setUser } from "@/lib/logger";
+import { clearExpenseQueue } from "@/services/queries/expenses";
 import React, {
   createContext,
   useCallback,
@@ -12,12 +13,16 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import { registerOnUnauthorized, unRegisterOnUnauthorized } from "../../services/api";
+import {
+  registerOnUnauthorized,
+  unRegisterOnUnauthorized,
+} from "../../services/api";
+import { queryClient, reactQueryPersister } from "./queryClient";
 
 interface AuthContextType {
   isLoggedIn: boolean;
   login: (authInfo: TeamAuthInfo) => Promise<void>;
-  logout: () => void;
+  logout: () => Promise<void>;
   isLoading: boolean;
   authInfo?: TeamAuthInfo;
 }
@@ -29,17 +34,41 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const [authInfo, setAuthInfo] = useState<TeamAuthInfo | undefined>();
 
-  const logout = useCallback(() => {
-    removeCurrentTeamAuthInfo().then(() => {
-      setAuthInfo(undefined);
-      setIsLoading(false);
-      setIsLoggedIn(false);
-      setUser(null); // clear user info from logger
-    });
+  const logout = useCallback(async () => {
+    try {
+      await removeCurrentTeamAuthInfo();
+    } catch (error) {
+      console.error("Failed to remove current team auth info", error);
+    }
+
+    setAuthInfo(undefined);
+    setIsLoading(false);
+    setIsLoggedIn(false);
+    setUser(null); // clear user info from logger
+
+    try {
+      // always clear out expense queue on logout as a security measure
+      await clearExpenseQueue();
+    } catch {
+      // Ignore errors
+    } finally {
+      queryClient.clear(); // Clear all cached queries from memory
+      await reactQueryPersister.removeClient(); // Clear persisted cache from storage
+    }
   }, []);
 
   const login = useCallback(async (authInfo: TeamAuthInfo) => {
     setIsLoading(true);
+
+    try {
+      await clearExpenseQueue();
+    } catch {
+      // Ignore errors
+    } finally {
+      queryClient.clear(); // Clear all cached queries from memory
+      await reactQueryPersister.removeClient(); // Clear persisted cache from storage
+    }
+
     await setOrUpdateUserAuthInfo(authInfo);
     setAuthInfo(authInfo);
     setIsLoggedIn(true);
@@ -58,12 +87,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-  registerOnUnauthorized(logout);
+    registerOnUnauthorized(logout);
 
-  return () => {
-    unRegisterOnUnauthorized(logout);
-  };
-}, [logout]);
+    return () => {
+      unRegisterOnUnauthorized(logout);
+    };
+  }, [logout]);
 
   console.log("AuthProvider rendered, isLoggedIn:", isLoggedIn);
 

@@ -1,31 +1,42 @@
 import { useAuth } from "@/components/context/AuthContext";
-import { queryClient } from "@/components/context/queryClient";
 import ExpenseQueue from "@/components/expenses/ExpenseQueue";
-import { useClearExpenseQueue } from "@/services/queries/expenses";
 import { useUserInfo } from "@/services/queries/users";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import { ArrowRightOnRectangleIcon } from "react-native-heroicons/outline";
 
 export default function LogoutScreen() {
   const { logout, authInfo } = useAuth();
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const isLoggingOutRef = useRef(false);
+  const isMountedRef = useRef(true);
+
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   const userQuery = useUserInfo(authInfo);
 
-  const clearExpenseQueueMutation = useClearExpenseQueue();
+  const onLogoutPress = useCallback(async () => {
+    if (isLoggingOutRef.current) {
+      return;
+    }
 
-  const onLogoutPress = async () => {
-    // invalidate all queries, clear the expense queue and logout
-    await queryClient.cancelQueries(); // cancel in-flight queries
+    isLoggingOutRef.current = true;
+    setIsLoggingOut(true);
 
     try {
-      await clearExpenseQueueMutation.mutateAsync();
-    } catch (error) {
-      console.error("Failed to clear expense queue:", error);
+      await logout();
     } finally {
-      queryClient.clear(); // Clear all cached queries
-      logout();
+      isLoggingOutRef.current = false;
+      if (isMountedRef.current) {
+        // don't want to set state if unmounted
+        setIsLoggingOut(false);
+      }
     }
-  };
+  }, [logout]);
 
   return (
     <View className="main">
@@ -43,8 +54,10 @@ export default function LogoutScreen() {
         <TouchableOpacity
           onPress={onLogoutPress}
           className="harvest-button-icon"
+          disabled={isLoggingOut}
           accessibilityRole="button"
           accessibilityLabel="Logout"
+          accessibilityState={{ disabled: isLoggingOut }}
         >
           <Text className="harvest-button-text">Log out of Harvest</Text>
           <ArrowRightOnRectangleIcon size={24} color="#fff" />

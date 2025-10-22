@@ -113,7 +113,7 @@ export function usePendingExpenses() {
   return useQuery({
     queryKey: ["expenses", "pending"],
     queryFn: getPendingExpensesFromDb,
-    networkMode: "offlineFirst", 
+    networkMode: "offlineFirst",
     staleTime: 30 * 1000, // 30 seconds - shorter stale time for more responsive sync
     refetchOnWindowFocus: true, // Trigger sync when app becomes active
     refetchOnReconnect: true, // Trigger sync when network returns
@@ -122,7 +122,7 @@ export function usePendingExpenses() {
 }
 
 // Clear all expenses from the queue
-async function clearExpenseQueue(): Promise<void> {
+export async function clearExpenseQueue(): Promise<void> {
   const db = getDbOrThrow();
 
   try {
@@ -137,7 +137,6 @@ async function clearExpenseQueue(): Promise<void> {
   }
 }
 
-// Only for development/testing purposes
 export function useClearExpenseQueue() {
   const queryClient = useQueryClient();
 
