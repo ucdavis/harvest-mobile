@@ -10,10 +10,6 @@
     @apply bg-white rounded-md p-4 mb-4 border border-primaryborder;
 }
 
-.card-header {
-    @apply text-md uppercase font-bold text-harvest tracking-tight;
-}
-
 .modal-header {
     @apply flex-row items-center justify-between border-b border-primaryborder bg-harvest px-6 py-6;
 }

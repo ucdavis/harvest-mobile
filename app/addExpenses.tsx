@@ -132,7 +132,7 @@ export default function AddExpenseScreen() {
 
 
         <View className="card">
-          <Text className="card-header">
+          <Text className="text-md uppercase font-bold text-harvest tracking-tight">
             Notes
           </Text>
           <TextInput
@@ -147,7 +147,7 @@ export default function AddExpenseScreen() {
         </View>
 
         <View className="card">
-          <Text className="card-header">
+          <Text className="text-md uppercase font-bold text-harvest tracking-tight">
             Expenses
           </Text>
           {expenses.length === 0 && (
