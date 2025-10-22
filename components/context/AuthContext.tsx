@@ -5,7 +5,7 @@ import {
   TeamAuthInfo,
 } from "@/lib/auth";
 import { setUser } from "@/lib/logger";
-import { useClearExpenseQueue } from "@/services/queries/expenses";
+import { clearExpenseQueue } from "@/services/queries/expenses";
 import React, {
   createContext,
   useCallback,
@@ -34,8 +34,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const [authInfo, setAuthInfo] = useState<TeamAuthInfo | undefined>();
 
-  const clearExpenseQueueMutation = useClearExpenseQueue();
-
   const logout = useCallback(async () => {
     try {
       await removeCurrentTeamAuthInfo();
@@ -49,35 +47,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(null); // clear user info from logger
 
     try {
-      await clearExpenseQueueMutation.mutateAsync();
+      // always clear out expense queue on logout as a security measure
+      await clearExpenseQueue();
     } catch {
       // Ignore errors
     } finally {
       queryClient.clear(); // Clear all cached queries from memory
       await reactQueryPersister.removeClient(); // Clear persisted cache from storage
     }
-  }, [clearExpenseQueueMutation]);
+  }, []);
 
-  const login = useCallback(
-    async (authInfo: TeamAuthInfo) => {
-      setIsLoading(true);
+  const login = useCallback(async (authInfo: TeamAuthInfo) => {
+    setIsLoading(true);
 
-      try {
-        await clearExpenseQueueMutation.mutateAsync();
-      } catch {
-        // Ignore errors
-      } finally {
-        queryClient.clear(); // Clear all cached queries from memory
-        await reactQueryPersister.removeClient(); // Clear persisted cache from storage
-      }
+    try {
+      await clearExpenseQueue();
+    } catch {
+      // Ignore errors
+    } finally {
+      queryClient.clear(); // Clear all cached queries from memory
+      await reactQueryPersister.removeClient(); // Clear persisted cache from storage
+    }
 
-      await setOrUpdateUserAuthInfo(authInfo);
-      setAuthInfo(authInfo);
-      setIsLoggedIn(true);
-      setIsLoading(false);
-    },
-    [clearExpenseQueueMutation]
-  );
+    await setOrUpdateUserAuthInfo(authInfo);
+    setAuthInfo(authInfo);
+    setIsLoggedIn(true);
+    setIsLoading(false);
+  }, []);
 
   // load current auth info on launch
   useEffect(() => {
