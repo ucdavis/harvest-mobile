@@ -112,7 +112,7 @@ export default function AddExpenseScreen() {
           <Text className="text-md font-medium text-primaryfont"><UserIcon size={12} color={Colors.primaryfont} /> {piName}</Text>
         </View>
         <View>
-          <Text className="text-sm uppercase font-bold text-primaryfont/40 tracking-tight">
+          <Text className="text-sm uppercase font-bold text-primaryfont/70 tracking-tight">
             # {projectId}
           </Text>
         </View>
