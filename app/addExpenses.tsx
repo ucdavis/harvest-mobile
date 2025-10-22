@@ -107,8 +107,11 @@ export default function AddExpenseScreen() {
     <View className="flex-1">
 
       <View className="bg-white px-5 py-4 border-b border-primaryborder flex-row items-end justify-between">
-        <View>
-          <Text className="text-xl font-semibold text-harvest">
+        <View className="max-w-[80%]">
+          <Text
+            numberOfLines={1}
+            ellipsizeMode="tail"
+            className="text-xl font-semibold text-harvest ">
             {projectName}
           </Text>
           <Text className="text-md font-medium text-primaryfont"><UserIcon size={12} color={Colors.primaryfont} /> {piName}</Text>
