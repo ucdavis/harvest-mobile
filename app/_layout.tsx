@@ -83,7 +83,7 @@ function RootLayoutNav() {
               title: "Select Rate",
               presentation: "card",
               headerBackVisible: true,
-              headerRight: () => <QrScanButton />,
+              headerRight: () => <QrScanButton context="rate" />,
             })}
           />
           <Stack.Screen

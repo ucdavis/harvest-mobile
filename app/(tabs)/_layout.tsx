@@ -38,7 +38,7 @@ export default function TabLayout() {
         options={{
           title: "Recent Projects",
           tabBarIcon: ({ color }) => <ClockIcon size={28} color={color} />,
-          headerRight: () => <QrScanButton />,
+          headerRight: () => <QrScanButton context="project" />,
         }}
       />
       <Tabs.Screen
@@ -48,7 +48,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => (
             <ClipboardDocumentListIcon size={28} color={color} />
           ),
-          headerRight: () => <QrScanButton />,
+          headerRight: () => <QrScanButton context="project" />,
         }}
       />
       <Tabs.Screen
@@ -61,5 +61,4 @@ export default function TabLayout() {
     </Tabs>
   );
 }
-
 
