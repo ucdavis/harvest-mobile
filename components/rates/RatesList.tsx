@@ -257,7 +257,7 @@ export function RatesList({
   if (error) {
     return (
       <View className="flex-1 items-center justify-center p-6">
-        <ExclamationTriangleIcon size={48} color="#79242F" />
+        <ExclamationTriangleIcon size={48} color={Colors.merlot} />
         <Text className="mt-4 text-center text-base text-primaryfont/80">
           Failed to load rates
         </Text>
