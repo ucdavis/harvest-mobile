@@ -1,18 +1,21 @@
-// components/QrScanButton.tsx
 import { HeaderButton } from "@react-navigation/elements";
 import { router } from "expo-router";
-import {
-  QrCodeIcon,
-} from "react-native-heroicons/solid";
+import { QrCodeIcon } from "react-native-heroicons/solid";
 
-export const QrScanButton = () => (
+import type { QRScanContext } from "@/app/qrScan";
+
+type QrScanButtonProps = {
+  context: QRScanContext;
+};
+
+export const QrScanButton = ({ context }: QrScanButtonProps) => (
   <HeaderButton
     accessibilityLabel="QR Scan"
     onPress={() =>
       router.push({
         pathname: "/qrScan",
         params: {
-          context: "project",
+          context,
         },
       })
     }
