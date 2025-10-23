@@ -109,7 +109,7 @@ export default function AddExpenseScreen() {
       <View className="bg-white px-5 py-4 border-b border-primaryborder flex-row items-end justify-between">
         <View className="max-w-[80%]">
           <Text
-            numberOfLines={1}
+            numberOfLines={2}
             ellipsizeMode="tail"
             className="text-xl font-semibold text-harvest ">
             {projectName}
