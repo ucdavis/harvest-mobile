@@ -36,7 +36,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "Recent Projects",
+          title: "Dashboard",
           tabBarIcon: ({ color }) => <ClockIcon size={28} color={color} />,
           headerRight: () => <QrScanButton context="project" />,
         }}
