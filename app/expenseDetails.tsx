@@ -257,7 +257,8 @@ export default function ExpenseDetailsScreen() {
         </ScrollView>
         {/* sticky bottom bar outside of the scroll view */}
         <View className="px-5 py-2 flex-row items-end justify-between">
-          <Text className="text-lg font-semibold text-harvest">
+          <Text numberOfLines={1}
+            ellipsizeMode="tail" className="text-lg font-semibold text-harvest max-w-[85%]">
             {projectName}
           </Text>
           <Text className="text-sm uppercase font-bold text-primaryfont/70 tracking-tight">
