@@ -16,14 +16,12 @@ export default function LoginScreen() {
     console.log("Login button pressed");
     await WebBrowser.openBrowserAsync(
       process.env.EXPO_PUBLIC_LOGIN_URL ||
-      "https://harvest-test.azurewebsites.net/caes/mobile/token"
+        "https://harvest-test.azurewebsites.net/mobileToken"
     );
   };
 
   return (
     <View className="flex-1 p-4">
-
-
       <View className="flex-1 items-center justify-center">
         <Image
           source={require("../assets/images/studentfarmer.png")}
