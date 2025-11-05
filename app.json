@@ -17,7 +17,9 @@
       },
       "supportsTablet": true,
       "bundleIdentifier": "com.ucdavis.harvest-mobile",
-      "runtimeVersion": "1.0.0",
+      "runtimeVersion": {
+        "policy": "appVersion"
+      },
       "userInterfaceStyle": "dark"
     },
     "android": {
