@@ -68,7 +68,7 @@ export default function App() {
             className="harvest-button w-full"
             onPress={requestPermission}
           >
-            <Text className="harvest-button-text">Grant Camera Permission</Text>
+            <Text className="harvest-button-text">Continue</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -185,41 +185,41 @@ export default function App() {
         animateShutter={false}
       />
       {__DEV__ && (
-      <View className="absolute bottom-16 w-full px-4">
-        <View className="bg-black/70 p-4 rounded-xl">
-          <Text className="text-white text-center font-bold mb-3">
-            Testing Buttons
-          </Text>
-          <View className="space-y-2">
-            <TouchableOpacity
-              className="bg-harvest/90 py-3 px-4 rounded-lg items-center border border-white/20"
-              onPress={() => onFakeScan("rate32")}
-            >
-              <Text className="text-white font-semibold">
-                🔍 Rate Scan (ID: 32)
-              </Text>
-            </TouchableOpacity>
+        <View className="absolute bottom-16 w-full px-4">
+          <View className="bg-black/70 p-4 rounded-xl">
+            <Text className="text-white text-center font-bold mb-3">
+              Testing Buttons
+            </Text>
+            <View className="space-y-2">
+              <TouchableOpacity
+                className="bg-harvest/90 py-3 px-4 rounded-lg items-center border border-white/20"
+                onPress={() => onFakeScan("rate32")}
+              >
+                <Text className="text-white font-semibold">
+                  🔍 Rate Scan (ID: 32)
+                </Text>
+              </TouchableOpacity>
 
-            <TouchableOpacity
-              className="bg-blue-600/90 py-3 px-4 rounded-lg items-center border border-white/20"
-              onPress={() => onFakeScan("project66")}
-            >
-              <Text className="text-white font-semibold">
-                🏗️ Project Scan (ID: 66)
-              </Text>
-            </TouchableOpacity>
+              <TouchableOpacity
+                className="bg-blue-600/90 py-3 px-4 rounded-lg items-center border border-white/20"
+                onPress={() => onFakeScan("project66")}
+              >
+                <Text className="text-white font-semibold">
+                  🏗️ Project Scan (ID: 66)
+                </Text>
+              </TouchableOpacity>
 
-            <TouchableOpacity
-              className="bg-red-600/90 py-3 px-4 rounded-lg items-center border border-white/20"
-              onPress={() => onFakeScan("rate999")}
-            >
-              <Text className="text-white font-semibold">
-                ❌ Rate Scan (Bad ID: 999)
-              </Text>
-            </TouchableOpacity>
+              <TouchableOpacity
+                className="bg-red-600/90 py-3 px-4 rounded-lg items-center border border-white/20"
+                onPress={() => onFakeScan("rate999")}
+              >
+                <Text className="text-white font-semibold">
+                  ❌ Rate Scan (Bad ID: 999)
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
-      </View>
       )}
     </View>
   );

@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "harvest-mobile",
+    "name": "UCD Harvest",
     "slug": "harvest-mobile",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "orientation": "portrait",
     "icon": "./assets/images/app-icon.png",
     "scheme": "harvestmobile",
@@ -13,7 +13,7 @@
         "usesNonExemptEncryption": false
       },
       "infoPlist": {
-        "NSCameraUsageDescription": "We use the camera to scan QR codes for rates/expenses."
+        "NSCameraUsageDescription": "Allow camera access to scan QR codes for projects and rates when recording expenses."
       },
       "supportsTablet": true,
       "bundleIdentifier": "com.ucdavis.harvest-mobile",
@@ -64,7 +64,7 @@
       [
         "expo-camera",
         {
-          "cameraPermission": "Allow Harvest to access your camera"
+          "cameraPermission": "Allow camera access to scan QR codes for projects and rates when recording expenses."
         }
       ],
       "expo-font",
