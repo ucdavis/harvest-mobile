@@ -13,10 +13,9 @@ export default function LoginScreen() {
   }
 
   const onLoginPress = async () => {
-    console.log("Login button pressed");
     await WebBrowser.openBrowserAsync(
       process.env.EXPO_PUBLIC_LOGIN_URL ||
-        "https://harvest-test.azurewebsites.net/mobileToken"
+        "https://harvest.caes.ucdavis.edu/mobileToken"
     );
   };
 
