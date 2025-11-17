@@ -101,7 +101,17 @@ export const getCurrentTeam = async (): Promise<string | null> => {
  */
 export const getCurrentTeamAuthInfo =
   async (): Promise<TeamAuthInfo | null> => {
-    const currentTeam = await getCurrentTeam();
+    let currentTeam = await getCurrentTeam();
+
+    // Fallback: if no current team, use the first available team
+    if (!currentTeam) {
+      const userAuthInfo = await getUserAuthInfo();
+      if (userAuthInfo && Object.keys(userAuthInfo).length > 0) {
+        currentTeam = Object.keys(userAuthInfo)[0];
+        await setCurrentTeam(currentTeam); // Restore the current team
+      }
+    }
+
     if (!currentTeam) return null;
 
     const userAuthInfo = await getUserAuthInfo();
