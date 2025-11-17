@@ -28,9 +28,10 @@ export const setOrUpdateUserAuthInfo = async (
   authInfo: TeamAuthInfo
 ): Promise<void> => {
   const userAuthInfo = (await getUserAuthInfo()) ?? {};
+  const currentTeam = await getCurrentTeam();
 
-  // if this is first auth info, set current team
-  if (Object.keys(userAuthInfo).length === 0) {
+  // if this is first auth info or if the current team is not set, set it to this team
+  if (Object.keys(userAuthInfo).length === 0 || !currentTeam) {
     await setCurrentTeam(authInfo.team);
   }
 
