@@ -20,7 +20,7 @@ import {
 import { queryClient, reactQueryPersister } from "./queryClient";
 
 interface AuthContextType {
-  isLoggedIn: boolean;
+  isLoggedIn: boolean | null; // null meaning we don't know yet
   login: (authInfo: TeamAuthInfo) => Promise<void>;
   logout: () => Promise<void>;
   isLoading: boolean;
@@ -30,7 +30,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // TODO: should we do this synchronously?
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [authInfo, setAuthInfo] = useState<TeamAuthInfo | undefined>();
 
