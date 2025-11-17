@@ -82,7 +82,7 @@ export const getUserAuthInfo = async (): Promise<UserAuthInfo | null> => {
  * @returns A promise that resolves when the current team has been saved.
  */
 export const setCurrentTeam = async (team: string): Promise<void> => {
-  await AsyncStorage.setItem(CURRENT_TEAM_KEY, team);
+  await SecureStore.setItemAsync(CURRENT_TEAM_KEY, team);
 };
 
 /**
@@ -91,7 +91,7 @@ export const setCurrentTeam = async (team: string): Promise<void> => {
  * @returns A promise that resolves to the current team identifier, or null if none is set.
  */
 export const getCurrentTeam = async (): Promise<string | null> => {
-  return await AsyncStorage.getItem(CURRENT_TEAM_KEY);
+  return await SecureStore.getItemAsync(CURRENT_TEAM_KEY);
 };
 
 /**
@@ -101,17 +101,7 @@ export const getCurrentTeam = async (): Promise<string | null> => {
  */
 export const getCurrentTeamAuthInfo =
   async (): Promise<TeamAuthInfo | null> => {
-    let currentTeam = await getCurrentTeam();
-
-    // Fallback: if no current team, use the first available team
-    if (!currentTeam) {
-      const userAuthInfo = await getUserAuthInfo();
-      if (userAuthInfo && Object.keys(userAuthInfo).length > 0) {
-        currentTeam = Object.keys(userAuthInfo)[0];
-        await setCurrentTeam(currentTeam); // Restore the current team
-      }
-    }
-
+    const currentTeam = await getCurrentTeam();
     if (!currentTeam) return null;
 
     const userAuthInfo = await getUserAuthInfo();
