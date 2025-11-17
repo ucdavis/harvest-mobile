@@ -4,7 +4,7 @@ import {
   setOrUpdateUserAuthInfo,
   TeamAuthInfo,
 } from "@/lib/auth";
-import { setUser } from "@/lib/logger";
+import { logger, setUser } from "@/lib/logger";
 import { clearExpenseQueue } from "@/services/queries/expenses";
 import React, {
   createContext,
@@ -33,6 +33,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoggedIn, setIsLoggedIn] = useState(false); // TODO: should we do this synchronously?
   const [isLoading, setIsLoading] = useState(true);
   const [authInfo, setAuthInfo] = useState<TeamAuthInfo | undefined>();
+
+  // load current auth info on launch
+  useEffect(() => {
+    const loadAuth = async () => {
+      try {
+        const info = await getCurrentTeamAuthInfo();
+        setAuthInfo(info || undefined);
+        setIsLoggedIn(!!info);
+      } catch (error) {
+        logger.error("Failed to load auth info on startup", error);
+        setIsLoggedIn(false);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadAuth();
+  }, []);
 
   const logout = useCallback(async () => {
     try {
@@ -73,17 +91,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setAuthInfo(authInfo);
     setIsLoggedIn(true);
     setIsLoading(false);
-  }, []);
-
-  // load current auth info on launch
-  useEffect(() => {
-    getCurrentTeamAuthInfo().then((info) => {
-      if (info) {
-        setAuthInfo(info);
-        setIsLoggedIn(true);
-      }
-      setIsLoading(false);
-    });
   }, []);
 
   useEffect(() => {
