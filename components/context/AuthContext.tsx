@@ -79,18 +79,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setIsLoading(true);
 
     try {
-      await clearExpenseQueue();
-    } catch {
-      // Ignore errors
-    } finally {
-      queryClient.clear(); // Clear all cached queries from memory
-      await reactQueryPersister.removeClient(); // Clear persisted cache from storage
-    }
+      // clear out existing data first
+      await Promise.all([
+        clearExpenseQueue().catch(() => {}), // Ignore errors
+        queryClient.clear(),
+        reactQueryPersister.removeClient(),
+      ]);
 
-    await setOrUpdateUserAuthInfo(authInfo);
-    setAuthInfo(authInfo);
-    setIsLoggedIn(true);
-    setIsLoading(false);
+      // now persist our new auth info
+      await setOrUpdateUserAuthInfo(authInfo);
+
+      // all good, update state
+      setAuthInfo(authInfo);
+      setIsLoggedIn(true);
+    } catch (error) {
+      logger.error("Login failed", error);
+      setIsLoggedIn(false);
+      setAuthInfo(undefined);
+      throw error; // rethrow, no coming back from this
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
 
   useEffect(() => {
