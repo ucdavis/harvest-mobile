@@ -1,10 +1,11 @@
 import { DefaultTheme, ThemeProvider } from "@react-navigation/native";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
+import * as SplashScreen from "expo-splash-screen";
 import "react-native-reanimated";
 
 import { AutoSyncManager } from "@/components/AutoSyncManager";
-import { AuthProvider } from "@/components/context/AuthContext";
+import { AuthProvider, useAuth } from "@/components/context/AuthContext";
 import { AuthGuard } from "@/components/context/AuthGuard";
 import { ExpenseProvider } from "@/components/context/ExpenseContext";
 import { QueryContext } from "@/components/context/QueryContext";
@@ -16,8 +17,12 @@ import "../global.css";
 import { QrScanButton } from "@/components/ui/QrScanButton";
 import { Colors } from "@/constants/Colors";
 import { toastConfig } from "@/toast.config";
-import React from "react";
+import React, { useEffect } from "react";
 import Toast from "react-native-toast-message";
+
+SplashScreen.preventAutoHideAsync().catch(() => {
+  // SplashScreen might already be prevented from auto hiding; ignore errors
+});
 
 Sentry.init({
   dsn: "https://fab598815739ee48f41e03c092212c08@o4507619154657280.ingest.us.sentry.io/4510064547332096",
@@ -131,11 +136,30 @@ export default Sentry.wrap(function RootLayout() {
   return (
     <QueryContext>
       <AuthProvider>
-        <ExpenseProvider>
-          <AutoSyncManager />
-          <RootLayoutNav />
-        </ExpenseProvider>
+        <AppReadyGate>
+          <ExpenseProvider>
+            <AutoSyncManager />
+            <RootLayoutNav />
+          </ExpenseProvider>
+        </AppReadyGate>
       </AuthProvider>
     </QueryContext>
   );
 });
+
+function AppReadyGate({ children }: { children: React.ReactNode }) {
+  const { isLoggedIn } = useAuth();
+  const authReady = isLoggedIn !== null;
+
+  useEffect(() => {
+    if (authReady) {
+      SplashScreen.hideAsync().catch(() => {});
+    }
+  }, [authReady]);
+
+  if (!authReady) {
+    return null;
+  }
+
+  return <>{children}</>;
+}
