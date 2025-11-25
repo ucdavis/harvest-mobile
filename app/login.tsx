@@ -1,16 +1,12 @@
 import { useAuth } from "@/components/context/AuthContext";
-import { closeDb } from "@/lib/db/client";
-import { logger } from "@/lib/logger";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Redirect } from "expo-router";
-import * as SecureStore from "expo-secure-store";
 import * as WebBrowser from "expo-web-browser";
 import { Alert, Image, Text, TouchableOpacity, View } from "react-native";
 
 WebBrowser.maybeCompleteAuthSession(); // needed to close the auth popup
 
 export default function LoginScreen() {
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, clearAllData } = useAuth();
 
   if (isLoggedIn) {
     return <Redirect href="/" />;
@@ -34,30 +30,14 @@ export default function LoginScreen() {
           style: "destructive",
           onPress: async () => {
             try {
-              logger.info("User initiated app data clear");
-
-              // Close database connection
-              await closeDb().catch((e) =>
-                logger.warn("Failed to close DB", e)
-              );
-
-              // Clear SecureStore (auth tokens and link codes)
-              await SecureStore.deleteItemAsync("userAuthInfo").catch(() => {});
-              await SecureStore.deleteItemAsync("currentTeam").catch(() => {});
-              await SecureStore.deleteItemAsync("completedLinkCodes").catch(
-                () => {}
-              );
-
-              // Clear AsyncStorage (React Query cache, etc)
-              await AsyncStorage.clear();
+              await clearAllData();
 
               Alert.alert(
                 "Data Cleared",
                 "All app data has been cleared. Please restart the app.",
                 [{ text: "OK" }]
               );
-            } catch (error) {
-              logger.error("Failed to clear app data", error);
+            } catch {
               Alert.alert(
                 "Error",
                 "Failed to clear some data. Please try uninstalling the app.",

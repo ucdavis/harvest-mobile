@@ -1,4 +1,6 @@
 import {
+  clearAllData,
+  clearDataOnFreshInstall,
   getCurrentTeamAuthInfo,
   removeCurrentTeamAuthInfo,
   setOrUpdateUserAuthInfo,
@@ -19,10 +21,14 @@ import {
 } from "../../services/api";
 import { queryClient, reactQueryPersister } from "./queryClient";
 
+// Get app version from package.json
+const APP_VERSION = require("../../../package.json").version;
+
 interface AuthContextType {
   isLoggedIn: boolean | null; // null meaning we don't know yet
   login: (authInfo: TeamAuthInfo) => Promise<void>;
   logout: () => Promise<void>;
+  clearAllData: () => Promise<void>;
   isLoading: boolean;
   authInfo?: TeamAuthInfo;
 }
@@ -38,9 +44,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const loadAuth = async () => {
       try {
-        const info = await getCurrentTeamAuthInfo();
-        setAuthInfo(info || undefined);
-        setIsLoggedIn(!!info);
+        // Check for fresh install and clear data if needed
+        const wasCleared = await clearDataOnFreshInstall(APP_VERSION);
+
+        if (wasCleared) {
+          logger.info("Data cleared on fresh install, user needs to log in");
+          setIsLoggedIn(false);
+          setAuthInfo(undefined);
+        } else {
+          // Load existing auth info
+          const info = await getCurrentTeamAuthInfo();
+          setAuthInfo(info || undefined);
+          setIsLoggedIn(!!info);
+        }
       } catch (error) {
         logger.error("Failed to load auth info on startup", error);
         setIsLoggedIn(false);
@@ -72,6 +88,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } finally {
       queryClient.clear(); // Clear all cached queries from memory
       await reactQueryPersister.removeClient(); // Clear persisted cache from storage
+    }
+  }, []);
+
+  const clearAll = useCallback(async () => {
+    try {
+      await clearAllData();
+
+      // Reset state
+      setAuthInfo(undefined);
+      setIsLoggedIn(false);
+      setIsLoading(false);
+      setUser(null);
+
+      // Clear query cache
+      queryClient.clear();
+      await reactQueryPersister.removeClient();
+    } catch (error) {
+      logger.error("Failed to clear all data in AuthContext", error);
+      throw error;
     }
   }, []);
 
@@ -114,7 +149,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ isLoggedIn, login, logout, isLoading, authInfo }}
+      value={{
+        isLoggedIn,
+        login,
+        logout,
+        clearAllData: clearAll,
+        isLoading,
+        authInfo,
+      }}
     >
       {children}
     </AuthContext.Provider>

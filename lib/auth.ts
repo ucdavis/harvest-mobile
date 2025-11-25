@@ -1,8 +1,12 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as SecureStore from "expo-secure-store";
+import { closeDb } from "./db/client";
+import { logger } from "./logger";
 
 const USER_AUTH_INFO_KEY = "userAuthInfo";
 const CURRENT_TEAM_KEY = "currentTeam";
+const COMPLETED_LINK_CODES_KEY = "completedLinkCodes";
+const APP_VERSION_KEY = "appVersion";
 
 export type TeamAuthInfo = {
   token: string;
@@ -142,4 +146,74 @@ export const isLinkCodeCompleted = async (code: string): Promise<boolean> => {
  */
 export const markLinkCodeCompleted = async (code: string): Promise<void> => {
   await AsyncStorage.setItem(`link_completed_${code}`, "true");
+};
+
+/**
+ * Checks if this is a fresh install or version upgrade and clears data if needed.
+ * Should be called on app startup before loading any auth info.
+ *
+ * @param currentVersion - The current app version from package.json
+ * @returns A promise that resolves to true if data was cleared, false otherwise
+ */
+export const clearDataOnFreshInstall = async (
+  currentVersion: string
+): Promise<boolean> => {
+  try {
+    const storedVersion = await AsyncStorage.getItem(APP_VERSION_KEY);
+
+    // If no stored version, this is a fresh install or first time running this code
+    if (!storedVersion) {
+      logger.info("Fresh install detected, clearing all persisted data", {
+        currentVersion,
+      });
+      await clearAllData();
+      await AsyncStorage.setItem(APP_VERSION_KEY, currentVersion);
+      return true;
+    }
+
+    // Store current version for next launch
+    if (storedVersion !== currentVersion) {
+      logger.info("App version changed", {
+        oldVersion: storedVersion,
+        newVersion: currentVersion,
+      });
+      await AsyncStorage.setItem(APP_VERSION_KEY, currentVersion);
+    }
+
+    return false;
+  } catch (error) {
+    logger.error("Failed to check/clear data on fresh install", error);
+    return false;
+  }
+};
+
+/**
+ * Clears all app data including authentication info, cached data, and the local database.
+ * This is useful for troubleshooting corrupted state or providing a complete reset.
+ *
+ * @returns A promise that resolves when all data has been cleared.
+ */
+export const clearAllData = async (): Promise<void> => {
+  logger.info("Clearing all app data");
+
+  try {
+    // Close database connection
+    await closeDb().catch((e) => logger.warn("Failed to close DB", e));
+
+    // Clear SecureStore (auth tokens and link codes)
+    await SecureStore.deleteItemAsync(USER_AUTH_INFO_KEY).catch(() => {});
+    await SecureStore.deleteItemAsync(CURRENT_TEAM_KEY).catch(() => {});
+    await SecureStore.deleteItemAsync(COMPLETED_LINK_CODES_KEY).catch(() => {});
+
+    // Clear AsyncStorage (React Query cache, link codes, etc)
+    // Note: We preserve APP_VERSION_KEY so we don't trigger fresh install logic again
+    const keys = await AsyncStorage.getAllKeys();
+    const keysToRemove = keys.filter((key) => key !== APP_VERSION_KEY);
+    await AsyncStorage.multiRemove(keysToRemove);
+
+    logger.info("All app data cleared successfully");
+  } catch (error) {
+    logger.error("Failed to clear all app data", error);
+    throw error;
+  }
 };
