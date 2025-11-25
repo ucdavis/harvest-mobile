@@ -1,9 +1,11 @@
 import {
+  clearAllData,
   getCurrentTeamAuthInfo,
   removeCurrentTeamAuthInfo,
   setOrUpdateUserAuthInfo,
   TeamAuthInfo,
 } from "@/lib/auth";
+import { deleteAndRecreateDb } from "@/lib/db/client";
 import { logger, setUser } from "@/lib/logger";
 import { clearExpenseQueue } from "@/services/queries/expenses";
 import React, {
@@ -23,6 +25,7 @@ interface AuthContextType {
   isLoggedIn: boolean | null; // null meaning we don't know yet
   login: (authInfo: TeamAuthInfo) => Promise<void>;
   logout: () => Promise<void>;
+  clearAllData: () => Promise<void>;
   isLoading: boolean;
   authInfo?: TeamAuthInfo;
 }
@@ -102,6 +105,36 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
+  const clearAllDataFn = useCallback(async () => {
+    setIsLoading(true);
+
+    try {
+      // Clear all auth data from SecureStore and AsyncStorage
+      await clearAllData();
+
+      // Delete and recreate the database (handles corruption)
+      await deleteAndRecreateDb();
+
+      // Clear React Query cache from memory and persistence
+      queryClient.clear();
+      await reactQueryPersister.removeClient();
+
+      // Reset auth state
+      setAuthInfo(undefined);
+      setIsLoggedIn(false);
+      setUser(null);
+
+      logger.info(
+        "All data cleared successfully including database recreation"
+      );
+    } catch (error) {
+      logger.error("Failed to clear all data", error);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     registerOnUnauthorized(logout);
 
@@ -114,7 +147,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ isLoggedIn, login, logout, isLoading, authInfo }}
+      value={{
+        isLoggedIn,
+        login,
+        logout,
+        clearAllData: clearAllDataFn,
+        isLoading,
+        authInfo,
+      }}
     >
       {children}
     </AuthContext.Provider>

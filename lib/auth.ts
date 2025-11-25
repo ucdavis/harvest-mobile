@@ -143,3 +143,30 @@ export const isLinkCodeCompleted = async (code: string): Promise<boolean> => {
 export const markLinkCodeCompleted = async (code: string): Promise<void> => {
   await AsyncStorage.setItem(`link_completed_${code}`, "true");
 };
+
+/**
+ * Clears all authentication data from secure storage and async storage.
+ * This includes all team auth info, current team selection, and link code tracking.
+ * Useful for troubleshooting corrupted data or providing a fresh start.
+ *
+ * @returns A promise that resolves when all data has been cleared.
+ */
+export const clearAllData = async (): Promise<void> => {
+  try {
+    // Clear all SecureStore keys
+    await Promise.all([
+      SecureStore.deleteItemAsync(USER_AUTH_INFO_KEY).catch(() => {}),
+      SecureStore.deleteItemAsync(CURRENT_TEAM_KEY).catch(() => {}),
+    ]);
+
+    // Clear all AsyncStorage link_completed keys
+    const allKeys = await AsyncStorage.getAllKeys();
+    const linkKeys = allKeys.filter((key) => key.startsWith("link_completed_"));
+    if (linkKeys.length > 0) {
+      await AsyncStorage.multiRemove(linkKeys);
+    }
+  } catch (error) {
+    console.error("Failed to clear all auth data", error);
+    throw error;
+  }
+};

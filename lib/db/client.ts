@@ -56,6 +56,34 @@ export async function closeDb(): Promise<void> {
   initPromise = null;
 }
 
+/**
+ * Deletes the database file and reinitializes it with a fresh schema.
+ * Use this to recover from database corruption or to completely reset the local database.
+ *
+ * @returns A promise that resolves when the database has been deleted and recreated.
+ */
+export async function deleteAndRecreateDb(): Promise<void> {
+  try {
+    // Close the database connection if open
+    await closeDb();
+
+    // Delete the database file
+    await SQLite.deleteDatabaseAsync(DB_NAME);
+
+    logger.info("Database deleted successfully", { dbName: DB_NAME });
+
+    // Reinitialize the database with fresh schema
+    await getDb();
+
+    logger.info("Database recreated successfully", { dbName: DB_NAME });
+  } catch (error) {
+    logger.error("Failed to delete and recreate database", error, {
+      dbName: DB_NAME,
+    });
+    throw error;
+  }
+}
+
 // --- Migrations --------------------------------------------------------------
 
 // 1-based schema version = migrations.length
