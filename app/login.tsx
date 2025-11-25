@@ -27,7 +27,7 @@ export default function LoginScreen() {
     <View className="flex-1 p-4">
       <TouchableOpacity
         onPress={() => router.push("/about")}
-        className="absolute right-4 rounded-full bg-harvest/90 px-3 py-2"
+        className="absolute right-4 rounded-full bg-harvest/90 px-2 py-2"
         style={{ top: insets.top + 12, zIndex: 10 }}
         accessibilityRole="button"
         accessibilityLabel="About this app"
