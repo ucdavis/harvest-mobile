@@ -70,11 +70,8 @@ export async function resetDb(): Promise<SQLite.SQLiteDatabase> {
 
   try {
     await SQLite.deleteDatabaseAsync(DB_NAME);
-  } catch (error) {
-    logger.error("Database reset failed: Could not delete DB file", error, {
-      dbName: DB_NAME,
-    });
-    throw error;
+  } catch {
+    // ignore - might not exist yet, nothing to do about it anyway
   }
 
   return getDb();

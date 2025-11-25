@@ -47,7 +47,7 @@ export default function AboutScreen() {
               await clearAllData();
               Alert.alert(
                 "Reset complete",
-                "Local data cleared. Sign in again to continue."
+                "Local data cleared. Close the about page and sign in to continue."
               );
             } catch (error) {
               logger.error("About: clearAllData failed", error);
