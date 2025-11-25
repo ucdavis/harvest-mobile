@@ -9,7 +9,6 @@ export function AboutCloseButton() {
     <HeaderButton
       accessibilityLabel="Close About"
       onPress={() => router.back()}
-      style={{ marginRight: 4 }}
     >
       <XMarkIcon size={22} color="#fff" />
     </HeaderButton>
