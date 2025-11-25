@@ -1,5 +1,5 @@
 import Constants from "expo-constants";
-import { useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import {
   Alert,
   Linking,
@@ -13,7 +13,12 @@ import {
   ArrowTopRightOnSquareIcon,
 } from "react-native-heroicons/outline";
 
+import { clearAllData } from "@/lib/app";
+import { logger } from "@/lib/logger";
+
 export default function AboutScreen() {
+  const [isResetting, setIsResetting] = useState(false);
+
   const { appName, appVersion } = useMemo(() => {
     const name = Constants.expoConfig?.name || "Harvest Mobile";
     const version = Constants.expoConfig?.version || "Unknown version";
@@ -24,12 +29,40 @@ export default function AboutScreen() {
     };
   }, []);
 
-  const handleResetPress = () => {
+  const handleResetPress = useCallback(() => {
+    if (isResetting) return;
+
     Alert.alert(
-      "Reset coming soon",
-      "This button will wipe local app data when troubleshooting. It is a placeholder for now."
+      "Reset app data",
+      "This will erase cached data, local auth, and the offline database. Continue?",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Reset",
+          style: "destructive",
+          onPress: async () => {
+            setIsResetting(true);
+
+            try {
+              await clearAllData();
+              Alert.alert(
+                "Reset complete",
+                "Local data cleared. Sign in again to continue."
+              );
+            } catch (error) {
+              logger.error("About: clearAllData failed", error);
+              Alert.alert(
+                "Reset failed",
+                "We couldn't clear local data. Please try again."
+              );
+            } finally {
+              setIsResetting(false);
+            }
+          },
+        },
+      ]
     );
-  };
+  }, [isResetting]);
 
   const supportUrl = "https://caeshelp.ucdavis.edu/?appname=Harvest";
 
@@ -98,15 +131,18 @@ export default function AboutScreen() {
           className="flex-row items-center justify-between bg-merlot rounded-md mt-4 px-4 py-3"
           accessibilityRole="button"
           accessibilityLabel="Reset app data"
-          accessibilityHint="Currently a placeholder; will remove local data in a future update"
+          accessibilityHint="Clears local cache, auth, and offline database"
+          disabled={isResetting}
+          style={isResetting ? { opacity: 0.7 } : undefined}
+          activeOpacity={0.9}
         >
           <View className="flex-1 pr-3">
             <Text className="text-lg font-semibold text-white">
-              Reset App Data
+              {isResetting ? "Resetting..." : "Reset App Data"}
             </Text>
             <Text className="text-sm text-white/80">
-              Placeholder only. This will erase stored data and reload the app
-              once implemented.
+              Clears cached data and local auth - useful if you can&apos;t
+              login.
             </Text>
           </View>
           <ArrowPathIcon size={28} color="#fff" />
