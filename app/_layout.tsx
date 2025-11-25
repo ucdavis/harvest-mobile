@@ -8,7 +8,7 @@ import { AuthProvider, useAuth } from "@/components/context/AuthContext";
 import { AuthGuard } from "@/components/context/AuthGuard";
 import { ExpenseProvider } from "@/components/context/ExpenseContext";
 import { QueryContext } from "@/components/context/QueryContext";
-import { useInitDb } from "@/hooks/useInitDb";
+import { useAppInit } from "@/lib/app";
 
 import * as Sentry from "@sentry/react-native";
 import "../global.css";
@@ -132,7 +132,7 @@ function RootLayoutNav() {
 }
 
 export default Sentry.wrap(function RootLayout() {
-  const { status } = useInitDb();
+  const { status } = useAppInit();
   const [loaded] = useFonts({
     ProximaNova: require("../assets/fonts/proximanova-regular.ttf"),
   });

@@ -1,7 +1,8 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { clearAllAuthData } from "@/lib/auth";
-import { resetDb } from "@/lib/db/client";
+import { getDb, resetDb } from "@/lib/db/client";
 import { logger } from "@/lib/logger";
 
 type ClearTask = {
@@ -10,6 +11,7 @@ type ClearTask = {
 };
 
 const INSTALL_FLAG_KEY = "install_flag";
+type AppInitStatus = "idle" | "initializing" | "ready" | "error";
 
 /**
  * Clear all locally persisted app data (DB, auth, AsyncStorage).
@@ -58,4 +60,45 @@ export async function resetOnFreshInstall(): Promise<void> {
     logger.error("resetOnFreshInstall: failed to set install flag", error);
     throw error;
   }
+}
+
+/**
+ * Initialize app persistent state (fresh-install wipe + DB ready).
+ */
+export function useAppInit() {
+  const [status, setStatus] = useState<AppInitStatus>("idle");
+  const [error, setError] = useState<unknown>(null);
+  const statusRef = useRef<AppInitStatus>("idle");
+
+  useEffect(() => {
+    statusRef.current = status;
+  }, [status]);
+
+  const init = useCallback(async () => {
+    if (
+      statusRef.current === "initializing" ||
+      statusRef.current === "ready"
+    ) {
+      return;
+    }
+
+    setStatus("initializing");
+    setError(null);
+
+    try {
+      await resetOnFreshInstall();
+      await getDb();
+      setStatus("ready");
+    } catch (err) {
+      logger.error("useAppInit: initialization failed", err);
+      setError(err);
+      setStatus("error");
+    }
+  }, []);
+
+  useEffect(() => {
+    void init();
+  }, [init]);
+
+  return { status, error, retry: init };
 }
