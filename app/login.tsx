@@ -1,7 +1,11 @@
 import { useAuth } from "@/components/context/AuthContext";
+import { closeDb } from "@/lib/db/client";
+import { logger } from "@/lib/logger";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Redirect } from "expo-router";
+import * as SecureStore from "expo-secure-store";
 import * as WebBrowser from "expo-web-browser";
-import { Image, Text, TouchableOpacity, View } from "react-native";
+import { Alert, Image, Text, TouchableOpacity, View } from "react-native";
 
 WebBrowser.maybeCompleteAuthSession(); // needed to close the auth popup
 
@@ -16,6 +20,53 @@ export default function LoginScreen() {
     await WebBrowser.openBrowserAsync(
       process.env.EXPO_PUBLIC_LOGIN_URL ||
         "https://harvest-test.azurewebsites.net/mobileToken"
+    );
+  };
+
+  const onClearDataPress = async () => {
+    Alert.alert(
+      "Clear All App Data",
+      "This will remove all stored data including login info, cached data, and the local database. This action cannot be undone.",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Clear Data",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              logger.info("User initiated app data clear");
+
+              // Close database connection
+              await closeDb().catch((e) =>
+                logger.warn("Failed to close DB", e)
+              );
+
+              // Clear SecureStore (auth tokens and link codes)
+              await SecureStore.deleteItemAsync("userAuthInfo").catch(() => {});
+              await SecureStore.deleteItemAsync("currentTeam").catch(() => {});
+              await SecureStore.deleteItemAsync("completedLinkCodes").catch(
+                () => {}
+              );
+
+              // Clear AsyncStorage (React Query cache, etc)
+              await AsyncStorage.clear();
+
+              Alert.alert(
+                "Data Cleared",
+                "All app data has been cleared. Please restart the app.",
+                [{ text: "OK" }]
+              );
+            } catch (error) {
+              logger.error("Failed to clear app data", error);
+              Alert.alert(
+                "Error",
+                "Failed to clear some data. Please try uninstalling the app.",
+                [{ text: "OK" }]
+              );
+            }
+          },
+        },
+      ]
     );
   };
 
@@ -39,6 +90,16 @@ export default function LoginScreen() {
           onPress={onLoginPress}
         >
           <Text className="harvest-button-text">Login with UC Davis</Text>
+        </TouchableOpacity>
+
+        {/* Troubleshooting button */}
+        <TouchableOpacity
+          className="border border-harvest rounded-lg py-3 px-6 mt-2"
+          onPress={onClearDataPress}
+        >
+          <Text className="text-harvest text-center font-semibold">
+            Troubleshooting: Clear All Data
+          </Text>
         </TouchableOpacity>
 
         <Image
