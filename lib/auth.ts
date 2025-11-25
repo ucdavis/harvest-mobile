@@ -1,11 +1,10 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as SecureStore from "expo-secure-store";
-import { closeDb } from "./db/client";
+import { closeDb, deleteDb } from "./db/client";
 import { logger } from "./logger";
 
 const USER_AUTH_INFO_KEY = "userAuthInfo";
 const CURRENT_TEAM_KEY = "currentTeam";
-const COMPLETED_LINK_CODES_KEY = "completedLinkCodes";
 const APP_VERSION_KEY = "appVersion";
 
 export type TeamAuthInfo = {
@@ -192,28 +191,103 @@ export const clearDataOnFreshInstall = async (
  * This is useful for troubleshooting corrupted state or providing a complete reset.
  *
  * @returns A promise that resolves when all data has been cleared.
+ * @throws Error if any critical operation fails
  */
 export const clearAllData = async (): Promise<void> => {
-  logger.info("Clearing all app data");
+  logger.info("Clearing all app data", {
+    action: "clearAppData",
+    source: "auth.clearAllData",
+  });
+
+  const errors: { key: string; error: unknown }[] = [];
 
   try {
-    // Close database connection
-    await closeDb().catch((e) => logger.warn("Failed to close DB", e));
+    // 1. Close and delete database
+    try {
+      await closeDb();
+      logger.info("Database connection closed", { action: "clearAppData" });
+    } catch (error) {
+      logger.warn("Failed to close DB", { action: "clearAppData", error });
+      errors.push({ key: "closeDb", error });
+    }
 
-    // Clear SecureStore (auth tokens and link codes)
-    await SecureStore.deleteItemAsync(USER_AUTH_INFO_KEY).catch(() => {});
-    await SecureStore.deleteItemAsync(CURRENT_TEAM_KEY).catch(() => {});
-    await SecureStore.deleteItemAsync(COMPLETED_LINK_CODES_KEY).catch(() => {});
+    try {
+      await deleteDb();
+      logger.info("Database file deleted", { action: "clearAppData" });
+    } catch (error) {
+      logger.error("Failed to delete database file", error, {
+        action: "clearAppData",
+        critical: true,
+      });
+      errors.push({ key: "deleteDb", error });
+    }
 
-    // Clear AsyncStorage (React Query cache, link codes, etc)
-    // Note: We preserve APP_VERSION_KEY so we don't trigger fresh install logic again
-    const keys = await AsyncStorage.getAllKeys();
-    const keysToRemove = keys.filter((key) => key !== APP_VERSION_KEY);
-    await AsyncStorage.multiRemove(keysToRemove);
+    // 2. Clear SecureStore (don't swallow errors)
+    // Note: Link completion keys are stored in AsyncStorage, not SecureStore
+    const secureStoreKeys = [
+      { key: USER_AUTH_INFO_KEY, name: "userAuthInfo" },
+      { key: CURRENT_TEAM_KEY, name: "currentTeam" },
+    ];
 
-    logger.info("All app data cleared successfully");
+    for (const { key, name } of secureStoreKeys) {
+      try {
+        await SecureStore.deleteItemAsync(key);
+        logger.info(`SecureStore key cleared: ${name}`, {
+          action: "clearAppData",
+          key: name,
+        });
+      } catch (error) {
+        logger.warn(`Failed to clear SecureStore key: ${name}`, {
+          action: "clearAppData",
+          key: name,
+          error,
+        });
+        errors.push({ key: name, error });
+      }
+    }
+
+    // 3. Clear AsyncStorage
+    try {
+      const keys = await AsyncStorage.getAllKeys();
+      const keysToRemove = keys.filter((key) => key !== APP_VERSION_KEY);
+      await AsyncStorage.multiRemove(keysToRemove);
+      logger.info("AsyncStorage cleared", {
+        action: "clearAppData",
+        keysCleared: keysToRemove.length,
+      });
+    } catch (error) {
+      logger.error("Failed to clear AsyncStorage", error, {
+        action: "clearAppData",
+        critical: true,
+      });
+      errors.push({ key: "AsyncStorage", error });
+    }
+
+    // If any errors occurred, throw to indicate partial failure
+    if (errors.length > 0) {
+      logger.error("Clear all data completed with errors", undefined, {
+        action: "clearAppData",
+        errorCount: errors.length,
+        failedKeys: errors.map((e) => e.key),
+      });
+      throw new Error(
+        `Failed to clear ${errors.length} item(s): ${errors.map((e) => e.key).join(", ")}`
+      );
+    }
+
+    logger.info("All app data cleared successfully", {
+      action: "clearAppData",
+    });
   } catch (error) {
-    logger.error("Failed to clear all app data", error);
+    // Re-throw if it's already our error with context
+    if (error instanceof Error && error.message.startsWith("Failed to clear")) {
+      throw error;
+    }
+
+    // Otherwise wrap it
+    logger.error("Failed to clear all app data", error, {
+      action: "clearAppData",
+    });
     throw error;
   }
 };

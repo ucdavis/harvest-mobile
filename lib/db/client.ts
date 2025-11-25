@@ -1,4 +1,5 @@
 import { logger } from "@/lib/logger";
+import * as FileSystem from "expo-file-system";
 import * as SQLite from "expo-sqlite";
 
 let dbInstance: SQLite.SQLiteDatabase | null = null;
@@ -54,6 +55,36 @@ export async function closeDb(): Promise<void> {
   }
   dbInstance = null;
   initPromise = null;
+}
+
+/**
+ * Deletes the SQLite database file from disk.
+ * The database connection must be closed before calling this function.
+ *
+ * @throws Error if the database file cannot be deleted
+ */
+export async function deleteDb(): Promise<void> {
+  if (dbInstance) {
+    throw new Error("Database must be closed before deletion");
+  }
+
+  const dbPath = `${FileSystem.documentDirectory}SQLite/${DB_NAME}`;
+
+  try {
+    const fileInfo = await FileSystem.getInfoAsync(dbPath);
+
+    if (fileInfo.exists) {
+      await FileSystem.deleteAsync(dbPath, { idempotent: true });
+      logger.info("Database file deleted", { dbPath });
+    } else {
+      logger.info("Database file does not exist, nothing to delete", {
+        dbPath,
+      });
+    }
+  } catch (error) {
+    logger.error("Failed to delete database file", error, { dbPath });
+    throw error;
+  }
 }
 
 // --- Migrations --------------------------------------------------------------
