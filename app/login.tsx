@@ -1,12 +1,16 @@
 import { useAuth } from "@/components/context/AuthContext";
-import { Redirect } from "expo-router";
+import { Redirect, useRouter } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
 import { Image, Text, TouchableOpacity, View } from "react-native";
+import { InformationCircleIcon } from "react-native-heroicons/outline";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 WebBrowser.maybeCompleteAuthSession(); // needed to close the auth popup
 
 export default function LoginScreen() {
   const { isLoggedIn } = useAuth();
+  const insets = useSafeAreaInsets();
+  const router = useRouter();
 
   if (isLoggedIn) {
     return <Redirect href="/" />;
@@ -21,6 +25,16 @@ export default function LoginScreen() {
 
   return (
     <View className="flex-1 p-4">
+      <TouchableOpacity
+        onPress={() => router.push("/about")}
+        className="absolute right-4 rounded-full bg-harvest/90 px-3 py-2"
+        style={{ top: insets.top + 12, zIndex: 10 }}
+        accessibilityRole="button"
+        accessibilityLabel="About this app"
+      >
+        <InformationCircleIcon size={22} color="#fff" />
+      </TouchableOpacity>
+
       <View className="flex-1 items-center justify-center">
         <Image
           source={require("../assets/images/studentfarmer.png")}

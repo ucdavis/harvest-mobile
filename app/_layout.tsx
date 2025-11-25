@@ -1,6 +1,5 @@
 import { DefaultTheme, ThemeProvider } from "@react-navigation/native";
 import { useFonts } from "expo-font";
-import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import "react-native-reanimated";
 
@@ -15,8 +14,10 @@ import * as Sentry from "@sentry/react-native";
 import "../global.css";
 
 import { QrScanButton } from "@/components/ui/QrScanButton";
+import { AboutCloseButton } from "@/components/ui/AboutCloseButton";
 import { Colors } from "@/constants/Colors";
 import { toastConfig } from "@/toast.config";
+import { Stack } from "expo-router";
 import React, { useEffect } from "react";
 import Toast from "react-native-toast-message";
 
@@ -69,7 +70,6 @@ function RootLayoutNav() {
             name="login"
             options={{
               headerShown: false,
-
             }}
           />
           <Stack.Screen name="applink" options={{ headerShown: false }} />
@@ -106,6 +106,15 @@ function RootLayoutNav() {
               presentation: "modal",
             }}
           />
+          <Stack.Screen
+            name="about"
+            options={{
+              title: "About",
+              presentation: "modal",
+              headerBackVisible: false,
+              headerRight: () => <AboutCloseButton />,
+            }}
+          />
           <Stack.Screen name="+not-found" />
         </Stack>
       </AuthGuard>
@@ -118,7 +127,6 @@ function RootLayoutNav() {
         keyboardOffset={24} // iOS: avoid the keyboard
         autoHide
       />
-
     </ThemeProvider>
   );
 }
