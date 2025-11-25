@@ -53,8 +53,9 @@ export default function AboutScreen() {
           {appName}
         </Text>
         <Text className="text-base text-primaryfont/80 mt-2">
-          Track project expenses quickly, stay in sync with your team, and keep
-          your field data clean while offline or on-site.
+          Track project expenses quickly and easily with Harvest Mobile, the
+          official app for UC Davis Harvest system. Log your hours, submit
+          expenses, and stay connected on the go.
         </Text>
 
         <View className="mt-4 space-y-2">
