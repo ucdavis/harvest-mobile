@@ -1,6 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as SecureStore from "expo-secure-store";
 
+// Secure storage is encrypted and persists across app reinstalls
 const USER_AUTH_INFO_KEY = "userAuthInfo";
 const CURRENT_TEAM_KEY = "currentTeam";
 
@@ -142,4 +143,17 @@ export const isLinkCodeCompleted = async (code: string): Promise<boolean> => {
  */
 export const markLinkCodeCompleted = async (code: string): Promise<void> => {
   await AsyncStorage.setItem(`link_completed_${code}`, "true");
+};
+
+/**
+ * Clears all authentication data from secure storage.
+ *
+ * This function removes both the user authentication information and current team data
+ * from the device's secure storage by deleting the associated keys.
+ *
+ * @returns A Promise that resolves when all authentication data has been cleared
+ */
+export const clearAllAuthData = async (): Promise<void> => {
+  await SecureStore.deleteItemAsync(USER_AUTH_INFO_KEY);
+  await SecureStore.deleteItemAsync(CURRENT_TEAM_KEY);
 };

@@ -56,6 +56,27 @@ export async function closeDb(): Promise<void> {
   initPromise = null;
 }
 
+export async function resetDb(): Promise<SQLite.SQLiteDatabase> {
+  // Finish any in-flight init to avoid deleting an open handle
+  if (initPromise) {
+    try {
+      await initPromise;
+    } catch {
+      // ignore init errors; we just need it to settle
+    }
+  }
+
+  await closeDb();
+
+  try {
+    await SQLite.deleteDatabaseAsync(DB_NAME);
+  } catch {
+    // ignore - might not exist yet, nothing to do about it anyway
+  }
+
+  return getDb();
+}
+
 // --- Migrations --------------------------------------------------------------
 
 // 1-based schema version = migrations.length

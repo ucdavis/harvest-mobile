@@ -12,7 +12,7 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
   }
 
   // Auth is determined, now check permissions
-  const isPublicRoute = ["login", "applink", "+not-found"].includes(
+  const isPublicRoute = ["login", "applink", "about", "+not-found"].includes(
     segments[0]
   );
 
