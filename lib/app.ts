@@ -40,6 +40,20 @@ export async function clearAllData(): Promise<void> {
   }
 }
 
+export async function setInstallFlag(): Promise<void> {
+  try {
+    await AsyncStorage.setItem(INSTALL_FLAG_KEY, "true");
+  } catch (error) {
+    logger.error("setInstallFlag: failed to set install flag", error);
+    throw error;
+  }
+}
+
+export async function resetAppState() {
+  await clearAllData();
+  await setInstallFlag();
+}
+
 /**
  * On a fresh install, wipe all persisted data once and mark completion so it only runs once.
  */
@@ -47,19 +61,9 @@ export async function resetOnFreshInstall(): Promise<void> {
   const alreadyReset = await AsyncStorage.getItem(INSTALL_FLAG_KEY);
   if (alreadyReset) return;
 
-  try {
-    await clearAllData();
-  } catch (error) {
-    logger.error("resetOnFreshInstall: clearAllData failed", error);
-    throw error;
-  }
+  await clearAllData();
 
-  try {
-    await AsyncStorage.setItem(INSTALL_FLAG_KEY, "true");
-  } catch (error) {
-    logger.error("resetOnFreshInstall: failed to set install flag", error);
-    throw error;
-  }
+  await setInstallFlag();
 }
 
 /**
@@ -75,10 +79,7 @@ export function useAppInit() {
   }, [status]);
 
   const init = useCallback(async () => {
-    if (
-      statusRef.current === "initializing" ||
-      statusRef.current === "ready"
-    ) {
+    if (statusRef.current === "initializing" || statusRef.current === "ready") {
       return;
     }
 

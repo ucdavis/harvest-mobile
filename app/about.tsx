@@ -13,7 +13,7 @@ import {
   ArrowTopRightOnSquareIcon,
 } from "react-native-heroicons/outline";
 
-import { clearAllData } from "@/lib/app";
+import { resetAppState } from "@/lib/app";
 import { logger } from "@/lib/logger";
 
 export default function AboutScreen() {
@@ -44,7 +44,7 @@ export default function AboutScreen() {
             setIsResetting(true);
 
             try {
-              await clearAllData();
+              await resetAppState();
               Alert.alert(
                 "Reset complete",
                 "Local data cleared. Close the about page and sign in to continue."
