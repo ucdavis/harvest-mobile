@@ -1,4 +1,4 @@
-import { router, useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams, useSegments } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import {
   Alert,
@@ -21,13 +21,15 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { getRateTypeColor, RateTypeIcon } from "@/components/ui/rateType";
 import { Colors } from "@/constants/Colors";
+import { usePathname } from "expo-router";
 
 export default function ExpenseDetailsScreen() {
-  const { rate: rateParam, projectId, projectName } = useLocalSearchParams<{
+  const { rate: rateParam, projectId, projectName, piName, from } = useLocalSearchParams<{
     rate: string;
     projectId: string;
     projectName: string;
-
+    piName: string;
+    from: string;
   }>();
 
   // Parse the rate from URL params
@@ -76,15 +78,13 @@ export default function ExpenseDetailsScreen() {
   };
   const quantityInputRef = useRef<TextInput>(null);
 
-  // Focus on quantity input when component mounts
-  useEffect(() => {
+useEffect(() => {
     const timer = setTimeout(() => {
       quantityInputRef.current?.focus();
     }, 100); // Small delay to ensure the component is fully mounted
 
     return () => clearTimeout(timer);
   }, []);
-
   // rate needs to be other and passthrough, but all passthrough rates are other so just check that
   const showDescriptionInput = rate?.isPassthrough || false;
 
@@ -131,10 +131,22 @@ export default function ExpenseDetailsScreen() {
     // Add expense to context
     addExpense(newExpense);
 
-    // Navigate back to addExpenses
+    if (from !== "dashboard") {
     router.dismiss(); // dismiss expenseDetails modal
     router.dismiss(); // dismiss rateSelect modal
-  };
+  } else {
+    // You're in Dashboard → ExpenseDetails
+    router.dismiss();
+    router.push({
+    pathname: "/addExpenses",
+    params: {
+      projectId,
+      projectName,
+      piName,
+    },
+  });
+  }
+};
 
   const getTotalCost = () => {
     const numericQuantity = parseFloat(quantity) || 0;

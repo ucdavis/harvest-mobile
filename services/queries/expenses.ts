@@ -1,7 +1,13 @@
 import { getDbOrThrow } from "@/lib/db/client";
-import { Expense, QueuedExpense } from "@/lib/expense";
+import { Expense, QueuedExpense, ExpenseCardInfo, getExpenseUniqueId } from "@/lib/expense";
+import { Project } from "@/lib/project";
 import { logger } from "@/lib/logger";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient, queryOptions} from "@tanstack/react-query";
+
+import { HOUR_IN_MS } from "@/components/context/queryClient";
+import { TeamAuthInfo } from "@/lib/auth";
+import { Rate } from "@/lib/expense";
+import { fetchFromApi } from "../api";
 
 // Insert expenses into the local database queue
 async function insertExpensesToDb(
@@ -155,3 +161,70 @@ export function useClearExpenseQueue() {
     },
   });
 }
+
+// Query functions to fetch recent expenses from harvest API
+async function fetchRecentExpensesFromApi(authInfo?: TeamAuthInfo) {
+  return fetchFromApi<Expense[]>("/api/mobile/recentexpenses", {}, authInfo);
+}
+
+export const recentExpensesApiQueryOptions = (authInfo?: TeamAuthInfo) =>
+  queryOptions({
+    queryKey: ["expenses", authInfo?.team, "recent"] as const,
+    queryFn: () => fetchRecentExpensesFromApi(authInfo),
+    staleTime: 5 * HOUR_IN_MS,
+    enabled: !!authInfo, // only run query if we have auth info
+  });
+
+export const useRecentExpenses = (authInfo?: TeamAuthInfo) => {
+  return useQuery(recentExpensesApiQueryOptions(authInfo));
+};
+
+export async function getRecentExpenseCardInfo(
+  expenses: Expense[],
+  authInfo?: TeamAuthInfo
+): Promise<ExpenseCardInfo[]> {
+  try {
+    const [rates, projects] = await Promise.all([
+      fetchFromApi<any[]>("/api/mobile/activerates", {}, authInfo),
+      fetchFromApi<any[]>("/api/mobile/projects", {}, authInfo),
+    ]);
+
+    const rateMap = new Map(rates.map((r) => [r.id, r]));
+    const projectMap = new Map(
+      projects.map((p) => [
+        p.id,
+        {
+          projectName: p.name,
+          piName: p.piName,
+        },
+      ])
+    );
+
+    return expenses.map((expense) => {
+      const rate = rateMap.get(expense.rateId);
+      const projectInfo = projectMap.get(expense.projectId);
+      return {
+        ...expense,
+        uniqueId: expense.uniqueId ?? getExpenseUniqueId(),
+        rateName: rate?.description ?? expense.description ?? "Unknown Rate",
+        rate, // <-- Return the entire rate object here
+        unit: rate?.unit ?? "",
+        projectName: projectInfo?.projectName ?? `Project #${expense.projectId}`,
+        piName: projectInfo?.piName ?? "Unknown PI",
+      };
+    });
+  } catch (error) {
+    console.error("Error mapping expense cards:", error);
+    return expenses.map((expense) => ({
+      ...expense,
+      uniqueId: expense.uniqueId ?? getExpenseUniqueId(),
+      rateName: expense.description ?? "Unknown Rate",
+      rate: undefined,
+      unit: "",
+      projectName: `Project #${expense.projectId}`,
+      piName: "",
+    }));
+  }
+}
+
+
