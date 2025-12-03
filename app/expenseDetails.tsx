@@ -15,6 +15,8 @@ import {
 
 import { ExclamationTriangleIcon } from "react-native-heroicons/solid";
 
+import Checkbox from 'expo-checkbox';
+
 import { useExpenses } from "@/components/context/ExpenseContext";
 import { createExpenseWithUniqueId, Rate } from "@/lib/expense";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -141,6 +143,7 @@ export default function ExpenseDetailsScreen() {
     return (numericQuantity * (rate?.price || 0)).toFixed(2);
   };
 
+  const [isChecked, setIsChecked] = useState(false);
   if (!rate) {
     return (
       <View className="flex-1 items-center justify-center bg-[#f8f9fa] p-8">
@@ -183,7 +186,7 @@ export default function ExpenseDetailsScreen() {
             </View>
             <View className="flex-1">
               <View
-                className="bg-white p-4 mb-2 border-b-2"
+                className="bg-white px-4 py-2 mb-2 border-b-2"
                 style={{ borderColor: getRateTypeColor(rate.type) }}
               >
                 <View className="flex-row items-center">
@@ -233,7 +236,7 @@ export default function ExpenseDetailsScreen() {
 
                 {/* Description Input */}
                 {showDescriptionInput && (
-                  <View className="mb-6">
+                  <View className="mb-2">
                     <Text className="text-sm font-semibold text-primaryfont/60 tracking-tight mb-2">
                       Description (required for passthrough)
                     </Text>
@@ -248,6 +251,20 @@ export default function ExpenseDetailsScreen() {
                     />
                   </View>
                 )}
+                <View className="flex-row items-center">
+                  <Text className="text-sm font-semibold text-primaryfont/60 mb-2">
+                    Markup
+                  </Text>
+
+                  <View className="mb-1 ms-2">
+                    <Checkbox
+                      value={isChecked}
+                      onValueChange={setIsChecked}
+                      color={isChecked ? Colors.primary : undefined}
+                      className="rounded border border-primaryborder"
+                    />
+                  </View>
+                </View>
               </View>
             </View>
           </View>
