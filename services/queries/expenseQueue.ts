@@ -22,6 +22,7 @@ async function insertExpensesToApi(
     quantity: expense.quantity,
     price: expense.price,
     uniqueId: expense.uniqueId,
+    markup: expense.markup,
   }));
 
   try {
