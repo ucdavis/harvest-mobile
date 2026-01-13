@@ -25,11 +25,12 @@ async function insertExpensesToDb(
           description, 
           quantity, 
           price, 
+          markup,
           uniqueId,
           status,
           createdDate,
           syncAttempts
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT(uniqueId) DO NOTHING;`, // ignore if duplicate
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT(uniqueId) DO NOTHING;`, // ignore if duplicate
           [
             expense.projectId,
             expense.rateId,
@@ -38,6 +39,7 @@ async function insertExpensesToDb(
             expense.description,
             expense.quantity,
             expense.price,
+            expense.markup ? 1 : 0,
             expense.uniqueId,
             "pending",
             createdDate,
