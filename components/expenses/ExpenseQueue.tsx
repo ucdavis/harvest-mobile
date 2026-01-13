@@ -1,4 +1,9 @@
+import { queryClient } from "@/components/context/queryClient";
 import { QueuedExpense } from "@/lib/expense";
+import {
+  MUTATION_KEY_SYNC_EXPENSES,
+  useSyncExpenseQueue,
+} from "@/services/queries/expenseQueue";
 import {
   useClearExpenseQueue,
   usePendingExpenses,
@@ -13,8 +18,6 @@ import {
   View,
 } from "react-native";
 import { ChevronRightIcon } from "react-native-heroicons/solid";
-import { useSyncExpenseQueue, MUTATION_KEY_SYNC_EXPENSES } from "@/services/queries/expenseQueue";
-import { queryClient } from "@/components/context/queryClient";
 
 interface ExpenseQueueProps {
   className?: string;
@@ -57,12 +60,12 @@ export default function ExpenseQueue({ className }: ExpenseQueueProps) {
     const isSyncing =
       queryClient.isMutating({
         mutationKey: [MUTATION_KEY_SYNC_EXPENSES],
-      }) > 0; 
+      }) > 0;
 
     if (!isSyncing) {
       syncExpenseQueueMutation.mutate();
     }
-};
+  };
 
   const handleClearQueue = () => {
     if (expenses.length === 0) return;
@@ -87,32 +90,29 @@ export default function ExpenseQueue({ className }: ExpenseQueueProps) {
   };
 
   return (
-    <View
-      className={`card ${className || ""}`}
-    >
+    <View className={`card ${className || ""}`}>
+      <View className="flex-row justify-between items-center mb-1">
+        <Text className="text-md uppercase font-bold text-harvest tracking-tight">
+          Expense Queue ({expenses.length})
+        </Text>
 
-     <View className="flex-row justify-between items-center mb-1">
-  <Text className="text-md uppercase font-bold text-harvest tracking-tight">
-    Expense Queue ({expenses.length})
-  </Text>
+        {expenses.length > 0 && (
+          <TouchableOpacity
+            onPress={handleSyncQueue}
+            className="flex-row bg-yellow-500 rounded-md mt-5 py-2 px-4 items-center"
+            disabled={syncExpenseQueueMutation.isPending}
+          >
+            <Text className="text-white text-sm font-medium">
+              {syncExpenseQueueMutation.isPending ? "Syncing..." : "Sync Queue"}
+            </Text>
+            <ChevronRightIcon size={16} color="white" />
+          </TouchableOpacity>
+        )}
+      </View>
 
-  {expenses.length > 0 && (
-    <TouchableOpacity
-      onPress={handleSyncQueue}
-      className="flex-row bg-yellow-500 rounded-md mt-5 py-2 px-4 items-center"
-      disabled={syncExpenseQueueMutation.isPending}
-    >
-      <Text className="text-white text-sm font-medium">
-        {syncExpenseQueueMutation.isPending ? "Syncing..." : "Sync Queue"}
+      <Text className="text-sm text-primaryfont/80 mb-2">
+        Showing expense sync status
       </Text>
-      <ChevronRightIcon size={16} color="white" />
-    </TouchableOpacity>
-  )}
-</View>
-
-<Text className="text-sm text-primaryfont/80 mb-2">
-  Showing expense sync status
-</Text>
 
       <ScrollView
         className="max-h-96"
@@ -160,6 +160,13 @@ export default function ExpenseQueue({ className }: ExpenseQueueProps) {
                   <Text className="text-sm text-gray-600">Quantity:</Text>
                   <Text className="text-sm text-gray-900">
                     {expense.quantity}
+                  </Text>
+                </View>
+
+                <View className="flex-row justify-between">
+                  <Text className="text-sm text-gray-600">Markup:</Text>
+                  <Text className="text-sm text-gray-900">
+                    {expense.markup ? "Yes" : "No"}
                   </Text>
                 </View>
 
@@ -225,22 +232,20 @@ export default function ExpenseQueue({ className }: ExpenseQueueProps) {
           ))
         )}
         {expenses.length > 0 && (
-        <TouchableOpacity
-          onPress={handleClearQueue}
-          className="flex-row bg-merlot rounded-md mt-5 justify-between py-2 px-4"
-          disabled={clearExpenseQueueMutation.isPending}
-        >
-          <Text className="text-white text-sm font-medium">
-            {clearExpenseQueueMutation.isPending
-              ? "Clearing..."
-              : "Clear All"}
-          </Text>
-          <ChevronRightIcon size={16} color="white" />
-        </TouchableOpacity>
-      )}
+          <TouchableOpacity
+            onPress={handleClearQueue}
+            className="flex-row bg-merlot rounded-md mt-5 justify-between py-2 px-4"
+            disabled={clearExpenseQueueMutation.isPending}
+          >
+            <Text className="text-white text-sm font-medium">
+              {clearExpenseQueueMutation.isPending
+                ? "Clearing..."
+                : "Clear All"}
+            </Text>
+            <ChevronRightIcon size={16} color="white" />
+          </TouchableOpacity>
+        )}
       </ScrollView>
     </View>
   );
 }
-
-
