@@ -22,7 +22,7 @@ async function insertExpensesToApi(
     quantity: expense.quantity,
     price: expense.price,
     uniqueId: expense.uniqueId,
-    markup: expense.markup,
+    markup: Boolean(Number(expense.markup)),
   }));
 
   try {
@@ -120,11 +120,37 @@ async function removeExpenseFromQueue(expenseId: number): Promise<void> {
 async function getPendingExpensesFromQueue(): Promise<QueuedExpense[]> {
   const db = getDbOrThrow();
 
-  const result = await db.getAllAsync<QueuedExpense>(
-    `SELECT * FROM expenses_queue WHERE status = 'pending' ORDER BY createdDate ASC`
+  // NOTE: SQLite stores booleans as integers (0/1). Also, column-name casing can
+  // vary across existing installs (e.g. `Markup` vs `markup`), so alias to a
+  // stable lowercase name and coerce to boolean.
+  const rows = await db.getAllAsync<
+    Omit<QueuedExpense, "markup"> & { markup: number | string | null }
+  >(
+    `SELECT
+      id,
+      projectId,
+      rateId,
+      type,
+      activity,
+      description,
+      quantity,
+      price,
+      uniqueId,
+      markup as markup,
+      status,
+      createdDate,
+      syncAttempts,
+      lastSyncAttempt,
+      errorMessage
+    FROM expenses_queue
+    WHERE status = 'pending'
+    ORDER BY createdDate ASC`
   );
 
-  return result;
+  return rows.map((row) => ({
+    ...row,
+    markup: Boolean(Number(row.markup)),
+  }));
 }
 
 /**
