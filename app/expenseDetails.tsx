@@ -48,6 +48,7 @@ export default function ExpenseDetailsScreen() {
   const [quantity, setQuantity] = useState("");
   const [description, setDescription] = useState("");
   const [markup, setMarkup] = useState(false);
+  const MARKUP_MULTIPLIER = 1.2;
 
   const handleQuantityChange = (value: string) => {
     // Allow empty string for clearing the input
@@ -91,6 +92,7 @@ export default function ExpenseDetailsScreen() {
   // rate needs to be other and passthrough, but all passthrough rates are other so just check that
   const showDescriptionInput = rate?.isPassthrough || false;
   const showMarkupInput = (rate?.type || "").toLowerCase() === "other";
+  const isMarkupApplied = showMarkupInput && markup;
 
   const handleCancel = () => {
     router.back();
@@ -143,7 +145,9 @@ export default function ExpenseDetailsScreen() {
 
   const getTotalCost = () => {
     const numericQuantity = parseFloat(quantity) || 0;
-    return (numericQuantity * (rate?.price || 0)).toFixed(2);
+    const baseTotal = numericQuantity * (rate?.price || 0);
+    const total = isMarkupApplied ? baseTotal * MARKUP_MULTIPLIER : baseTotal;
+    return total.toFixed(2);
   };
 
   if (!rate) {
@@ -302,6 +306,7 @@ export default function ExpenseDetailsScreen() {
             <View>
               <Text className="text-base font-semibold text-primaryfont/40 text-start">
                 {quantity || "0"} {rate.unit} × ${rate.price}
+                {isMarkupApplied ? " (+20%)" : ""}
               </Text>
               <Text className="text-lg font-extrabold text-harvest">
                 ${getTotalCost()}
