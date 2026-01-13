@@ -12,7 +12,7 @@ import {
 import {
   InformationCircleIcon,
   TrashIcon,
-  UserIcon
+  UserIcon,
 } from "react-native-heroicons/solid";
 
 import { useAuth } from "@/components/context/AuthContext";
@@ -27,8 +27,7 @@ import { useInsertExpenses } from "@/services/queries/expenses";
 
 import { getRateTypeColor, RateTypeIcon } from "@/components/ui/rateType";
 import { DocumentPlusIcon } from "react-native-heroicons/outline";
-import Toast from 'react-native-toast-message';
-
+import Toast from "react-native-toast-message";
 
 const showMoreProjectInfoButton = false; // false for now since workers can't see project details
 
@@ -52,13 +51,15 @@ export default function AddExpenseScreen() {
   }, [clearExpenses]); // Include clearExpenses in dependencies
 
   const handleAddExpenses = () => {
-    router.push({ pathname: "/rateSelect", params: { projectId, projectName, piName } });
+    router.push({
+      pathname: "/rateSelect",
+      params: { projectId, projectName, piName },
+    });
   };
 
   const handleDeleteExpense = (uniqueId: string) => {
     removeExpense(uniqueId);
   };
-
 
   const handleProjectInfo = async () => {
     const url = getProjectLink(projectId, auth.authInfo!);
@@ -78,14 +79,16 @@ export default function AddExpenseScreen() {
     }));
     insertExpensesMutation.mutate(expensesWithActivity, {
       onSuccess: () => {
-        // TODO: some kind of success message 
+        // TODO: some kind of success message
         Toast.show({
-          type: 'success',
-          text1: 'Expense(s) saved.',
+          type: "success",
+          text1: "Expense(s) saved.",
         });
         clearExpenses(); // clear local expenses
 
-        queryClient.invalidateQueries({ queryKey: ["rates", auth.authInfo?.team, "recent"] });
+        queryClient.invalidateQueries({
+          queryKey: ["rates", auth.authInfo?.team, "recent"],
+        });
         // invalidate the recent projects query to refresh recent projects
         queryClient.invalidateQueries({
           queryKey: ["projects", auth.authInfo?.team, "recent"],
@@ -105,16 +108,18 @@ export default function AddExpenseScreen() {
 
   return (
     <View className="flex-1">
-
       <View className="bg-white px-5 py-4 border-b border-primaryborder flex-row items-end justify-between">
         <View className="max-w-[80%]">
           <Text
             numberOfLines={2}
             ellipsizeMode="tail"
-            className="text-xl font-semibold text-harvest ">
+            className="text-xl font-semibold text-harvest "
+          >
             {projectName}
           </Text>
-          <Text className="text-md font-medium text-primaryfont"><UserIcon size={12} color={Colors.primaryfont} /> {piName}</Text>
+          <Text className="text-md font-medium text-primaryfont">
+            <UserIcon size={12} color={Colors.primaryfont} /> {piName}
+          </Text>
         </View>
         <View>
           <Text className="text-sm uppercase font-bold text-primaryfont/70 tracking-tight">
@@ -126,14 +131,11 @@ export default function AddExpenseScreen() {
             <InformationCircleIcon size={24} color={Colors.icon} />
           </TouchableOpacity>
         )}
-
       </View>
       <ScrollView
         className="flex-1 px-4 py-4"
         showsVerticalScrollIndicator={false}
       >
-
-
         <View className="card">
           <Text className="text-md uppercase font-bold text-harvest tracking-tight">
             Notes
@@ -184,7 +186,8 @@ export default function AddExpenseScreen() {
                       {item.rate?.description}
                     </Text>
                     <Text className="text-base text-primaryfont/70 font-semibold">
-                      {item.quantity} {item.rate?.unit} @ ${item.price}
+                      {item.quantity} {item.rate?.unit} @ ${item.price}{" "}
+                      {item.markup ? "(+20%)" : ""}
                     </Text>
                   </View>
                 </View>
@@ -203,7 +206,9 @@ export default function AddExpenseScreen() {
             className="flex-row bg-harvest rounded-md mt-5 justify-between py-2 px-4"
             onPress={handleAddExpenses}
           >
-            <Text className="text-base text-white font-bold pt-0.5">Add expense</Text>
+            <Text className="text-base text-white font-bold pt-0.5">
+              Add expense
+            </Text>
             <DocumentPlusIcon size={24} color="white" />
           </TouchableOpacity>
         </View>

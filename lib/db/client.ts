@@ -143,6 +143,26 @@ const migrations: Migration[] = [
     }
   },
 
+  // V3: add markup column
+  async function migrateToV3(tx: Tx) {
+    try {
+      const cols =
+        (await tx.getAllAsync<{ name: string }>(
+          "PRAGMA table_info(expenses_queue)"
+        )) ?? [];
+      const hasMarkup = cols.some((c) => c.name.toLowerCase() === "markup");
+      if (!hasMarkup) {
+        await tx.execAsync(`
+          ALTER TABLE expenses_queue
+          ADD COLUMN markup INTEGER NOT NULL DEFAULT 0;
+        `);
+      }
+    } catch (error) {
+      logger.error("Migration V3 failed: Could not add markup column", error);
+      throw error;
+    }
+  },
+
   // add new migrations below
 ];
 

@@ -22,6 +22,7 @@ async function insertExpensesToApi(
     quantity: expense.quantity,
     price: expense.price,
     uniqueId: expense.uniqueId,
+    markup: Boolean(Number(expense.markup)),
   }));
 
   try {
@@ -119,22 +120,54 @@ async function removeExpenseFromQueue(expenseId: number): Promise<void> {
 async function getPendingExpensesFromQueue(): Promise<QueuedExpense[]> {
   const db = getDbOrThrow();
 
-  const result = await db.getAllAsync<QueuedExpense>(
-    `SELECT * FROM expenses_queue WHERE status = 'pending' ORDER BY createdDate ASC`
+  // NOTE: SQLite stores booleans as integers (0/1). Also, column-name casing can
+  // vary across existing installs (e.g. `Markup` vs `markup`), so alias to a
+  // stable lowercase name and coerce to boolean.
+  const rows = await db.getAllAsync<
+    Omit<QueuedExpense, "markup"> & { markup: number | string | null }
+  >(
+    `SELECT
+      id,
+      projectId,
+      rateId,
+      type,
+      activity,
+      description,
+      quantity,
+      price,
+      uniqueId,
+      markup as markup,
+      status,
+      createdDate,
+      syncAttempts,
+      lastSyncAttempt,
+      errorMessage
+    FROM expenses_queue
+    WHERE status = 'pending'
+    ORDER BY createdDate ASC`
   );
 
-  return result;
+  return rows.map((row) => ({
+    ...row,
+    markup: Boolean(Number(row.markup)),
+  }));
 }
 
 /**
  * Helper function for backoff logic
  */
-function shouldAttemptSync(syncAttempts: number, lastSyncAttempt: string | null | undefined): boolean {
+function shouldAttemptSync(
+  syncAttempts: number,
+  lastSyncAttempt: string | null | undefined
+): boolean {
   if (syncAttempts >= 5) return false;
   if (!lastSyncAttempt) return true;
   const now = Date.now();
   const last = new Date(lastSyncAttempt).getTime();
-  const minWait = Math.min(60 * 1000 * Math.pow(2, syncAttempts - 1), 60 * 60 * 1000); // 1, 2, 4, 8, 16 minutes
+  const minWait = Math.min(
+    60 * 1000 * Math.pow(2, syncAttempts - 1),
+    60 * 60 * 1000
+  ); // 1, 2, 4, 8, 16 minutes
   return now - last >= minWait;
 }
 
@@ -153,17 +186,24 @@ async function syncAllPendingExpenses(): Promise<void> {
     for (const expense of pendingExpenses) {
       if (expense.syncAttempts >= 5) {
         if (typeof expense.id === "number") {
-          logger.error("Expense permanently failed after 5 attempts, removing", { expenseId: expense.id });
+          logger.error(
+            "Expense permanently failed after 5 attempts, removing",
+            { expenseId: expense.id }
+          );
           await removeExpenseFromQueue(expense.id);
         } else {
-          logger.error("Expense missing id, cannot remove from queue", { expense });
+          logger.error("Expense missing id, cannot remove from queue", {
+            expense,
+          });
         }
       }
     }
 
     // Determine which expenses are eligible for sync based on backoff logic
     const syncableExpenses = pendingExpenses.filter(
-      (e) => e.syncAttempts < 5 && shouldAttemptSync(e.syncAttempts, e.lastSyncAttempt)
+      (e) =>
+        e.syncAttempts < 5 &&
+        shouldAttemptSync(e.syncAttempts, e.lastSyncAttempt)
     );
     if (syncableExpenses.length === 0) {
       return;
@@ -201,7 +241,9 @@ async function syncAllPendingExpenses(): Promise<void> {
           "pending",
           JSON.stringify(res.errors) || "Unknown error"
         );
-        logger.info("Updated syncAttempts for expense", { expenseId: expense.id });
+        logger.info("Updated syncAttempts for expense", {
+          expenseId: expense.id,
+        });
         failureCount++;
         logger.warn("Expense sync failed", {
           expenseId: expense.id,

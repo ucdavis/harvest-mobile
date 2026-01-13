@@ -10,7 +10,7 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  View
+  View,
 } from "react-native";
 
 import { ExclamationTriangleIcon } from "react-native-heroicons/solid";
@@ -23,11 +23,14 @@ import { getRateTypeColor, RateTypeIcon } from "@/components/ui/rateType";
 import { Colors } from "@/constants/Colors";
 
 export default function ExpenseDetailsScreen() {
-  const { rate: rateParam, projectId, projectName } = useLocalSearchParams<{
+  const {
+    rate: rateParam,
+    projectId,
+    projectName,
+  } = useLocalSearchParams<{
     rate: string;
     projectId: string;
     projectName: string;
-
   }>();
 
   // Parse the rate from URL params
@@ -42,9 +45,10 @@ export default function ExpenseDetailsScreen() {
   // for positioning submit button
   const insets = useSafeAreaInsets();
 
-
   const [quantity, setQuantity] = useState("");
   const [description, setDescription] = useState("");
+  const [markup, setMarkup] = useState(false);
+  const MARKUP_MULTIPLIER = 1.2;
 
   const handleQuantityChange = (value: string) => {
     // Allow empty string for clearing the input
@@ -87,6 +91,8 @@ export default function ExpenseDetailsScreen() {
 
   // rate needs to be other and passthrough, but all passthrough rates are other so just check that
   const showDescriptionInput = rate?.isPassthrough || false;
+  const showMarkupInput = (rate?.type || "").toLowerCase() === "other";
+  const isMarkupApplied = showMarkupInput && markup;
 
   const handleCancel = () => {
     router.back();
@@ -126,6 +132,7 @@ export default function ExpenseDetailsScreen() {
       projectId: Number(projectId),
       rateId: rate.id,
       rate,
+      markup: showMarkupInput ? markup : false,
     });
 
     // Add expense to context
@@ -138,7 +145,9 @@ export default function ExpenseDetailsScreen() {
 
   const getTotalCost = () => {
     const numericQuantity = parseFloat(quantity) || 0;
-    return (numericQuantity * (rate?.price || 0)).toFixed(2);
+    const baseTotal = numericQuantity * (rate?.price || 0);
+    const total = isMarkupApplied ? baseTotal * MARKUP_MULTIPLIER : baseTotal;
+    return total.toFixed(2);
   };
 
   if (!rate) {
@@ -164,14 +173,12 @@ export default function ExpenseDetailsScreen() {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       keyboardVerticalOffset={0}
     >
-
       <Pressable className="flex-1 bg-secondarybg" onPress={Keyboard.dismiss}>
         <ScrollView
           contentContainerStyle={{ flexGrow: 1 }}
           keyboardShouldPersistTaps="handled"
         >
           <View className="flex-1">
-
             <View className="modal-header">
               <TouchableOpacity onPress={handleCancel}>
                 <Text className="text-base text-white">Cancel</Text>
@@ -191,8 +198,11 @@ export default function ExpenseDetailsScreen() {
                     className="mr-3 h-8 w-8 items-center justify-center rounded-full"
                     style={{ backgroundColor: getRateTypeColor(rate.type) }}
                   >
-
-                    <RateTypeIcon type={rate.type} colorOverride="white" size={16} />
+                    <RateTypeIcon
+                      type={rate.type}
+                      colorOverride="white"
+                      size={16}
+                    />
                   </View>
                   <View className="flex-1">
                     <Text className="tertiary-label uppercase">
@@ -227,7 +237,6 @@ export default function ExpenseDetailsScreen() {
                     placeholderTextColor="#999"
                     keyboardType="decimal-pad"
                     selectTextOnFocus
-
                   />
                 </View>
 
@@ -247,6 +256,31 @@ export default function ExpenseDetailsScreen() {
                       textAlignVertical="top"
                     />
                   </View>
+                )}
+
+                {/* Markup Toggle (only for other) */}
+                {showMarkupInput && (
+                  <TouchableOpacity
+                    activeOpacity={0.8}
+                    onPress={() => setMarkup((v) => !v)}
+                    className="flex-row items-center"
+                    accessibilityRole="checkbox"
+                    accessibilityLabel="Markup"
+                    accessibilityState={{ checked: markup }}
+                  >
+                    <View
+                      className={`h-6 w-6 items-center justify-center rounded-md border border-primaryborder ${
+                        markup ? "bg-harvest" : "bg-white"
+                      }`}
+                    >
+                      {markup && (
+                        <Text className="text-white text-sm font-bold">✓</Text>
+                      )}
+                    </View>
+                    <Text className="ml-3 text-base font-semibold text-primaryfont">
+                      Markup
+                    </Text>
+                  </TouchableOpacity>
                 )}
               </View>
             </View>
@@ -268,17 +302,13 @@ export default function ExpenseDetailsScreen() {
           style={{ paddingBottom: (insets.bottom || 12) + 12 }}
           className="border-t border-primaryborder bg-white px-2 pt-1"
         >
-
           <View className="px-4 py-2 flex-row items-center justify-between mb-5">
             <View>
-
               <Text className="text-base font-semibold text-primaryfont/40 text-start">
                 {quantity || "0"} {rate.unit} × ${rate.price}
+                {isMarkupApplied ? " (+20%)" : ""}
               </Text>
-              <Text
-                className="text-lg font-extrabold text-harvest"
-
-              >
+              <Text className="text-lg font-extrabold text-harvest">
                 ${getTotalCost()}
               </Text>
             </View>
@@ -291,9 +321,7 @@ export default function ExpenseDetailsScreen() {
             </TouchableOpacity>
           </View>
         </View>
-
       </Pressable>
-
     </KeyboardAvoidingView>
   );
 }
