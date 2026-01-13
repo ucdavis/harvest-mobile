@@ -126,6 +126,7 @@ export default function ExpenseDetailsScreen() {
       projectId: Number(projectId),
       rateId: rate.id,
       rate,
+      markup: false,
     });
 
     // Add expense to context

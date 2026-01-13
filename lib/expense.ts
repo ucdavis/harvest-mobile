@@ -20,6 +20,7 @@ export type Expense = {
   projectId: number;
   rateId: string; // ties to specific rates
   rate?: Rate; // optional reference to the rate details
+  markup: boolean;
   uniqueId: string; // for tracking and sync
 };
 
