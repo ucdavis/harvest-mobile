@@ -9,6 +9,7 @@ import { AuthGuard } from "@/components/context/AuthGuard";
 import { ExpenseProvider } from "@/components/context/ExpenseContext";
 import { QueryContext } from "@/components/context/QueryContext";
 import { useAppInit } from "@/lib/app";
+import "@/lib/i18n";
 
 import * as Sentry from "@sentry/react-native";
 import "../global.css";

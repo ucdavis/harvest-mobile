@@ -1,4 +1,5 @@
 import { useAuth } from "@/components/context/AuthContext";
+import { t } from "@/lib/i18n";
 import { Redirect, useRouter } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
 import { Image, Text, TouchableOpacity, View } from "react-native";
@@ -52,7 +53,9 @@ export default function LoginScreen() {
           className="harvest-button my-6"
           onPress={onLoginPress}
         >
-          <Text className="harvest-button-text">Login with UC Davis</Text>
+          <Text className="harvest-button-text">
+            {t("auth.loginWithUCDavis") as string}
+          </Text>
         </TouchableOpacity>
 
         <Image
