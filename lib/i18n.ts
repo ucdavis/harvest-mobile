@@ -4,11 +4,13 @@ import { I18n } from "i18n-js";
 const translations = {
   en: {
     auth: {
+      welcomeToHarvest: "Welcome to Harvest",
       loginWithUCDavis: "Login with UC Davis",
     },
   },
   es: {
     auth: {
+      welcomeToHarvest: "Bienvenido a Harvest",
       loginWithUCDavis: "Iniciar sesión con UC Davis",
     },
   },

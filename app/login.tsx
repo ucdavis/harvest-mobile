@@ -46,7 +46,7 @@ export default function LoginScreen() {
 
       <View className="pb-6">
         <Text className="text-harvest text-center text-4xl font-bold">
-          Welcome to Harvest
+          {t("auth.welcomeToHarvest") as string}
         </Text>
 
         <TouchableOpacity
