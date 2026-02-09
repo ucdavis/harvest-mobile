@@ -76,19 +76,34 @@ export default function App() {
     );
   }
 
-  const onFakeScan = (testType: "rate32" | "project66" | "rate999") => {
+  const onFakeScan = (
+    testType: "rate32" | "project66" | "rate999" | "wrongEnv",
+  ) => {
     // Simulate scanning different QR codes for testing purposes
     let fakeData: string;
 
+    // Get current environment host from authInfo
+    const currentHost = authInfo?.apiBaseUrl
+      ? new URL(authInfo.apiBaseUrl).host
+      : "harvest.caes.ucdavis.edu";
+
     switch (testType) {
       case "rate32":
-        fakeData = `https://example.com/caes/rate/details/32`;
+        fakeData = `https://${currentHost}/caes/rate/details/32`;
         break;
       case "project66":
-        fakeData = `https://example.com/caes/project/details/66`;
+        fakeData = `https://${currentHost}/caes/project/details/66`;
         break;
       case "rate999":
-        fakeData = `https://example.com/caes/rate/details/999`;
+        fakeData = `https://${currentHost}/caes/rate/details/999`;
+        break;
+      case "wrongEnv":
+        // Simulate wrong environment for Apple testing
+        // Uses known test/production URLs to test host validation
+        const wrongHost = currentHost.includes("harvest-test")
+          ? "harvest.caes.ucdavis.edu"
+          : "harvest-test.azurewebsites.net";
+        fakeData = `https://${wrongHost}/caes/rate/details/32`;
         break;
     }
 
@@ -115,9 +130,28 @@ export default function App() {
       // https://<host>/<team>/project/details/<project_id>
       // or https://<host>/<team>/rate/details/<rate_id>
 
+      // Validate the host matches the current environment
+      const expectedHost = authInfo?.apiBaseUrl
+        ? new URL(authInfo.apiBaseUrl).host
+        : null;
+
+      if (expectedHost && url.host !== expectedHost) {
+        Alert.alert(
+          "Invalid QR Code Host",
+          `This QR code is from "${url.host}" but you're currently connected to "${expectedHost}". Please scan a QR code from the correct environment.`,
+          [
+            {
+              text: "Try Again",
+              onPress: () => setIsScanning(true),
+            },
+          ],
+        );
+        return;
+      }
+
       const pathSegments = url.pathname.split("/").filter(Boolean);
       const expectedType = pathSegments.find(
-        (segment) => segment.toLowerCase() === context.toLowerCase()
+        (segment) => segment.toLowerCase() === context.toLowerCase(),
       );
 
       if (!expectedType) {
@@ -131,7 +165,7 @@ export default function App() {
               text: tx("common.tryAgain"),
               onPress: () => setIsScanning(true),
             },
-          ]
+          ],
         );
         return;
       }
@@ -150,7 +184,7 @@ export default function App() {
               text: tx("common.tryAgain"),
               onPress: () => setIsScanning(true),
             },
-          ]
+          ],
         );
         return;
       }
@@ -176,7 +210,7 @@ export default function App() {
             text: tx("common.ok"),
             onPress: () => setIsScanning(true),
           },
-        ]
+        ],
       );
     }
   };
@@ -221,6 +255,15 @@ export default function App() {
               >
                 <Text className="text-white font-semibold">
                   {tx("qrScan.devRateScanBad999")}
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                className="bg-orange-600/90 py-3 px-4 rounded-lg items-center border border-white/20"
+                onPress={() => onFakeScan("wrongEnv")}
+              >
+                <Text className="text-white font-semibold">
+                  🚫 Wrong Environment Test
                 </Text>
               </TouchableOpacity>
             </View>
