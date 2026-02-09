@@ -2,6 +2,7 @@ import { useAuth } from "@/components/context/AuthContext";
 import { HapticTab } from "@/components/HapticTab";
 import { QrScanButton } from "@/components/ui/QrScanButton";
 import { Colors } from "@/constants/Colors";
+import { tx } from "@/lib/i18n";
 import { Redirect, Tabs } from "expo-router";
 import { Platform } from "react-native";
 import {
@@ -36,7 +37,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "Recent Projects",
+          title: tx("tabs.recentProjects"),
           tabBarIcon: ({ color }) => <ClockIcon size={28} color={color} />,
           headerRight: () => <QrScanButton context="project" />,
         }}
@@ -44,7 +45,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="projects"
         options={{
-          title: "All Projects",
+          title: tx("tabs.allProjects"),
           tabBarIcon: ({ color }) => (
             <ClipboardDocumentListIcon size={28} color={color} />
           ),
@@ -54,7 +55,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="settings"
         options={{
-          title: "Settings",
+          title: tx("tabs.settings"),
           tabBarIcon: ({ color }) => <CogIcon size={28} color={color} />,
         }}
       />

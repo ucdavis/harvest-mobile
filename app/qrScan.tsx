@@ -11,6 +11,7 @@ import { CameraIcon, ShieldCheckIcon } from "react-native-heroicons/outline";
 import { useAuth } from "@/components/context/AuthContext";
 import { useExpenses } from "@/components/context/ExpenseContext";
 import { Colors } from "@/constants/Colors";
+import { tx } from "@/lib/i18n";
 
 export type QRScanContext = "rate" | "project";
 
@@ -39,10 +40,10 @@ export default function App() {
               <CameraIcon size={64} color={Colors.harvest} />
             </View>
             <Text className="text-2xl font-bold text-primaryfont text-center mb-2">
-              Camera Access Required
+              {tx("qrScan.cameraAccessRequiredTitle")}
             </Text>
             <Text className="text-base text-primaryfont/60 text-center leading-6">
-              To scan QR codes, we need permission to access your camera
+              {tx("qrScan.cameraAccessRequiredBody")}
             </Text>
           </View>
 
@@ -54,10 +55,10 @@ export default function App() {
               </View>
               <View className="flex-1">
                 <Text className="font-semibold text-primaryfont mb-1">
-                  Privacy Protected
+                  {tx("qrScan.privacyProtectedTitle")}
                 </Text>
                 <Text className="text-sm text-primaryfont/60">
-                  Your camera is only used for scanning QR codes
+                  {tx("qrScan.privacyProtectedBody")}
                 </Text>
               </View>
             </View>
@@ -68,7 +69,7 @@ export default function App() {
             className="harvest-button w-full"
             onPress={requestPermission}
           >
-            <Text className="harvest-button-text">Continue</Text>
+            <Text className="harvest-button-text">{tx("qrScan.continueButton")}</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -121,11 +122,13 @@ export default function App() {
 
       if (!expectedType) {
         Alert.alert(
-          "Wrong QR Code Type",
-          `This QR code is not for ${context === "rate" ? "a rate" : "a project"}. Please scan a ${context} QR code.`,
+          tx("qrScan.wrongQrCodeTypeTitle"),
+          context === "rate"
+            ? tx("qrScan.wrongQrCodeTypeRateMessage")
+            : tx("qrScan.wrongQrCodeTypeProjectMessage"),
           [
             {
-              text: "Try Again",
+              text: tx("common.tryAgain"),
               onPress: () => setIsScanning(true),
             },
           ]
@@ -137,11 +140,14 @@ export default function App() {
       const teamInUrl = pathSegments[0];
       if (teamInUrl.toLowerCase() !== authInfo?.team?.toLowerCase()) {
         Alert.alert(
-          "Wrong Team",
-          `This QR code belongs to team "${teamInUrl}" but you're currently working with team "${authInfo?.team}". Please scan a QR code for your current team.`,
+          tx("qrScan.wrongTeamTitle"),
+          tx("qrScan.wrongTeamMessage", {
+            teamInUrl,
+            currentTeam: authInfo?.team ?? "",
+          }),
           [
             {
-              text: "Try Again",
+              text: tx("common.tryAgain"),
               onPress: () => setIsScanning(true),
             },
           ]
@@ -163,11 +169,11 @@ export default function App() {
       // something went wrong, probably an invalid URL, so let's let them scan again after showing an error
       setIsScanning(true);
       Alert.alert(
-        "Invalid QR Code",
-        "The scanned QR code is not valid. Please try again.",
+        tx("qrScan.invalidQrCodeTitle"),
+        tx("qrScan.invalidQrCodeMessage"),
         [
           {
-            text: "OK",
+            text: tx("common.ok"),
             onPress: () => setIsScanning(true),
           },
         ]
@@ -188,7 +194,7 @@ export default function App() {
         <View className="absolute bottom-16 w-full px-4">
           <View className="bg-black/70 p-4 rounded-xl">
             <Text className="text-white text-center font-bold mb-3">
-              Testing Buttons
+              {tx("qrScan.testingButtonsTitle")}
             </Text>
             <View className="space-y-2">
               <TouchableOpacity
@@ -196,7 +202,7 @@ export default function App() {
                 onPress={() => onFakeScan("rate32")}
               >
                 <Text className="text-white font-semibold">
-                  🔍 Rate Scan (ID: 32)
+                  {tx("qrScan.devRateScan32")}
                 </Text>
               </TouchableOpacity>
 
@@ -205,7 +211,7 @@ export default function App() {
                 onPress={() => onFakeScan("project66")}
               >
                 <Text className="text-white font-semibold">
-                  🏗️ Project Scan (ID: 66)
+                  {tx("qrScan.devProjectScan66")}
                 </Text>
               </TouchableOpacity>
 
@@ -214,7 +220,7 @@ export default function App() {
                 onPress={() => onFakeScan("rate999")}
               >
                 <Text className="text-white font-semibold">
-                  ❌ Rate Scan (Bad ID: 999)
+                  {tx("qrScan.devRateScanBad999")}
                 </Text>
               </TouchableOpacity>
             </View>

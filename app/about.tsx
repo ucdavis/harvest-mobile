@@ -14,10 +14,8 @@ import {
 } from "react-native-heroicons/outline";
 
 import { resetAppState } from "@/lib/app";
-import { t } from "@/lib/i18n";
+import { tx } from "@/lib/i18n";
 import { logger } from "@/lib/logger";
-
-const tx = (scope: string): string => t(scope) as string;
 
 export default function AboutScreen() {
   const [isResetting, setIsResetting] = useState(false);

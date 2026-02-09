@@ -6,6 +6,7 @@ import { useAuth } from "@/components/context/AuthContext";
 import { useExpenses } from "@/components/context/ExpenseContext";
 import { RatesList } from "@/components/rates/RatesList";
 import { Rate } from "@/lib/expense";
+import { tx } from "@/lib/i18n";
 import { useRates } from "@/services/queries/rates";
 
 export default function RateSelectScreen() {
@@ -43,11 +44,11 @@ export default function RateSelectScreen() {
         handleRateSelect(scannedRate);
       } else {
         Alert.alert(
-          "Rate Not Found",
-          `The scanned rate (ID: ${scannedRateId}) is not valid. Please scan a valid rate QR code or select a rate from the list.`,
+          tx("rateSelect.rateNotFoundTitle"),
+          tx("rateSelect.rateNotFoundMessage", { rateId: scannedRateId }),
           [
             {
-              text: "OK",
+              text: tx("common.ok"),
               onPress: () => setScannedRateId(null),
             },
           ]
