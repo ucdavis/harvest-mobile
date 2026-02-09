@@ -59,8 +59,7 @@ const translations = {
         resetCompleteMessage:
           "Local data cleared. Close the about page and sign in to continue.",
         resetFailedTitle: "Reset failed",
-        resetFailedMessage:
-          "We couldn't clear local data. Please try again.",
+        resetFailedMessage: "We couldn't clear local data. Please try again.",
         unableToOpenLinkTitle: "Unable to open link",
         unableToOpenLinkMessage: "Please try again or copy the URL.",
       },
@@ -224,7 +223,7 @@ const translations = {
   es: {
     common: {
       ok: "Aceptar",
-      tryAgain: "Intentar de nuevo",
+      tryAgain: "Reintentar",
       markupSuffix: " (+20%)",
     },
     auth: {
@@ -246,7 +245,7 @@ const translations = {
     },
     notFound: {
       screenDoesNotExist: "Esta pantalla no existe.",
-      goHomeScreen: "Ir a la pantalla principal",
+      goHomeScreen: "¡Ir a la pantalla de inicio!",
     },
     about: {
       defaultAppName: "Harvest Mobile",
@@ -254,7 +253,7 @@ const translations = {
       accessibilityLabel: "Acerca de Harvest Mobile",
       title: "Acerca de",
       description:
-        "Registra gastos de proyectos de forma rápida y sencilla con Harvest Mobile, la aplicación oficial del sistema Harvest de UC Davis. Registra tus horas, envía gastos y mantente conectado mientras te desplazas.",
+        "Lleva el control de los gastos del proyecto rápida y fácilmente con Harvest Mobile, la aplicación oficial del sistema Harvest de UC Davis. Registra tus horas, envía tus gastos y mantente conectado dondequiera que estés.",
       versionLabel: "Versión",
       supportLabel: "Soporte",
       supportLinkAccessibilityLabel:
@@ -277,13 +276,12 @@ const translations = {
         resetAction: "Restablecer",
         resetCompleteTitle: "Restablecimiento completado",
         resetCompleteMessage:
-          "Datos locales borrados. Cierra la página de información e inicia sesión para continuar.",
+          "Datos locales borrados. Cierra la pantalla «Acerca de» e inicia sesión para continuar.",
         resetFailedTitle: "Falló el restablecimiento",
         resetFailedMessage:
           "No pudimos borrar los datos locales. Inténtalo de nuevo.",
         unableToOpenLinkTitle: "No se puede abrir el enlace",
-        unableToOpenLinkMessage:
-          "Inténtalo de nuevo o copia la URL.",
+        unableToOpenLinkMessage: "Inténtalo de nuevo o copia la URL.",
       },
     },
     settings: {
@@ -293,7 +291,7 @@ const translations = {
       unknownTeam: "Equipo desconocido",
       currentUserTeamLine: "%{email} en el equipo %{team}",
       logoutAccessibilityLabel: "Cerrar sesión",
-      logoutButton: "Cerrar sesión de Harvest",
+      logoutButton: "Cerrar sesión en Harvest",
     },
     addExpenses: {
       notesTitle: "Notas",
@@ -302,27 +300,25 @@ const translations = {
       noExpensesYet: "Aún no hay gastos ingresados.",
       addExpenseButton: "Agregar gasto",
       submitButton: "Enviar",
-      savedToast: "Gasto(s) guardado(s).",
+      savedToast: "Gastos guardados.",
     },
     appLink: {
       authenticating: "Autenticando...",
-      missingCodeOrBaseUrl: "Falta code o baseUrl.",
+      missingCodeOrBaseUrl: "Falta el código o la URL base.",
       alreadyAuthenticatedRedirecting: "Ya autenticado. Redirigiendo...",
       linkingDevice: "Vinculando tu dispositivo...",
-      linkedSuccessfullyRedirecting: "Vinculación exitosa. Redirigiendo...",
+      linkedSuccessfullyRedirecting: "Vinculado correctamente. Redirigiendo...",
       authenticationFailed: "Falló la autenticación.",
       authenticationFailedTitle: "Falló la autenticación",
       unknownError: "Error desconocido",
       goBack: "Volver",
-      invalidBaseUrl: "baseUrl debe usar http(s)",
-      responseMissingApiKeyOrTeam:
-        "La respuesta no incluye apiKey o team.",
+      invalidBaseUrl: "La URL base debe comenzar con http(s).",
+      responseMissingApiKeyOrTeam: "La respuesta no incluye apiKey o equipo.",
       linkFailedWithStatus: "Falló la vinculación (%{status}). %{details}",
     },
     expenseDetails: {
       invalidQuantityTitle: "Cantidad inválida",
-      invalidQuantityMessage:
-        "Ingresa una cantidad válida mayor que 0.",
+      invalidQuantityMessage: "Ingresa una cantidad válida mayor que 0.",
       errorTitle: "Error",
       missingRateInfo: "Falta la información de la tarifa.",
       descriptionRequiredTitle: "Descripción requerida",
@@ -343,16 +339,15 @@ const translations = {
     qrScan: {
       cameraAccessRequiredTitle: "Se requiere acceso a la cámara",
       cameraAccessRequiredBody:
-        "Para escanear códigos QR, necesitamos permiso para usar tu cámara",
+        "Para escanear códigos QR, necesitamos permiso para acceder a tu cámara",
       privacyProtectedTitle: "Privacidad protegida",
-      privacyProtectedBody:
-        "Tu cámara solo se usa para escanear códigos QR",
+      privacyProtectedBody: "Tu cámara solo se usa para escanear códigos QR",
       continueButton: "Continuar",
       wrongQrCodeTypeTitle: "Tipo de código QR incorrecto",
       wrongQrCodeTypeRateMessage:
-        "Este código QR no es de una tarifa. Escanea un código QR de tarifa.",
+        "Este código QR no corresponde a una tarifa. Escanea un código QR de tarifa.",
       wrongQrCodeTypeProjectMessage:
-        "Este código QR no es de un proyecto. Escanea un código QR de proyecto.",
+        "Este código QR no corresponde a un proyecto. Escanea un código QR de proyecto.",
       wrongTeamTitle: "Equipo incorrecto",
       wrongTeamMessage:
         'Este código QR pertenece al equipo "%{teamInUrl}", pero actualmente estás trabajando con el equipo "%{currentTeam}". Escanea un código QR de tu equipo actual.',
@@ -372,7 +367,7 @@ const translations = {
     components: {
       expenseQueue: {
         titleWithCount: "Cola de gastos (%{count})",
-        syncQueue: "Sincronizar cola",
+        syncQueue: "Sincronizar la cola",
         syncing: "Sincronizando...",
         subtitle: "Mostrando estado de sincronización de gastos",
         emptyQueue: "No hay gastos en cola",
@@ -416,7 +411,7 @@ const translations = {
       },
       ratesList: {
         recentsHeader: "Recientes",
-        allHeader: "Todos",
+        allHeader: "Todas",
         searchPlaceholder: "Buscar tarifas, tipos o unidades...",
         clearSearchAccessibilityLabel: "Limpiar búsqueda",
         hideFiltersAccessibilityLabel: "Ocultar filtros",
@@ -428,7 +423,7 @@ const translations = {
         retry: "Reintentar",
         resultsFoundSingular: "%{count} resultado encontrado",
         resultsFoundPlural: "%{count} resultados encontrados",
-        filteredBy: "filtrado por %{type}",
+        filteredBy: "Filtrado por %{type}",
         noRatesFound: "No se encontraron tarifas",
         adjustSearchOrFilters:
           "Intenta ajustar tus términos de búsqueda o filtros",
@@ -436,9 +431,9 @@ const translations = {
         contactAdministrator: "Contacta a tu administrador",
       },
       ui: {
-        closeAboutAccessibilityLabel: "Cerrar Acerca de",
+        closeAboutAccessibilityLabel: "Cerrar «Acerca de»",
         editProjectAccessibilityLabel: "Editar proyecto",
-        qrScanAccessibilityLabel: "Escaneo QR",
+        qrScanAccessibilityLabel: "Escanear código QR",
         teamLabel: "Equipo: %{team}",
         piLabel: "PI: %{pi}",
         collapsibleExpand: "expandir",
@@ -456,7 +451,7 @@ i18n.locale = getLocales().at(0)?.languageCode ?? "en";
 
 export function t(
   scope: string,
-  options?: Record<string, unknown>
+  options?: Record<string, unknown>,
 ): string | unknown {
   return i18n.t(scope, options);
 }
