@@ -9,6 +9,7 @@ import { AuthGuard } from "@/components/context/AuthGuard";
 import { ExpenseProvider } from "@/components/context/ExpenseContext";
 import { QueryContext } from "@/components/context/QueryContext";
 import { useAppInit } from "@/lib/app";
+import { tx } from "@/lib/i18n";
 
 import * as Sentry from "@sentry/react-native";
 import "../global.css";
@@ -77,7 +78,7 @@ function RootLayoutNav() {
           <Stack.Screen
             name="addExpenses"
             options={{
-              title: "New Activity",
+              title: tx("navigation.newActivity"),
               presentation: "card",
               headerBackVisible: true,
             }}
@@ -85,7 +86,7 @@ function RootLayoutNav() {
           <Stack.Screen
             name="rateSelect"
             options={() => ({
-              title: "Select Rate",
+              title: tx("navigation.selectRate"),
               presentation: "card",
               headerBackVisible: true,
               headerRight: () => <QrScanButton context="rate" />,
@@ -94,7 +95,7 @@ function RootLayoutNav() {
           <Stack.Screen
             name="qrScan"
             options={{
-              title: "Scan QR Code",
+              title: tx("navigation.scanQrCode"),
               presentation: "card",
               headerBackVisible: true,
             }}
@@ -109,7 +110,7 @@ function RootLayoutNav() {
           <Stack.Screen
             name="about"
             options={{
-              title: "About",
+              title: tx("navigation.about"),
               presentation: "modal",
               headerBackVisible: false,
               headerRight: () => <AboutCloseButton />,

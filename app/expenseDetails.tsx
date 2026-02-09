@@ -17,6 +17,7 @@ import { ExclamationTriangleIcon } from "react-native-heroicons/solid";
 
 import { useExpenses } from "@/components/context/ExpenseContext";
 import { createExpenseWithUniqueId, Rate } from "@/lib/expense";
+import { tx } from "@/lib/i18n";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { getRateTypeColor, RateTypeIcon } from "@/components/ui/rateType";
@@ -103,21 +104,24 @@ export default function ExpenseDetailsScreen() {
 
     if (!quantity.trim() || isNaN(numericQuantity) || numericQuantity <= 0) {
       Alert.alert(
-        "Invalid Quantity",
-        "Please enter a valid quantity greater than 0."
+        tx("expenseDetails.invalidQuantityTitle"),
+        tx("expenseDetails.invalidQuantityMessage")
       );
       return;
     }
 
     if (!rate) {
-      Alert.alert("Error", "Rate information is missing.");
+      Alert.alert(
+        tx("expenseDetails.errorTitle"),
+        tx("expenseDetails.missingRateInfo")
+      );
       return;
     }
 
     if (showDescriptionInput && !description.trim()) {
       Alert.alert(
-        "Description Required",
-        "Please enter a description for this expense (required for passthrough)."
+        tx("expenseDetails.descriptionRequiredTitle"),
+        tx("expenseDetails.descriptionRequiredMessage")
       );
       return;
     }
@@ -155,13 +159,15 @@ export default function ExpenseDetailsScreen() {
       <View className="flex-1 items-center justify-center bg-[#f8f9fa] p-8">
         <ExclamationTriangleIcon size={48} color={Colors.merlot} />
         <Text className="mt-4 text-base text-neutral-600 text-center">
-          Rate information is missing
+          {tx("expenseDetails.missingRateInline")}
         </Text>
         <TouchableOpacity
           className="mt-4 bg-[#5e8a5e] px-6 py-3 rounded-lg"
           onPress={handleCancel}
         >
-          <Text className="text-white text-base font-semibold">Go Back</Text>
+          <Text className="text-white text-base font-semibold">
+            {tx("expenseDetails.goBack")}
+          </Text>
         </TouchableOpacity>
       </View>
     );
@@ -181,10 +187,12 @@ export default function ExpenseDetailsScreen() {
           <View className="flex-1">
             <View className="modal-header">
               <TouchableOpacity onPress={handleCancel}>
-                <Text className="text-base text-white">Cancel</Text>
+                <Text className="text-base text-white">
+                  {tx("expenseDetails.cancel")}
+                </Text>
               </TouchableOpacity>
               <Text className="text-xl font-semibold text-white">
-                Expense Details
+                {tx("expenseDetails.headerTitle")}
               </Text>
               <View className="w-[60px]" />
             </View>
@@ -226,14 +234,14 @@ export default function ExpenseDetailsScreen() {
                 {/* Quantity Input */}
                 <View className="mb-4">
                   <Text className="text-[12px] font-semibold text-neutral-500 tracking-tight mb-2">
-                    Quantity ({rate.unit})
+                    {tx("expenseDetails.quantityLabel", { unit: rate.unit })}
                   </Text>
                   <TextInput
                     ref={quantityInputRef}
                     className="bg-white rounded-lg p-2 text-[18px] font-semibold border border-primaryborder text-center"
                     value={quantity}
                     onChangeText={handleQuantityChange}
-                    placeholder="0.00"
+                    placeholder={tx("expenseDetails.quantityPlaceholder")}
                     placeholderTextColor="#999"
                     keyboardType="decimal-pad"
                     selectTextOnFocus
@@ -244,13 +252,13 @@ export default function ExpenseDetailsScreen() {
                 {showDescriptionInput && (
                   <View className="mb-6">
                     <Text className="text-sm font-semibold text-primaryfont/60 tracking-tight mb-2">
-                      Description (required for passthrough)
+                      {tx("expenseDetails.descriptionLabel")}
                     </Text>
                     <TextInput
                       className="bg-white rounded-lg p-4 text-base border border-primaryborder min-h-[80px]"
                       value={description}
                       onChangeText={setDescription}
-                      placeholder="Enter description (required)"
+                      placeholder={tx("expenseDetails.descriptionPlaceholder")}
                       placeholderTextColor="#999"
                       multiline
                       textAlignVertical="top"
@@ -265,7 +273,9 @@ export default function ExpenseDetailsScreen() {
                     onPress={() => setMarkup((v) => !v)}
                     className="flex-row items-center"
                     accessibilityRole="checkbox"
-                    accessibilityLabel="Markup"
+                    accessibilityLabel={tx(
+                      "expenseDetails.markupAccessibilityLabel"
+                    )}
                     accessibilityState={{ checked: markup }}
                   >
                     <View
@@ -278,7 +288,7 @@ export default function ExpenseDetailsScreen() {
                       )}
                     </View>
                     <Text className="ml-3 text-base font-semibold text-primaryfont">
-                      Markup
+                      {tx("expenseDetails.markupLabel")}
                     </Text>
                   </TouchableOpacity>
                 )}
@@ -306,7 +316,7 @@ export default function ExpenseDetailsScreen() {
             <View>
               <Text className="text-base font-semibold text-primaryfont/40 text-start">
                 {quantity || "0"} {rate.unit} × ${rate.price}
-                {isMarkupApplied ? " (+20%)" : ""}
+                {isMarkupApplied ? tx("common.markupSuffix") : ""}
               </Text>
               <Text className="text-lg font-extrabold text-harvest">
                 ${getTotalCost()}
@@ -317,7 +327,9 @@ export default function ExpenseDetailsScreen() {
               className="harvest-button w-[55%]"
               onPress={handleConfirm}
             >
-              <Text className="harvest-button-text">Add Expense</Text>
+              <Text className="harvest-button-text">
+                {tx("expenseDetails.addExpenseButton")}
+              </Text>
             </TouchableOpacity>
           </View>
         </View>

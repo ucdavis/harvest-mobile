@@ -1,6 +1,7 @@
 // note, lowercase to match route, must be exactly `harvestmobile://applink`
 import { useAuth } from "@/components/context/AuthContext";
 import { isLinkCodeCompleted, markLinkCodeCompleted } from "@/lib/auth";
+import { tx } from "@/lib/i18n";
 import { router, useLocalSearchParams } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
 import { useEffect, useRef, useState } from "react";
@@ -21,7 +22,7 @@ function normalizeBaseUrl(input: string) {
   // Ensure http/https, drop trailing slash, strip hash
   const u = new URL(input);
   if (!/^https?:$/.test(u.protocol)) {
-    throw new Error("baseUrl must be http(s)");
+    throw new Error(tx("appLink.invalidBaseUrl"));
   }
   u.hash = "";
   const noTrailing = (u.origin + u.pathname).replace(/\/$/, "");
@@ -34,7 +35,7 @@ export default function AppLinkScreen() {
     baseUrl?: string;
   }>();
   const { login } = useAuth(); // use auth context so we can notify it of login
-  const [status, setStatus] = useState("Authenticating…");
+  const [status, setStatus] = useState(tx("appLink.authenticating"));
   const [hasFailed, setHasFailed] = useState(false);
   const didRun = useRef(false); // avoid double-run in StrictMode
 
@@ -52,7 +53,7 @@ export default function AppLinkScreen() {
     (async () => {
       try {
         if (!code || !baseUrl) {
-          setStatus("Missing code or baseUrl.");
+          setStatus(tx("appLink.missingCodeOrBaseUrl"));
           setHasFailed(true);
           didRun.current = false; // Reset on failure to allow retry
           return;
@@ -63,7 +64,7 @@ export default function AppLinkScreen() {
         const alreadyCompleted = await isLinkCodeCompleted(codeStr);
 
         if (alreadyCompleted) {
-          setStatus("Already authenticated. Redirecting…");
+          setStatus(tx("appLink.alreadyAuthenticatedRedirecting"));
           router.replace("/");
           return;
         }
@@ -72,7 +73,7 @@ export default function AppLinkScreen() {
         const normalizedBase = normalizeBaseUrl(String(baseUrl));
 
         // Hit POST {baseUrl}/api/getapi/{code}
-        setStatus("Linking your device…");
+        setStatus(tx("appLink.linkingDevice"));
 
         timeoutId = setTimeout(() => controller.abort(), 12000); // 12s timeout
 
@@ -90,7 +91,10 @@ export default function AppLinkScreen() {
         if (!res.ok) {
           const text = await res.text().catch(() => "");
           throw new Error(
-            `Link failed (${res.status}). ${text?.slice(0, 200)}`
+            tx("appLink.linkFailedWithStatus", {
+              status: res.status,
+              details: text?.slice(0, 200) || "",
+            })
           );
         }
 
@@ -98,7 +102,7 @@ export default function AppLinkScreen() {
         const { apiKey, team } = data;
 
         if (!apiKey || !team) {
-          throw new Error("Response missing apiKey or team.");
+          throw new Error(tx("appLink.responseMissingApiKeyOrTeam"));
         }
 
         // Persist securely under auth-{team}
@@ -111,15 +115,18 @@ export default function AppLinkScreen() {
         // Mark this code as completed to prevent re-processing
         await markLinkCodeCompleted(codeStr);
 
-        setStatus("Linked successfully. Redirecting…");
+        setStatus(tx("appLink.linkedSuccessfullyRedirecting"));
 
         router.replace("/"); // nav to home, which is the index tab
       } catch (err: any) {
         if (unmounted) return;
-        setStatus("Authentication failed.");
+        setStatus(tx("appLink.authenticationFailed"));
         setHasFailed(true);
         didRun.current = false; // Reset on failure to allow retry
-        Alert.alert("Authentication failed", err?.message ?? "Unknown error");
+        Alert.alert(
+          tx("appLink.authenticationFailedTitle"),
+          err?.message ?? tx("appLink.unknownError")
+        );
       }
     })();
 
@@ -152,7 +159,9 @@ export default function AppLinkScreen() {
           }}
           onPress={() => router.replace("/")}
         >
-          <Text style={{ color: "white", fontWeight: "600" }}>Go Back</Text>
+          <Text style={{ color: "white", fontWeight: "600" }}>
+            {tx("appLink.goBack")}
+          </Text>
         </TouchableOpacity>
       )}
     </View>

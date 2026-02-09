@@ -21,6 +21,7 @@ import {
 import { RateTypeIcon, getRateTypeColor } from "@/components/ui/rateType";
 import { Colors } from "@/constants/Colors";
 import { Rate } from "@/lib/expense";
+import { tx } from "@/lib/i18n";
 import { XMarkIcon } from "react-native-heroicons/solid";
 
 type RatesListProps = {
@@ -86,10 +87,10 @@ export function RatesList({
 
   const listData = [
     ...(filteredRecents.length > 0
-      ? [{ header: "Recents" }, ...filteredRecents]
+      ? [{ header: tx("components.ratesList.recentsHeader") }, ...filteredRecents]
       : []),
     ...(allFilteredRates.length > 0
-      ? [{ header: "All" }, ...allFilteredRates]
+      ? [{ header: tx("components.ratesList.allHeader") }, ...allFilteredRates]
       : []),
   ];
 
@@ -159,7 +160,7 @@ export function RatesList({
         <MagnifyingGlassIcon size={20} color={Colors.icon} />
         <TextInput
           className="flex-1 text-lg leading-6 mx-2 text-primaryfont"
-          placeholder="Search rates, types, or units…"
+          placeholder={tx("components.ratesList.searchPlaceholder")}
           placeholderTextColor={Colors.icon}
           value={searchTerm}
           onChangeText={setSearchTerm}
@@ -170,7 +171,9 @@ export function RatesList({
             onPress={() => setSearchTerm("")}
             className="p-1 mr-1"
             accessibilityRole="button"
-            accessibilityLabel="Clear search"
+            accessibilityLabel={tx(
+              "components.ratesList.clearSearchAccessibilityLabel"
+            )}
           >
             <XMarkIcon size={20} color={Colors.icon} />
           </TouchableOpacity>
@@ -179,7 +182,11 @@ export function RatesList({
           onPress={() => setFiltersOpen((v) => !v)}
           className="p-1"
           accessibilityRole="button"
-          accessibilityLabel={filtersOpen ? "Hide filters" : "Show filters"}
+          accessibilityLabel={
+            filtersOpen
+              ? tx("components.ratesList.hideFiltersAccessibilityLabel")
+              : tx("components.ratesList.showFiltersAccessibilityLabel")
+          }
         >
           <AdjustmentsHorizontalIcon
             size={24}
@@ -227,9 +234,13 @@ export function RatesList({
                 onPress={() => setSelectedType(null)}
                 className="mr-2 rounded-full border border-primaryborder px-3 py-2"
                 accessibilityRole="button"
-                accessibilityLabel="Clear filter"
+                accessibilityLabel={tx(
+                  "components.ratesList.clearFilterAccessibilityLabel"
+                )}
               >
-                <Text className="text-sm text-primaryfont/80">Clear</Text>
+                <Text className="text-sm text-primaryfont/80">
+                  {tx("components.ratesList.clearFilter")}
+                </Text>
               </TouchableOpacity>
             )}
           </View>
@@ -246,7 +257,7 @@ export function RatesList({
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator size="large" color={Colors.harvest} />
           <Text className="mt-4 text-base text-primaryfont/80">
-            Loading rates...
+            {tx("components.ratesList.loadingRates")}
           </Text>
         </View>
       </View>
@@ -259,13 +270,15 @@ export function RatesList({
       <View className="flex-1 items-center justify-center p-6">
         <ExclamationTriangleIcon size={48} color={Colors.merlot} />
         <Text className="mt-4 text-center text-base text-primaryfont/80">
-          Failed to load rates
+          {tx("components.ratesList.failedToLoadRates")}
         </Text>
         <TouchableOpacity
           onPress={() => queryClient.refetchQueries({ queryKey })}
           className="mt-4 rounded-lg bg-[#5e8a5e] px-6 py-3"
         >
-          <Text className="text-base font-semibold text-white">Retry</Text>
+          <Text className="text-base font-semibold text-white">
+            {tx("components.ratesList.retry")}
+          </Text>
         </TouchableOpacity>
       </View>
     );
@@ -280,9 +293,18 @@ export function RatesList({
       {(searchTerm.length > 0 || selectedType) && (
         <View className="items-center mt-2">
           <Text className="text-sm text-primary-font/80">
-            {allFilteredRates.length} result
-            {allFilteredRates.length !== 1 ? "s" : ""} found
-            {selectedType ? ` • filtered by ${selectedType}` : ""}
+            {allFilteredRates.length === 1
+              ? tx("components.ratesList.resultsFoundSingular", {
+                  count: allFilteredRates.length,
+                })
+              : tx("components.ratesList.resultsFoundPlural", {
+                  count: allFilteredRates.length,
+                })}
+            {selectedType
+              ? ` • ${tx("components.ratesList.filteredBy", {
+                  type: selectedType,
+                })}`
+              : ""}
           </Text>
         </View>
       )}
@@ -292,20 +314,20 @@ export function RatesList({
           <View className="items-center justify-center py-16 px-5">
             <MagnifyingGlassIcon size={80} color={Colors.icon} />
             <Text className="text-lg font-semibold mt-4 text-center text-primaryfont/40">
-              No rates found
+              {tx("components.ratesList.noRatesFound")}
             </Text>
             <Text className="text-sm mt-2 text-center text-primaryfont/40">
-              Try adjusting your search terms or filters
+              {tx("components.ratesList.adjustSearchOrFilters")}
             </Text>
           </View>
         ) : (
           <View className="items-center justify-center py-16 px-5">
             <WrenchScrewdriverIcon size={80} color={Colors.icon} />
             <Text className="text-lg font-semibold mt-4 text-center text-primaryfont/40">
-              No rates available
+              {tx("components.ratesList.noRatesAvailable")}
             </Text>
             <Text className="text-sm mt-2 text-center text-primaryfont/40">
-              Contact your administrator
+              {tx("components.ratesList.contactAdministrator")}
             </Text>
           </View>
         )

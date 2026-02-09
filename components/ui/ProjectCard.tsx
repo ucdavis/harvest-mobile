@@ -1,4 +1,5 @@
 import { Colors } from "@/constants/Colors";
+import { tx } from "@/lib/i18n";
 import { Text, TouchableOpacity, View } from "react-native";
 import { PlusCircleIcon } from "react-native-heroicons/outline";
 import { UserIcon } from "react-native-heroicons/solid";
@@ -57,7 +58,7 @@ export function ProjectCard({
 
         <TouchableOpacity
           accessibilityRole="button"
-          accessibilityLabel="Edit project"
+          accessibilityLabel={tx("components.ui.editProjectAccessibilityLabel")}
           onPress={onEdit}
           className="p-2 rounded-lg active:bg-harvest/15"
         >

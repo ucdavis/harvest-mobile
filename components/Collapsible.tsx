@@ -1,4 +1,5 @@
 import { Colors } from "@/constants/Colors";
+import { tx } from "@/lib/i18n";
 import { PropsWithChildren, useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import { ChevronRightIcon } from "react-native-heroicons/outline";
@@ -15,7 +16,11 @@ export function Collapsible({ children, title }: CollapsibleProps) {
         onPress={() => setIsOpen((v) => !v)}
         activeOpacity={0.8}
         accessibilityRole="button"
-        accessibilityLabel={`${title} ${isOpen ? "collapse" : "expand"}`}
+        accessibilityLabel={`${title} ${
+          isOpen
+            ? tx("components.ui.collapsibleCollapse")
+            : tx("components.ui.collapsibleExpand")
+        }`}
       >
         <View
           className="mr-1"

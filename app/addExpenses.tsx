@@ -18,6 +18,7 @@ import {
 import { useAuth } from "@/components/context/AuthContext";
 import { useExpenses } from "@/components/context/ExpenseContext";
 import { queryClient } from "@/components/context/queryClient";
+import { tx } from "@/lib/i18n";
 import { getProjectLink } from "@/lib/project";
 import {
   MUTATION_KEY_SYNC_EXPENSES,
@@ -82,7 +83,7 @@ export default function AddExpenseScreen() {
         // TODO: some kind of success message
         Toast.show({
           type: "success",
-          text1: "Expense(s) saved.",
+          text1: tx("addExpenses.savedToast"),
         });
         clearExpenses(); // clear local expenses
 
@@ -138,11 +139,11 @@ export default function AddExpenseScreen() {
       >
         <View className="card">
           <Text className="text-md uppercase font-bold text-harvest tracking-tight">
-            Notes
+            {tx("addExpenses.notesTitle")}
           </Text>
           <TextInput
             className="border mt-5 border-primaryborder rounded-md p-3 text-base min-h-[60px] bg-gray-50"
-            placeholder="Add expense activity..."
+            placeholder={tx("addExpenses.activityPlaceholder")}
             placeholderTextColor="#999"
             value={activity}
             onChangeText={setActivity}
@@ -153,11 +154,11 @@ export default function AddExpenseScreen() {
 
         <View className="card">
           <Text className="text-md uppercase font-bold text-harvest tracking-tight">
-            Expenses
+            {tx("addExpenses.expensesTitle")}
           </Text>
           {expenses.length === 0 && (
             <Text className="text-primaryfont/80 mt-2">
-              No expenses entered yet.
+              {tx("addExpenses.noExpensesYet")}
             </Text>
           )}
 
@@ -187,7 +188,7 @@ export default function AddExpenseScreen() {
                     </Text>
                     <Text className="text-base text-primaryfont/70 font-semibold">
                       {item.quantity} {item.rate?.unit} @ ${item.price}{" "}
-                      {item.markup ? "(+20%)" : ""}
+                      {item.markup ? tx("common.markupSuffix") : ""}
                     </Text>
                   </View>
                 </View>
@@ -207,7 +208,7 @@ export default function AddExpenseScreen() {
             onPress={handleAddExpenses}
           >
             <Text className="text-base text-white font-bold pt-0.5">
-              Add expense
+              {tx("addExpenses.addExpenseButton")}
             </Text>
             <DocumentPlusIcon size={24} color="white" />
           </TouchableOpacity>
@@ -221,7 +222,7 @@ export default function AddExpenseScreen() {
           onPress={expenses.length > 0 ? handleSubmit : undefined}
           disabled={expenses.length === 0}
         >
-          <Text className="harvest-button-text">Submit</Text>
+          <Text className="harvest-button-text">{tx("addExpenses.submitButton")}</Text>
         </TouchableOpacity>
       </View>
     </View>

@@ -1,5 +1,6 @@
 import { useAuth } from "@/components/context/AuthContext";
 import ExpenseQueue from "@/components/expenses/ExpenseQueue";
+import { tx } from "@/lib/i18n";
 import { useUserInfo } from "@/services/queries/users";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
@@ -18,6 +19,8 @@ export default function LogoutScreen() {
   }, []);
 
   const userQuery = useUserInfo(authInfo);
+  const userEmail = userQuery.data?.user.email || tx("settings.loadingUser");
+  const team = userQuery.data?.teamSlug || tx("settings.unknownTeam");
 
   const onLogoutPress = useCallback(async () => {
     if (isLoggingOutRef.current) {
@@ -42,24 +45,23 @@ export default function LogoutScreen() {
     <View className="main">
       <View className="card">
         <Text className="text-md uppercase font-bold text-harvest tracking-tight">
-          User Details
+          {tx("settings.userDetailsTitle")}
         </Text>
         <Text className="text-lg font-semibold text-primaryfont">
-          Current User:
+          {tx("settings.currentUserLabel")}
         </Text>
         <Text className="text-lg text-primaryfont">
-          {userQuery.data?.user.email || "Loading User"} in team{" "}
-          {userQuery.data?.teamSlug || "Unknown Team"}
+          {tx("settings.currentUserTeamLine", { email: userEmail, team })}
         </Text>
         <TouchableOpacity
           onPress={onLogoutPress}
           className="harvest-button-icon"
           disabled={isLoggingOut}
           accessibilityRole="button"
-          accessibilityLabel="Logout"
+          accessibilityLabel={tx("settings.logoutAccessibilityLabel")}
           accessibilityState={{ disabled: isLoggingOut }}
         >
-          <Text className="harvest-button-text">Log out of Harvest</Text>
+          <Text className="harvest-button-text">{tx("settings.logoutButton")}</Text>
           <ArrowRightOnRectangleIcon size={24} color="#fff" />
         </TouchableOpacity>
       </View>
