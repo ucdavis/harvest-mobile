@@ -1,3 +1,4 @@
+import { tx } from "@/lib/i18n";
 import { Text, View } from "react-native";
 
 type ProjectCardProps = {
@@ -45,7 +46,7 @@ export function ProjectInfo({
               numberOfLines={1}
               ellipsizeMode="tail"
             >
-              PI: {piName}
+              {tx("components.ui.piLabel", { pi: piName })}
             </Text>
           ) : null}
         </View>

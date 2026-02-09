@@ -16,6 +16,7 @@ import {
 
 import { ProjectCard } from "@/components/ui/ProjectCard";
 import { Colors } from "@/constants/Colors";
+import { tx } from "@/lib/i18n";
 import { Project } from "@/lib/project";
 import { XMarkIcon } from "react-native-heroicons/solid";
 
@@ -82,7 +83,7 @@ export function ProjectsList({
           <MagnifyingGlassIcon size={20} color={Colors.icon} />
           <TextInput
             className="flex-1 text-lg mx-2 text-primaryfont"
-            placeholder="Search project IDs or PIs…"
+            placeholder={tx("components.projectsList.searchPlaceholder")}
             placeholderTextColor={Colors.icon}
             value={searchTerm}
             onChangeText={setSearchTerm}
@@ -96,7 +97,7 @@ export function ProjectsList({
         </View>
 
         <Text className="text-base text-primaryfont/70 p-4">
-          Loading projects...
+          {tx("components.projectsList.loadingProjects")}
         </Text>
       </View>
     );
@@ -109,7 +110,7 @@ export function ProjectsList({
         <MagnifyingGlassIcon size={20} color={Colors.icon} />
         <TextInput
           className="flex-1 mx-2 text-primaryfont text-lg leading-6"
-          placeholder="Search project IDs or PIs…"
+          placeholder={tx("components.projectsList.searchPlaceholder")}
           placeholderTextColor={Colors.icon}
           value={searchTerm}
           onChangeText={setSearchTerm}
@@ -129,7 +130,9 @@ export function ProjectsList({
           <TouchableOpacity
             className="p-1 mr-1"
             accessibilityRole="button"
-            accessibilityLabel="Clear search"
+            accessibilityLabel={tx(
+              "components.projectsList.clearSearchAccessibilityLabel"
+            )}
             onPress={() => setSearchTerm("")}
           >
             <XMarkIcon size={20} color={Colors.icon} />
@@ -141,8 +144,13 @@ export function ProjectsList({
       {searchTerm.length > 0 && (
         <View className="items-center mt-2">
           <Text className="text-sm text-primaryfont/80">
-            {filteredProjects.length} result
-            {filteredProjects.length !== 1 ? "s" : ""} found
+            {filteredProjects.length === 1
+              ? tx("components.projectsList.resultsFoundSingular", {
+                  count: filteredProjects.length,
+                })
+              : tx("components.projectsList.resultsFoundPlural", {
+                  count: filteredProjects.length,
+                })}
           </Text>
         </View>
       )}
@@ -165,20 +173,20 @@ export function ProjectsList({
         <View className="items-center justify-center py-16 px-5">
           <MagnifyingGlassIcon size={80} color={Colors.icon} />
           <Text className="text-lg font-semibold mt-4 text-center text-harvest">
-            No projects found
+            {tx("components.projectsList.noProjectsFound")}
           </Text>
           <Text className="mt-2 text-center text-primaryfont/80">
-            Try adjusting your search terms
+            {tx("components.projectsList.adjustSearchTerms")}
           </Text>
         </View>
       ) : (
         <View className="items-center justify-center py-16 px-5">
           <FolderPlusIcon size={80} color={Colors.icon} />
           <Text className="text-lg font-semibold mt-4 text-center text-primaryfont">
-            No projects yet
+            {tx("components.projectsList.noProjectsYet")}
           </Text>
           <Text className="mt-2 text-center text-primaryfont/80">
-            You can add recent projects by submitting an expense
+            {tx("components.projectsList.addRecentProjectsHint")}
           </Text>
         </View>
       )}

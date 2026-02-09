@@ -1,5 +1,6 @@
 import { queryClient } from "@/components/context/queryClient";
 import { QueuedExpense } from "@/lib/expense";
+import { tx } from "@/lib/i18n";
 import {
   MUTATION_KEY_SYNC_EXPENSES,
   useSyncExpenseQueue,
@@ -44,6 +45,21 @@ export default function ExpenseQueue({ className }: ExpenseQueueProps) {
     }
   };
 
+  const getStatusText = (status: QueuedExpense["status"]) => {
+    switch (status) {
+      case "pending":
+        return tx("components.expenseQueue.statusPending");
+      case "syncing":
+        return tx("components.expenseQueue.statusSyncing");
+      case "synced":
+        return tx("components.expenseQueue.statusSynced");
+      case "failed":
+        return tx("components.expenseQueue.statusFailed");
+    }
+
+    return "";
+  };
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleString();
   };
@@ -71,15 +87,17 @@ export default function ExpenseQueue({ className }: ExpenseQueueProps) {
     if (expenses.length === 0) return;
 
     Alert.alert(
-      "Clear Expense Queue",
-      `Are you sure you want to clear all ${expenses.length} expenses from the queue? This action cannot be undone.`,
+      tx("components.expenseQueue.clearAlertTitle"),
+      tx("components.expenseQueue.clearAlertMessage", {
+        count: expenses.length,
+      }),
       [
         {
-          text: "Cancel",
+          text: tx("components.expenseQueue.cancelAction"),
           style: "cancel",
         },
         {
-          text: "Clear",
+          text: tx("components.expenseQueue.clearAction"),
           style: "destructive",
           onPress: () => {
             clearExpenseQueueMutation.mutate();
@@ -93,7 +111,9 @@ export default function ExpenseQueue({ className }: ExpenseQueueProps) {
     <View className={`card ${className || ""}`}>
       <View className="flex-row justify-between items-center mb-1">
         <Text className="text-md uppercase font-bold text-harvest tracking-tight">
-          Expense Queue ({expenses.length})
+          {tx("components.expenseQueue.titleWithCount", {
+            count: expenses.length,
+          })}
         </Text>
 
         {expenses.length > 0 && (
@@ -103,7 +123,9 @@ export default function ExpenseQueue({ className }: ExpenseQueueProps) {
             disabled={syncExpenseQueueMutation.isPending}
           >
             <Text className="text-white text-sm font-medium">
-              {syncExpenseQueueMutation.isPending ? "Syncing..." : "Sync Queue"}
+              {syncExpenseQueueMutation.isPending
+                ? tx("components.expenseQueue.syncing")
+                : tx("components.expenseQueue.syncQueue")}
             </Text>
             <ChevronRightIcon size={16} color="white" />
           </TouchableOpacity>
@@ -111,7 +133,7 @@ export default function ExpenseQueue({ className }: ExpenseQueueProps) {
       </View>
 
       <Text className="text-sm text-primaryfont/80 mb-2">
-        Showing expense sync status
+        {tx("components.expenseQueue.subtitle")}
       </Text>
 
       <ScrollView
@@ -123,7 +145,7 @@ export default function ExpenseQueue({ className }: ExpenseQueueProps) {
         {expenses.length === 0 ? (
           <View className="p-4">
             <Text className="text-primaryfont/40 text-center">
-              No expenses in queue
+              {tx("components.expenseQueue.emptyQueue")}
             </Text>
           </View>
         ) : (
@@ -139,66 +161,86 @@ export default function ExpenseQueue({ className }: ExpenseQueueProps) {
                 <Text
                   className={`font-semibold ${getStatusColor(expense.status)}`}
                 >
-                  {expense.status.toUpperCase()}
+                  {getStatusText(expense.status)}
                 </Text>
               </View>
 
               <View className="space-y-1">
                 <View className="flex-row justify-between">
-                  <Text className="text-sm text-gray-600">Type:</Text>
+                  <Text className="text-sm text-gray-600">
+                    {tx("components.expenseQueue.typeLabel")}
+                  </Text>
                   <Text className="text-sm text-gray-900">{expense.type}</Text>
                 </View>
 
                 <View className="flex-row justify-between">
-                  <Text className="text-sm text-gray-600">Price:</Text>
+                  <Text className="text-sm text-gray-600">
+                    {tx("components.expenseQueue.priceLabel")}
+                  </Text>
                   <Text className="text-sm text-gray-900">
                     {formatPrice(expense.price)}
                   </Text>
                 </View>
 
                 <View className="flex-row justify-between">
-                  <Text className="text-sm text-gray-600">Quantity:</Text>
+                  <Text className="text-sm text-gray-600">
+                    {tx("components.expenseQueue.quantityLabel")}
+                  </Text>
                   <Text className="text-sm text-gray-900">
                     {expense.quantity}
                   </Text>
                 </View>
 
                 <View className="flex-row justify-between">
-                  <Text className="text-sm text-gray-600">Markup:</Text>
+                  <Text className="text-sm text-gray-600">
+                    {tx("components.expenseQueue.markupLabel")}
+                  </Text>
                   <Text className="text-sm text-gray-900">
-                    {expense.markup ? "Yes" : "No"}
+                    {expense.markup
+                      ? tx("components.expenseQueue.markupYes")
+                      : tx("components.expenseQueue.markupNo")}
                   </Text>
                 </View>
 
                 <View className="flex-row justify-between">
-                  <Text className="text-sm text-gray-600">Total:</Text>
+                  <Text className="text-sm text-gray-600">
+                    {tx("components.expenseQueue.totalLabel")}
+                  </Text>
                   <Text className="text-sm font-medium text-gray-900">
                     {formatPrice(expense.price * expense.quantity)}
                   </Text>
                 </View>
 
                 <View className="flex-row justify-between">
-                  <Text className="text-sm text-gray-600">Project ID:</Text>
+                  <Text className="text-sm text-gray-600">
+                    {tx("components.expenseQueue.projectIdLabel")}
+                  </Text>
                   <Text className="text-sm text-gray-900">
                     {expense.projectId}
                   </Text>
                 </View>
                 <View className="flex-row justify-between">
-                  <Text className="text-sm text-gray-600">Rate ID:</Text>
+                  <Text className="text-sm text-gray-600">
+                    {tx("components.expenseQueue.rateIdLabel")}
+                  </Text>
                   <Text className="text-sm text-gray-900">
                     {expense.rateId}
                   </Text>
                 </View>
 
                 <View className="flex-row justify-between">
-                  <Text className="text-sm text-gray-600">Created:</Text>
+                  <Text className="text-sm text-gray-600">
+                    {tx("components.expenseQueue.createdLabel")}
+                  </Text>
                   <Text className="text-sm text-gray-900">
                     {formatDate(expense.createdDate)}
                   </Text>
                 </View>
 
                 <View className="flex-row justify-between">
-                  <Text className="text-sm text-gray-600">Sync Attempts:</Text>
+                  <Text className="text-sm text-gray-600">
+                    {tx("components.expenseQueue.syncAttemptsLabel")}
+                  </Text>
                   <Text className="text-sm text-gray-900">
                     {expense.syncAttempts}
                   </Text>
@@ -206,7 +248,9 @@ export default function ExpenseQueue({ className }: ExpenseQueueProps) {
 
                 {expense.lastSyncAttempt && (
                   <View className="flex-row justify-between">
-                    <Text className="text-sm text-gray-600">Last Sync:</Text>
+                    <Text className="text-sm text-gray-600">
+                      {tx("components.expenseQueue.lastSyncLabel")}
+                    </Text>
                     <Text className="text-sm text-gray-900">
                       {formatDate(expense.lastSyncAttempt)}
                     </Text>
@@ -215,7 +259,9 @@ export default function ExpenseQueue({ className }: ExpenseQueueProps) {
 
                 {expense.errorMessage && (
                   <View className="mt-2">
-                    <Text className="text-sm text-gray-600">Error:</Text>
+                    <Text className="text-sm text-gray-600">
+                      {tx("components.expenseQueue.errorLabel")}
+                    </Text>
                     <Text className="text-sm text-red-600 mt-1">
                       {expense.errorMessage}
                     </Text>
@@ -224,7 +270,7 @@ export default function ExpenseQueue({ className }: ExpenseQueueProps) {
 
                 <View className="mt-2 pt-2 border-t border-gray-100">
                   <Text className="text-xs text-gray-500">
-                    ID: {expense.uniqueId}
+                    {tx("components.expenseQueue.idLabel")} {expense.uniqueId}
                   </Text>
                 </View>
               </View>
@@ -239,8 +285,8 @@ export default function ExpenseQueue({ className }: ExpenseQueueProps) {
           >
             <Text className="text-white text-sm font-medium">
               {clearExpenseQueueMutation.isPending
-                ? "Clearing..."
-                : "Clear All"}
+                ? tx("components.expenseQueue.clearing")
+                : tx("components.expenseQueue.clearAll")}
             </Text>
             <ChevronRightIcon size={16} color="white" />
           </TouchableOpacity>
