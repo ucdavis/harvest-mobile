@@ -23,6 +23,7 @@ const translations = {
     tabs: {
       recentProjects: "Recent Projects",
       allProjects: "All Projects",
+      expenses: "Expenses",
       settings: "Settings",
     },
     notFound: {
@@ -241,6 +242,7 @@ const translations = {
     tabs: {
       recentProjects: "Proyectos recientes",
       allProjects: "Todos los proyectos",
+      expenses: "Gastos",
       settings: "Configuración",
     },
     notFound: {

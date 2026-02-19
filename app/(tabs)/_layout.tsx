@@ -43,13 +43,12 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="projects"
+        name="expenses"
         options={{
-          title: tx("tabs.allProjects"),
+          title: tx("tabs.expenses"),
           tabBarIcon: ({ color }) => (
             <ClipboardDocumentListIcon size={28} color={color} />
           ),
-          headerRight: () => <QrScanButton context="project" />,
         }}
       />
       <Tabs.Screen
