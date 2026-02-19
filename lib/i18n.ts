@@ -21,8 +21,8 @@ const translations = {
       notFoundOops: "Oops!",
     },
     tabs: {
-      recentProjects: "Recent Projects",
-      allProjects: "All Projects",
+      projects: "Projects",
+      expenses: "Expenses",
       settings: "Settings",
     },
     notFound: {
@@ -178,6 +178,8 @@ const translations = {
         statusFailed: "FAILED",
       },
       projectsList: {
+        recentsHeader: "Recents",
+        allHeader: "All",
         searchPlaceholder: "Search project IDs or PIs...",
         loadingProjects: "Loading projects...",
         clearSearchAccessibilityLabel: "Clear search",
@@ -209,6 +211,16 @@ const translations = {
         noRatesAvailable: "No rates available",
         contactAdministrator: "Contact your administrator",
       },
+      expensesList: {
+        title: "Recent Expenses",
+        subtitle: "Showing submitted expenses from the last 7 days.",
+        loadingRecentExpenses: "Loading recent expenses...",
+        failedToLoadRecentExpenses: "Couldn't load recent expenses.",
+        statusApproved: "approved",
+        statusSubmitted: "submitted",
+        noRecentExpenses: "No recent expenses yet",
+        pullDownToRefresh: "Pull down to refresh.",
+      },
       ui: {
         closeAboutAccessibilityLabel: "Close About",
         editProjectAccessibilityLabel: "Edit project",
@@ -239,8 +251,8 @@ const translations = {
       notFoundOops: "¡Vaya!",
     },
     tabs: {
-      recentProjects: "Proyectos recientes",
-      allProjects: "Todos los proyectos",
+      projects: "Proyectos",
+      expenses: "Gastos",
       settings: "Configuración",
     },
     notFound: {
@@ -398,6 +410,8 @@ const translations = {
         statusFailed: "FALLIDO",
       },
       projectsList: {
+        recentsHeader: "Recientes",
+        allHeader: "Todos",
         searchPlaceholder: "Buscar IDs de proyecto o PI...",
         loadingProjects: "Cargando proyectos...",
         clearSearchAccessibilityLabel: "Limpiar búsqueda",
@@ -429,6 +443,16 @@ const translations = {
           "Intenta ajustar tus términos de búsqueda o filtros",
         noRatesAvailable: "No hay tarifas disponibles",
         contactAdministrator: "Contacta a tu administrador",
+      },
+      expensesList: {
+        title: "Gastos recientes",
+        subtitle: "Mostrando gastos enviados en los últimos 7 días.",
+        loadingRecentExpenses: "Cargando gastos recientes...",
+        failedToLoadRecentExpenses: "No se pudieron cargar los gastos recientes.",
+        statusApproved: "aprobado",
+        statusSubmitted: "enviado",
+        noRecentExpenses: "Aún no hay gastos recientes",
+        pullDownToRefresh: "Desliza hacia abajo para actualizar.",
       },
       ui: {
         closeAboutAccessibilityLabel: "Cerrar «Acerca de»",

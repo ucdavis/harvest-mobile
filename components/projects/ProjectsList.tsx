@@ -1,5 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import {
   FlatList,
   RefreshControl,
@@ -25,38 +25,116 @@ type ProjectsListProps = {
   queryKey: (string | undefined)[];
   onProjectPress: (project: Project) => void;
   isLoading?: boolean;
+  recentProjects?: Project[];
+  refreshQueryKeys?: (string | undefined)[][];
 };
+
+type ProjectListItem =
+  | {
+      type: "header";
+      header: string;
+      key: string;
+    }
+  | {
+      type: "project";
+      section: "recent" | "all";
+      project: Project;
+    };
 
 export function ProjectsList({
   projects,
   queryKey,
   onProjectPress,
   isLoading = false,
+  recentProjects,
+  refreshQueryKeys,
 }: ProjectsListProps) {
   const queryClient = useQueryClient();
   const [refreshing, setRefreshing] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const sectionedMode = typeof recentProjects !== "undefined";
+
+  const filterProjects = useCallback(
+    (items: Project[] = []) => {
+      if (!searchTerm.trim()) return items;
+      const q = searchTerm.toLowerCase();
+      return items.filter(
+        (p) =>
+          String(p.name).toLowerCase().includes(q) ||
+          String(p.id).toLowerCase().includes(q) ||
+          String(p.piName).toLowerCase().includes(q),
+      );
+    },
+    [searchTerm],
+  );
 
   // Filter projects based on search term
   const filteredProjects = useMemo(() => {
-    if (!projects) return [];
-    if (!searchTerm.trim()) return projects;
+    return filterProjects(projects);
+  }, [projects, filterProjects]);
 
-    const q = searchTerm.toLowerCase();
+  const filteredRecentProjects = useMemo(() => {
+    return filterProjects(recentProjects ?? []);
+  }, [recentProjects, filterProjects]);
 
-    return projects.filter(
-      (p) =>
-        String(p.name).toLowerCase().includes(q) ||
-        String(p.id).toLowerCase().includes(q) ||
-        String(p.piName).toLowerCase().includes(q)
-    );
-  }, [projects, searchTerm]);
+  const listData = useMemo<ProjectListItem[]>(() => {
+    if (!sectionedMode) {
+      return filteredProjects.map((project) => ({
+        type: "project",
+        section: "all",
+        project,
+      }));
+    }
+
+    return [
+      ...(filteredRecentProjects.length > 0
+        ? [
+            {
+              type: "header" as const,
+              header: tx("components.projectsList.recentsHeader"),
+              key: "header-recent-projects",
+            },
+            ...filteredRecentProjects.map((project) => ({
+              type: "project" as const,
+              section: "recent" as const,
+              project,
+            })),
+          ]
+        : []),
+      ...(filteredProjects.length > 0
+        ? [
+            {
+              type: "header" as const,
+              header: tx("components.projectsList.allHeader"),
+              key: "header-all-projects",
+            },
+            ...filteredProjects.map((project) => ({
+              type: "project" as const,
+              section: "all" as const,
+              project,
+            })),
+          ]
+        : []),
+    ];
+  }, [sectionedMode, filteredProjects, filteredRecentProjects]);
+
+  const visibleProjectCount = sectionedMode
+    ? filteredRecentProjects.length + filteredProjects.length
+    : filteredProjects.length;
 
   const onRefresh = async () => {
     setRefreshing(true);
-    await queryClient.refetchQueries({
-      queryKey,
-    });
+    const queryKeysToRefresh =
+      refreshQueryKeys && refreshQueryKeys.length > 0
+        ? refreshQueryKeys
+        : [queryKey];
+    await Promise.all(
+      queryKeysToRefresh.map((key) =>
+        queryClient.refetchQueries({
+          queryKey: key,
+        }),
+      ),
+    );
     setRefreshing(false);
   };
 
@@ -64,15 +142,27 @@ export function ProjectsList({
     onProjectPress(project);
   };
 
-  const renderProjectCard = ({ item }: { item: Project }) => (
+  const renderProjectCard = (project: Project) => (
     <ProjectCard
-      id={Number(item.id)}
-      projectName={item.name}
-      piName={item.piName}
-      onPress={() => handleProjectPress(item)}
-      onEdit={() => handleProjectPress(item)}
+      id={project.id}
+      projectName={project.name}
+      piName={project.piName}
+      onPress={() => handleProjectPress(project)}
+      onEdit={() => handleProjectPress(project)}
     />
   );
+
+  const renderItem = ({ item }: { item: ProjectListItem }) => {
+    if (item.type === "header") {
+      return (
+        <Text className="px-4 pt-4 pb-2 text-base font-semibold text-primaryfont">
+          {item.header}
+        </Text>
+      );
+    }
+
+    return renderProjectCard(item.project);
+  };
 
   // Show loading state
   if (isLoading) {
@@ -105,8 +195,7 @@ export function ProjectsList({
 
   return (
     <View className="flex-1">
-
-      <View className="flex-row items-center p-4 bg-white border-b border-primaryborder h-14 mb-2">
+      <View className="flex-row items-center p-4 bg-white border-b border-primaryborder h-14">
         <MagnifyingGlassIcon size={20} color={Colors.icon} />
         <TextInput
           className="flex-1 mx-2 text-primaryfont text-lg leading-6"
@@ -115,7 +204,6 @@ export function ProjectsList({
           value={searchTerm}
           onChangeText={setSearchTerm}
           returnKeyType="search"
-
           multiline={false}
           numberOfLines={1}
           style={{
@@ -124,14 +212,13 @@ export function ProjectsList({
             paddingTop: 0,
             paddingBottom: 0,
           }}
-
         />
         {searchTerm.length > 0 && (
           <TouchableOpacity
             className="p-1 mr-1"
             accessibilityRole="button"
             accessibilityLabel={tx(
-              "components.projectsList.clearSearchAccessibilityLabel"
+              "components.projectsList.clearSearchAccessibilityLabel",
             )}
             onPress={() => setSearchTerm("")}
           >
@@ -144,24 +231,27 @@ export function ProjectsList({
       {searchTerm.length > 0 && (
         <View className="items-center mt-2">
           <Text className="text-sm text-primaryfont/80">
-            {filteredProjects.length === 1
+            {visibleProjectCount === 1
               ? tx("components.projectsList.resultsFoundSingular", {
-                  count: filteredProjects.length,
+                  count: visibleProjectCount,
                 })
               : tx("components.projectsList.resultsFoundPlural", {
-                  count: filteredProjects.length,
+                  count: visibleProjectCount,
                 })}
           </Text>
         </View>
       )}
 
       {/* Projects List Content */}
-      {filteredProjects.length > 0 ? (
+      {listData.length > 0 ? (
         <View className="px-4 flex-1">
           <FlatList
-            data={filteredProjects}
-            renderItem={renderProjectCard}
-            keyExtractor={(item) => item.id} // keep internal key stable
+            data={listData}
+            renderItem={renderItem}
+            keyExtractor={(item, idx) => {
+              if (item.type === "header") return item.key;
+              return `${item.section}-${item.project.id}-${idx}`;
+            }}
             contentContainerStyle={{ paddingTop: 8, paddingBottom: 88 }}
             showsVerticalScrollIndicator={false}
             refreshControl={

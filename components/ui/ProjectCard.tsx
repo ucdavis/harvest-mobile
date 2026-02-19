@@ -5,9 +5,9 @@ import { PlusCircleIcon } from "react-native-heroicons/outline";
 import { UserIcon } from "react-native-heroicons/solid";
 
 type ProjectCardProps = {
-  id: number; // internal ID, just a number
+  id: string;
   projectName: string;
-  piName?: string; // PI name
+  piName?: string;
   onEdit?: () => void;
   onPress?: () => void;
 };

@@ -1,11 +1,39 @@
+import { HOUR_IN_MS } from "@/components/context/queryClient";
+import { TeamAuthInfo } from "@/lib/auth";
 import { getDbOrThrow } from "@/lib/db/client";
-import { Expense, QueuedExpense } from "@/lib/expense";
+import { Expense, QueuedExpense, RecentExpense } from "@/lib/expense";
 import { logger } from "@/lib/logger";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  queryOptions,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
+import { fetchFromApi } from "../api";
+
+async function fetchRecentExpensesFromApi(authInfo?: TeamAuthInfo) {
+  return fetchFromApi<RecentExpense[]>(
+    "/api/mobile/recentexpenses",
+    {},
+    authInfo,
+  );
+}
+
+export const recentExpensesApiQueryOptions = (authInfo?: TeamAuthInfo) =>
+  queryOptions({
+    queryKey: ["expenses", authInfo?.team, "recent"] as const,
+    queryFn: () => fetchRecentExpensesFromApi(authInfo),
+    staleTime: HOUR_IN_MS / 2, // 30 minutes
+    enabled: !!authInfo, // only run query if we have auth info
+  });
+
+export const useRecentExpenses = (authInfo?: TeamAuthInfo) => {
+  return useQuery(recentExpensesApiQueryOptions(authInfo));
+};
 
 // Insert expenses into the local database queue
 async function insertExpensesToDb(
-  expenses: Expense[]
+  expenses: Expense[],
 ): Promise<QueuedExpense[]> {
   const db = getDbOrThrow();
   const results: QueuedExpense[] = [];
@@ -44,7 +72,7 @@ async function insertExpensesToDb(
             "pending",
             createdDate,
             0,
-          ]
+          ],
         );
 
         // Create the queued expense object with the generated ID
@@ -126,7 +154,7 @@ async function getPendingExpensesFromDb(): Promise<QueuedExpense[]> {
       errorMessage
     FROM expenses_queue
     WHERE status = 'pending'
-    ORDER BY createdDate DESC`
+    ORDER BY createdDate DESC`,
   );
 
   return rows.map((row) => ({

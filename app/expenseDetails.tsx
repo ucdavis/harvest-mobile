@@ -133,7 +133,7 @@ export default function ExpenseDetailsScreen() {
       description: description || rate.description,
       price: rate.price,
       quantity: numericQuantity,
-      projectId: Number(projectId),
+      projectId,
       rateId: rate.id,
       rate,
       markup: showMarkupInput ? markup : false,

@@ -270,6 +270,20 @@ async function syncAllPendingExpenses(): Promise<void> {
 
 export const MUTATION_KEY_SYNC_EXPENSES = ["sync-expenses"] as const;
 
+function invalidateRecentExpensesQueries() {
+  queryClient.invalidateQueries({
+    predicate: (query) => {
+      const key = query.queryKey;
+      return (
+        Array.isArray(key) &&
+        key.length >= 3 &&
+        key[0] === "expenses" &&
+        key[2] === "recent"
+      );
+    },
+  });
+}
+
 /**
  * React Query mutation hook for syncing the expense queue
  */
@@ -292,6 +306,7 @@ export function useSyncExpenseQueue() {
     },
     onSuccess: () => {
       logger.info("Sync expense queue mutation succeeded");
+      invalidateRecentExpensesQueries();
     },
     onError: (error, variables, context) => {
       logger.error("Sync expense queue mutation failed", error, {
