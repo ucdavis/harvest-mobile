@@ -2,6 +2,7 @@ import { useAuth } from "@/components/context/AuthContext";
 import { RateTypeIcon } from "@/components/ui/rateType";
 import { Colors } from "@/constants/Colors";
 import { RecentExpense } from "@/lib/expense";
+import { tx } from "@/lib/i18n";
 import { useRecentExpenses } from "@/services/queries/expenses";
 import { useQueryClient } from "@tanstack/react-query";
 import { FlatList, RefreshControl, Text, View } from "react-native";
@@ -21,7 +22,7 @@ export default function ExpensesScreen() {
     return (
       <View className="flex-1 items-center justify-center p-6">
         <Text className="text-base text-primaryfont/70">
-          Loading recent expenses...
+          {tx("components.expensesList.loadingRecentExpenses")}
         </Text>
       </View>
     );
@@ -31,7 +32,7 @@ export default function ExpensesScreen() {
     return (
       <View className="flex-1 items-center justify-center p-6">
         <Text className="text-base text-primaryfont">
-          Couldn&apos;t load recent expenses.
+          {tx("components.expensesList.failedToLoadRecentExpenses")}
         </Text>
       </View>
     );
@@ -45,6 +46,16 @@ export default function ExpensesScreen() {
         contentContainerStyle={{ flexGrow: 1, paddingTop: 12, paddingBottom: 88 }}
         alwaysBounceVertical
         showsVerticalScrollIndicator={false}
+        ListHeaderComponent={
+          <View className="px-4 pb-3">
+            <Text className="text-2xl font-semibold tracking-tight text-harvest">
+              {tx("components.expensesList.title")}
+            </Text>
+            <Text className="mt-1 text-sm text-primaryfont/80">
+              {tx("components.expensesList.subtitle")}
+            </Text>
+          </View>
+        }
         renderItem={({ item }: { item: RecentExpense }) => (
           <View className="mx-4 mb-4 overflow-hidden rounded-md border border-primaryborder bg-white">
             <View className="flex-row items-start justify-between px-4 py-3">
@@ -79,7 +90,9 @@ export default function ExpensesScreen() {
                       item.approved ? "text-green-700" : "text-blue-700"
                     }`}
                   >
-                    {item.approved ? "approved" : "submitted"}
+                    {item.approved
+                      ? tx("components.expensesList.statusApproved")
+                      : tx("components.expensesList.statusSubmitted")}
                   </Text>
                 </View>
                 <View className="mt-2 rounded-full bg-harvest/10 px-3 py-1">
@@ -101,10 +114,10 @@ export default function ExpensesScreen() {
           <View className="flex-1 items-center justify-center">
             <ClipboardDocumentListIcon size={72} color={Colors.icon} />
             <Text className="mt-4 text-lg font-semibold text-primaryfont">
-              No recent expenses yet
+              {tx("components.expensesList.noRecentExpenses")}
             </Text>
             <Text className="mt-2 text-primaryfont/80">
-              Pull down to refresh.
+              {tx("components.expensesList.pullDownToRefresh")}
             </Text>
           </View>
         }
