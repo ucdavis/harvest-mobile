@@ -11,7 +11,7 @@ async function fetchProjectsFromApi(authInfo?: TeamAuthInfo) {
 // uses api data and caches it
 export const projectsApiQueryOptions = (authInfo?: TeamAuthInfo) =>
   queryOptions({
-    queryKey: ["projects", authInfo?.team] as const,
+    queryKey: ["projects", authInfo?.team, "all"] as const,
     queryFn: () => fetchProjectsFromApi(authInfo),
     staleTime: 12 * HOUR_IN_MS,
     enabled: !!authInfo, // only run query if we have auth info

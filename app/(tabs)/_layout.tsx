@@ -8,7 +8,7 @@ import { Platform } from "react-native";
 import {
   ClipboardDocumentListIcon,
   ClockIcon,
-  CogIcon
+  CogIcon,
 } from "react-native-heroicons/solid";
 
 export default function TabLayout() {
@@ -37,7 +37,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: tx("tabs.recentProjects"),
+          title: tx("tabs.projects"),
           tabBarIcon: ({ color }) => <ClockIcon size={28} color={color} />,
           headerRight: () => <QrScanButton context="project" />,
         }}

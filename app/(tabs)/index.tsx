@@ -1,7 +1,7 @@
 import { useAuth } from "@/components/context/AuthContext";
 import { ProjectsList } from "@/components/projects/ProjectsList";
 import { useScannedProjectHandler } from "@/hooks/useScannedProjectHandler";
-import { useRecentProjects } from "@/services/queries/projects";
+import { useProjects, useRecentProjects } from "@/services/queries/projects";
 import { useUserInfo } from "@/services/queries/users";
 import { setUser } from "@sentry/react-native";
 import { useEffect } from "react";
@@ -9,8 +9,8 @@ import { View } from "react-native";
 
 export default function RecentProjectsScreen() {
   const { authInfo } = useAuth();
-  const { data: recentProjects, isLoading: isLoadingProjects } =
-    useRecentProjects(authInfo);
+  const recentProjectsQuery = useRecentProjects(authInfo);
+  const projectsQuery = useProjects(authInfo);
   const userQuery = useUserInfo(authInfo);
 
   const { handleProjectPress } = useScannedProjectHandler({
@@ -33,10 +33,15 @@ export default function RecentProjectsScreen() {
       {/* <TeamChooser /> */}
 
       <ProjectsList
-        projects={recentProjects || []}
-        queryKey={["projects", authInfo?.team, "recent"]}
+        projects={projectsQuery.data || []}
+        recentProjects={recentProjectsQuery.data || []}
+        queryKey={["projects", authInfo?.team]}
+        refreshQueryKeys={[
+          ["projects", authInfo?.team, "all"],
+          ["projects", authInfo?.team, "recent"],
+        ]}
         onProjectPress={handleProjectPress}
-        isLoading={isLoadingProjects}
+        isLoading={recentProjectsQuery.isLoading || projectsQuery.isLoading}
       />
     </View>
   );

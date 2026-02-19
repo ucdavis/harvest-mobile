@@ -21,8 +21,7 @@ const translations = {
       notFoundOops: "Oops!",
     },
     tabs: {
-      recentProjects: "Recent Projects",
-      allProjects: "All Projects",
+      projects: "Projects",
       expenses: "Expenses",
       settings: "Settings",
     },
@@ -179,6 +178,8 @@ const translations = {
         statusFailed: "FAILED",
       },
       projectsList: {
+        recentsHeader: "Recents",
+        allHeader: "All",
         searchPlaceholder: "Search project IDs or PIs...",
         loadingProjects: "Loading projects...",
         clearSearchAccessibilityLabel: "Clear search",
@@ -240,8 +241,7 @@ const translations = {
       notFoundOops: "¡Vaya!",
     },
     tabs: {
-      recentProjects: "Proyectos recientes",
-      allProjects: "Todos los proyectos",
+      projects: "Proyectos",
       expenses: "Gastos",
       settings: "Configuración",
     },
@@ -400,6 +400,8 @@ const translations = {
         statusFailed: "FALLIDO",
       },
       projectsList: {
+        recentsHeader: "Recientes",
+        allHeader: "Todos",
         searchPlaceholder: "Buscar IDs de proyecto o PI...",
         loadingProjects: "Cargando proyectos...",
         clearSearchAccessibilityLabel: "Limpiar búsqueda",
