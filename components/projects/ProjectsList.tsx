@@ -62,10 +62,10 @@ export function ProjectsList({
         (p) =>
           String(p.name).toLowerCase().includes(q) ||
           String(p.id).toLowerCase().includes(q) ||
-          String(p.piName).toLowerCase().includes(q)
+          String(p.piName).toLowerCase().includes(q),
       );
     },
-    [searchTerm]
+    [searchTerm],
   );
 
   // Filter projects based on search term
@@ -132,8 +132,8 @@ export function ProjectsList({
       queryKeysToRefresh.map((key) =>
         queryClient.refetchQueries({
           queryKey: key,
-        })
-      )
+        }),
+      ),
     );
     setRefreshing(false);
   };
@@ -195,8 +195,7 @@ export function ProjectsList({
 
   return (
     <View className="flex-1">
-
-      <View className="flex-row items-center p-4 bg-white border-b border-primaryborder h-14 mb-2">
+      <View className="flex-row items-center p-4 bg-white border-b border-primaryborder h-14">
         <MagnifyingGlassIcon size={20} color={Colors.icon} />
         <TextInput
           className="flex-1 mx-2 text-primaryfont text-lg leading-6"
@@ -205,7 +204,6 @@ export function ProjectsList({
           value={searchTerm}
           onChangeText={setSearchTerm}
           returnKeyType="search"
-
           multiline={false}
           numberOfLines={1}
           style={{
@@ -214,14 +212,13 @@ export function ProjectsList({
             paddingTop: 0,
             paddingBottom: 0,
           }}
-
         />
         {searchTerm.length > 0 && (
           <TouchableOpacity
             className="p-1 mr-1"
             accessibilityRole="button"
             accessibilityLabel={tx(
-              "components.projectsList.clearSearchAccessibilityLabel"
+              "components.projectsList.clearSearchAccessibilityLabel",
             )}
             onPress={() => setSearchTerm("")}
           >
