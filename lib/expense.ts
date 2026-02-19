@@ -10,6 +10,25 @@ export type Rate = {
   isPassthrough: boolean;
 };
 
+// shape returned by /api/mobile/recentexpenses
+export type RecentExpense = {
+  id: number;
+  type: string;
+  activity: string;
+  description: string;
+  price: number;
+  quantity: number;
+  total: number;
+  createdOn: string;
+  approvedOn: string | null;
+  approvedBy: string;
+  approved: boolean;
+  projectId: number;
+  rateId: number;
+  rateName: string;
+  projectName: string;
+};
+
 // matched with harvest
 export type Expense = {
   type: string;
