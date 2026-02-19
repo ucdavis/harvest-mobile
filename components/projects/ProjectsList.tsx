@@ -144,7 +144,7 @@ export function ProjectsList({
 
   const renderProjectCard = (project: Project) => (
     <ProjectCard
-      id={Number(project.id)}
+      id={project.id}
       projectName={project.name}
       piName={project.piName}
       onPress={() => handleProjectPress(project)}

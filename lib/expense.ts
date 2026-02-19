@@ -23,7 +23,7 @@ export type RecentExpense = {
   approvedOn: string | null;
   approvedBy: string;
   approved: boolean;
-  projectId: number;
+  projectId: string;
   rateId: number;
   rateName: string;
   projectName: string;
@@ -36,7 +36,7 @@ export type Expense = {
   description: string; // for other
   price: number; // rate amount, immutable
   quantity: number;
-  projectId: number;
+  projectId: string;
   rateId: string; // ties to specific rates
   rate?: Rate; // optional reference to the rate details
   markup: boolean;
