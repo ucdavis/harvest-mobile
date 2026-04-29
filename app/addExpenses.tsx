@@ -187,9 +187,13 @@ export default function AddExpenseScreen() {
                       {item.rate?.description}
                     </Text>
                     <Text className="text-base text-primaryfont/70 font-semibold">
-                      {item.quantity} {item.rate?.unit} @ ${item.price}{" "}
-                      {item.markup ? tx("common.markupSuffix") : ""}
+                      {item.quantity} {item.rate?.unit} @ ${item.price}
                     </Text>
+                    {item.markup && (
+                      <Text className="mt-0.5 text-xs font-semibold uppercase tracking-tight text-primaryfont/55">
+                        {tx("common.markupSummary")}
+                      </Text>
+                    )}
                   </View>
                 </View>
 
