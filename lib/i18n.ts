@@ -6,7 +6,7 @@ const translations = {
     common: {
       ok: "OK",
       tryAgain: "Try Again",
-      markupSummary: "20% markup on first $1,000",
+      markupSummary: "+markup",
     },
     auth: {
       welcomeToHarvest: "Welcome to Harvest",
@@ -237,7 +237,7 @@ const translations = {
     common: {
       ok: "Aceptar",
       tryAgain: "Reintentar",
-      markupSummary: "Recargo del 20% sobre los primeros $1,000",
+      markupSummary: "+recargo",
     },
     auth: {
       welcomeToHarvest: "Bienvenido a Harvest",
@@ -450,7 +450,8 @@ const translations = {
         title: "Gastos recientes",
         subtitle: "Mostrando gastos enviados en los últimos 7 días.",
         loadingRecentExpenses: "Cargando gastos recientes...",
-        failedToLoadRecentExpenses: "No se pudieron cargar los gastos recientes.",
+        failedToLoadRecentExpenses:
+          "No se pudieron cargar los gastos recientes.",
         statusApproved: "aprobado",
         statusSubmitted: "enviado",
         noRecentExpenses: "Aún no hay gastos recientes",
