@@ -1,5 +1,5 @@
 import { queryClient } from "@/components/context/queryClient";
-import { QueuedExpense } from "@/lib/expense";
+import { calculateExpenseTotal, QueuedExpense } from "@/lib/expense";
 import { tx } from "@/lib/i18n";
 import {
   MUTATION_KEY_SYNC_EXPENSES,
@@ -207,7 +207,13 @@ export default function ExpenseQueue({ className }: ExpenseQueueProps) {
                     {tx("components.expenseQueue.totalLabel")}
                   </Text>
                   <Text className="text-sm font-medium text-gray-900">
-                    {formatPrice(expense.price * expense.quantity)}
+                    {formatPrice(
+                      calculateExpenseTotal(
+                        expense.price,
+                        expense.quantity,
+                        expense.markup
+                      )
+                    )}
                   </Text>
                 </View>
 

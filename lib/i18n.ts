@@ -6,7 +6,7 @@ const translations = {
     common: {
       ok: "OK",
       tryAgain: "Try Again",
-      markupSuffix: " (+20%)",
+      markupSummary: "+markup",
     },
     auth: {
       welcomeToHarvest: "Welcome to Harvest",
@@ -114,6 +114,7 @@ const translations = {
       descriptionPlaceholder: "Enter description (required)",
       markupAccessibilityLabel: "Markup",
       markupLabel: "Markup",
+      markupInfo: "Adds 20% to the first $1,000 only.",
       addExpenseButton: "Add Expense",
     },
     qrScan: {
@@ -236,7 +237,7 @@ const translations = {
     common: {
       ok: "Aceptar",
       tryAgain: "Reintentar",
-      markupSuffix: " (+20%)",
+      markupSummary: "+recargo",
     },
     auth: {
       welcomeToHarvest: "Bienvenido a Harvest",
@@ -346,6 +347,7 @@ const translations = {
       descriptionPlaceholder: "Ingresa una descripción (requerida)",
       markupAccessibilityLabel: "Recargo",
       markupLabel: "Recargo",
+      markupInfo: "Agrega 20% solo a los primeros $1,000.",
       addExpenseButton: "Agregar gasto",
     },
     qrScan: {
@@ -448,7 +450,8 @@ const translations = {
         title: "Gastos recientes",
         subtitle: "Mostrando gastos enviados en los últimos 7 días.",
         loadingRecentExpenses: "Cargando gastos recientes...",
-        failedToLoadRecentExpenses: "No se pudieron cargar los gastos recientes.",
+        failedToLoadRecentExpenses:
+          "No se pudieron cargar los gastos recientes.",
         statusApproved: "aprobado",
         statusSubmitted: "enviado",
         noRecentExpenses: "Aún no hay gastos recientes",

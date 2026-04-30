@@ -53,6 +53,23 @@ export type QueuedExpense = Expense & {
   errorMessage?: string; // error message if sync failed
 };
 
+export const MARKUP_RATE = 0.2;
+export const MARKUP_CAP = 1000;
+
+export function calculateExpenseTotal(
+  price: number,
+  quantity: number,
+  markup: boolean
+): number {
+  const baseTotal = price * quantity;
+
+  if (!markup) {
+    return baseTotal;
+  }
+
+  return baseTotal + Math.min(baseTotal, MARKUP_CAP) * MARKUP_RATE;
+}
+
 export function getExpenseUniqueId(): string {
   // Generate a UUID v4 using expo-crypto
   return Crypto.randomUUID();
