@@ -256,17 +256,19 @@ export default function ExpenseDetailsScreen() {
 
                 {/* Description Input */}
                 {showDescriptionInput && (
-                  <View className="mb-6">
+                  <View className="mb-4">
                     <Text className="text-sm font-semibold text-primaryfont/60 tracking-tight mb-2">
                       {tx("expenseDetails.descriptionLabel")}
                     </Text>
                     <TextInput
-                      className="bg-white rounded-lg p-4 text-base border border-primaryborder min-h-[80px]"
+                      className="bg-white rounded-lg p-4 text-base border border-primaryborder"
+                      style={{ height: 80 }}
                       value={description}
                       onChangeText={setDescription}
                       placeholder={tx("expenseDetails.descriptionPlaceholder")}
                       placeholderTextColor="#999"
                       multiline
+                      scrollEnabled
                       textAlignVertical="top"
                     />
                   </View>
@@ -274,36 +276,32 @@ export default function ExpenseDetailsScreen() {
 
                 {/* Markup Toggle (only for other) */}
                 {showMarkupInput && (
-                  <View className="mb-4 rounded-2xl border border-primaryborder bg-white px-4 py-3">
-                    <TouchableOpacity
-                      activeOpacity={0.8}
-                      onPress={() => setMarkup((v) => !v)}
-                      className="flex-row items-start"
-                      accessibilityRole="checkbox"
-                      accessibilityLabel={tx(
-                        "expenseDetails.markupAccessibilityLabel"
-                      )}
-                      accessibilityState={{ checked: markup }}
+                  <TouchableOpacity
+                    activeOpacity={0.8}
+                    onPress={() => setMarkup((v) => !v)}
+                    className="flex-row items-center mb-4"
+                    accessibilityRole="checkbox"
+                    accessibilityLabel={tx(
+                      "expenseDetails.markupAccessibilityLabel"
+                    )}
+                    accessibilityState={{ checked: markup }}
+                  >
+                    <View
+                      className={`h-6 w-6 items-center justify-center rounded-md border border-primaryborder ${
+                        markup ? "bg-harvest" : "bg-white"
+                      }`}
                     >
-                      <View
-                        className={`mt-0.5 h-6 w-6 items-center justify-center rounded-md border border-primaryborder ${
-                          markup ? "bg-harvest" : "bg-white"
-                        }`}
-                      >
-                        {markup && (
-                          <Text className="text-white text-sm font-bold">✓</Text>
-                        )}
-                      </View>
-                      <View className="ml-3 flex-1">
-                        <Text className="text-base font-semibold text-primaryfont">
-                          {tx("expenseDetails.markupLabel")}
-                        </Text>
-                        <Text className="mt-1 text-sm leading-5 text-primaryfont/65">
-                          {tx("expenseDetails.markupInfo")}
-                        </Text>
-                      </View>
-                    </TouchableOpacity>
-                  </View>
+                      {markup && (
+                        <Text className="text-white text-sm font-bold">✓</Text>
+                      )}
+                    </View>
+                    <Text className="ml-3 text-base font-semibold text-primaryfont">
+                      {tx("expenseDetails.markupLabel")}
+                    </Text>
+                    <Text className="ml-2 text-sm text-primaryfont/65">
+                      {tx("expenseDetails.markupInfo")}
+                    </Text>
+                  </TouchableOpacity>
                 )}
               </View>
             </View>
@@ -328,20 +326,15 @@ export default function ExpenseDetailsScreen() {
           <View className="px-4 py-2 flex-row items-center justify-between mb-5">
             <View>
               <Text className="text-base font-semibold text-primaryfont/40 text-start">
-                {quantity || "0"} {rate.unit} × ${rate.price}
+                {quantity || "0"} {rate.unit} × ${rate.price}{isMarkupApplied ? ` ${tx("common.markupSummary")}` : ""}
               </Text>
-              {isMarkupApplied && (
-                <Text className="mt-1 text-xs font-semibold uppercase tracking-tight text-primaryfont/55">
-                  {tx("common.markupSummary")}
-                </Text>
-              )}
               <Text className="text-lg font-extrabold text-harvest">
                 ${getTotalCost()}
               </Text>
             </View>
 
             <TouchableOpacity
-              className="harvest-button w-[55%]"
+              className="harvest-button w-[45%]"
               onPress={handleConfirm}
             >
               <Text className="harvest-button-text">
